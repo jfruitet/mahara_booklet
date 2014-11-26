@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="artefact/booklet/db" VERSION="20120703" COMMENT="XMLDB file for booklet tables"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd"
+>
+
+     <TABLES>
+         <TABLE NAME="artefact_booklet_designer">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="userfk" TYPE="foreign" FIELDS="id" REFTABLE="usr" REFFIELDS="id" />
+            </KEYS>
+         </TABLE>
+         <TABLE NAME="artefact_booklet_tome">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="artefact" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="title" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="help" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="public" TYPE="int" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="artefactfk" TYPE="foreign" FIELDS="artefact" REFTABLE="artefact" REFFIELDS="id" />
+            </KEYS>
+         </TABLE>
+         <TABLE NAME="artefact_booklet_tab">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idtome" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="title" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="help" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="displayorder" TYPE="int" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="tomefk" TYPE="foreign" FIELDS="idtome" REFTABLE="artefact_booklet_tome" REFFIELDS="id" />
+            </KEYS>
+         </TABLE>
+         <TABLE NAME="artefact_booklet_frame">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idtab" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="title" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="help" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="list" TYPE="int" NOTNULL="false" />
+                <FIELD NAME="displayorder" TYPE="int" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="tabfk" TYPE="foreign" FIELDS="idtab" REFTABLE="artefact_booklet_tab" REFFIELDS="id" />
+            </KEYS>
+         </TABLE>
+         <TABLE NAME="artefact_booklet_object">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idframe" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="type" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="title" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="name" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="help" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="value" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="displayorder" TYPE="int" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="framefk" TYPE="foreign" FIELDS="idframe" REFTABLE="artefact_booklet_frame" REFFIELDS="id" />
+            </KEYS>
+         </TABLE>
+         <TABLE NAME="artefact_booklet_radio">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="option" TYPE="text" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+         <TABLE NAME="artefact_booklet_synthesis">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idobjectlinked" TYPE="int" LENGTH="10" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_selectedtome">
+            <FIELDS>
+                <FIELD NAME="idtome" TYPE="int" LENGTH="10"  NOTNULL="true" />
+                <FIELD NAME="iduser" TYPE="int" LENGTH="10"  NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="iduser" />
+                <KEY NAME="userfk" TYPE="foreign" FIELDS="iduser" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="tomefk" TYPE="foreign" FIELDS="idtome" REFTABLE="artefact_booklet_tome" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resultcheckbox">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="value" TYPE="int" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="bookletobjectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resultdate">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="value" TYPE="datetime" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="bookletobjectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resultradio">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idchoice" TYPE="int" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="choicefk" TYPE="foreign" FIELDS="idchoice" REFTABLE="artefact_booklet_radio" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resulttext">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="value" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resultattachedfiles">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="artefact" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="artefactfk" TYPE="foreign" FIELDS="artefact" REFTABLE="artefact" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="artefact_booklet_resultdisplayorder">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idrecord" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="displayorder" TYPE="int" LENGTH="10" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+    </TABLES>
+</XMLDB>

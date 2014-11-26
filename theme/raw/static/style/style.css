@@ -1,0 +1,93 @@
+/**
+ * CSS rules for the booklet artefact plugin
+ *
+ * Copyright (C) 2006-2009 Catalyst IT
+ * This file is distributed under the same terms as Mahara itself
+ */
+.tablerenderer th.nom {
+    width: 200px !important;
+}
+#bookletwrap table {
+    width: 100%;
+}
+#bookletwrap table td {
+    padding: 0;
+}
+
+#bookletwrap table.tabcomposite .right,
+#bookletwrap table.framecomposite .right,
+#bookletwrap table.objectcomposite .right,
+#bookletwrap table.optioncomposite .right,
+#bookletwrap table.tomecomposite .right {
+    width: 40px;
+    padding: 5px 5px 3px 5px;
+    line-height: 1.3333em;
+}
+
+#bookletwrap table.tabcomposite .movebuttons,
+#bookletwrap table.framecomposite .movebuttons,
+#bookletwrap table.objectcomposite .movebuttons,
+#bookletwrap table.optioncomposite .movebuttons,
+#bookletwrap table.tomecomposite .movebuttons {
+    padding: 5px 5px 3px 5px;
+    line-height: 1.3333em;
+}
+
+#bookletwrap table.tabcomposite .btn-edit,
+#bookletwrap table.framecomposite .btn-edit,
+#bookletwrap table.objectcomposite .btn-edit,
+#bookletwrap table.optioncomposite .btn-edit,
+#bookletwrap table.tabcomposite .btn-del,
+#bookletwrap table.framecomposite .btn-del,
+#bookletwrap table.objectcomposite .btn-del,
+#bookletwrap table.optioncomposite .btn-del,
+#bookletwrap table.tomecomposite .btn-edit,
+#bookletwrap table.tomecomposite .btn-del {
+    font-size: .9167em;
+}
+
+#bookletwrap table.tabcomposite td,
+#bookletwrap table.framecomposite td,
+#bookletwrap table.objectcomposite td,
+#bookletwrap table.optioncomposite td,
+#bookletwrap table.tomecomposite td {
+    padding: 5px 5px;
+}
+
+
+
+
+#bookletwrap table.framecomposite,
+#bookletwrap table.objectcomposite{
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+#bookletwrap table.tabcomposite,
+#bookletwrap table.optioncomposite,
+#bookletwrap table.tomecomposite{
+    margin-bottom: 5px;
+    width: 50%;
+}
+
+#bookletwrap table table {
+    width: auto;
+}
+#bookletwrap form {
+    margin: 0;
+}
+#container #bookletwrap table td.errmsg {
+   padding-left: 20px;
+}
+fieldset legend.bookleth3 a {
+    background: none;
+    padding: 0;
+}
+
+#personalinformation fieldset th {
+    text-align: left;
+}
+#bookletwrap fieldset th label {
+    font-weight: bold;
+    font-size: 1em;
+}
