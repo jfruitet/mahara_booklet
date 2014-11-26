@@ -5,13 +5,17 @@ Jean.Fruitet@univ-nantes.fr
 This is a Mahara 10.1 artefact booklet version of Christophe Declercq-Mauras Mahara artefact Booklet 
 
 
-French presentation 
--------------------
+## French presentation 
+
 Le « livret universel de compétences » : un méta-artefact pour Mahara
+
 http://moodlemoot2013.univ-bordeaux.fr/course/view.php?id=55
+
 Auteur(s) : Christophe Declercq <christophe.declercq@univ-nantes.fr>
+
 Mots-clés : mahara, eportfolio, artefact, curriculum-vitae
-Résumé
+
+### Résumé
 La définition statique des champs dans le CV de Mahara, pour exprimer les connaissances et les compétences, 
 a amené de nombreux établissements à définir des artefacts ad'hoc pour adapter l'outil à leur démarche particulière 
 de valorisation des compétences des étudiants.
