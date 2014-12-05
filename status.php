@@ -4,31 +4,34 @@
  * @package    mahara
  * @subpackage artefact-resume
  * @author     Catalyst IT Ltd
+ * @auther     Christophe.Declercq@univ-nantes.fr
+ * @author     Jean.Fruitet@univ-nantes.fr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
  */
 
-// Page d'édition d'un tome
 define('INTERNAL', true);
 define('MENUITEM', 'content/booklet');
 define('SECTION_PLUGINTYPE', 'artefact');
 define('SECTION_PLUGINNAME', 'booklet');
-define('SECTION_PAGE', 'tomes');
+define('SECTION_PAGE', 'tabs');
 defined('INTERNAL') || die();
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
-define('TITLE', get_string('booklet', 'artefact.booklet'));
 require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
+$idtome = param_integer('id', null);
+$tome = get_record('artefact_booklet_tome', 'id', $idtome);
 
-$copyright = 0;
-// JF 2014/12/04 : copyright verification before modification
-$tomeform = ArtefactTypeTome::get_form();
-//$inlinejs = ArtefactTypeTome::get_js('tome', $copyright);
-$inlinejs = ArtefactTypeTome::get_js('tome');
-// le formulaire obtenu de pieform et le js sont integres dans le template smarty
+define('TITLE', $tome->title);
+
+$statusform = ArtefactTypeTab::get_form_status($idtome);
+//print_object($statusform);
+//exit;
+$inlinejs = ArtefactTypeTab::get_js('tab', $idtome);
 $smarty = smarty(array('tablerenderer','jquery'));
-$smarty->assign('tomeform', $tomeform);
 $smarty->assign('PAGEHEADING', TITLE);
 $smarty->assign('INLINEJAVASCRIPT', $inlinejs);
-$smarty->display('artefact:booklet:tomes.tpl');
+$smarty->assign('statusform', $statusform);
+$smarty->display('artefact:booklet:status.tpl');

@@ -4,6 +4,7 @@
  * @package    mahara
  * @subpackage artefact-resume
  * @author     Catalyst IT Ltd
+ * @author     Christophe DECLERCQ - christophe.declercq@univ-nantes.fr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
@@ -97,7 +98,7 @@ EOF;
         }
         $js .= call_static_method(generate_artefact_class_name($compositetype), 'get_tablerenderer_js');
         $js .= call_static_method(generate_artefact_class_name($compositetype), 'get_editdel_js');
-        if (isset($id)) {
+		if (isset($id)) {
             settype($id, 'integer');
             $js .= <<<EOF
 tableRenderers.{$compositetype}.id = '{$id}';
@@ -171,6 +172,8 @@ function moveComposite(type, id, artefact, direction) {
     );
     return false;
 }
+
+
 EOF;
         $js .= self::get_showhide_composite_js();
         return $js;
@@ -232,22 +235,31 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
     public static function get_editdel_js() {
         $image = get_config('wwwroot') . 'theme/raw/static/images/btn_export.png';
         $editstr = get_string('edit','artefact.booklet');
-        $exportstr = get_string('export','artefact.booklet');
+        $editforbiddenstr = get_string('editforbidden','artefact.booklet');
+		$exportstr = get_string('export','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
         $js = <<<EOF
           function (r, d) {
-            var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
+            if (r.status>0){   // Modif JF
+                var copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': config.theme['images/btn_editforbidden.png'], 'alt':'{$editforbiddenstr}'}));
+    			var editlink = A({'href': 'status.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
+			}
+			else{
+                var copyrightlink = '';
+				var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
+			}
             var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$image}', 'alt':'{$exportstr}'}));
             var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
             });
-            return TD({'class':'right'}, null, editlink, ' ', exportlink, ' ', dellink);
+            return TD({'class':'right'}, null, copyrightlink, ' ', editlink, ' ', exportlink, ' ', dellink);
         }
     ]
 );
 EOF;
+
         return $js;
     }
 
@@ -271,6 +283,7 @@ EOF;
         $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id='.$id->id;
         return $goto;
     }
+
 }
 
 function addtome_submit (Pieform $form, $values) {
@@ -287,11 +300,143 @@ function addtome_submit (Pieform $form, $values) {
     redirect($goto);
 }
 
+// *********************************************************************
+/**
+ * Modif JF 2014/12/01
+ * collect author status
+ * @input: tome id
+ * @output: record
+ */
+
+function get_author($idtome) {
+	$table = 'artefact_booklet_author';
+       if ($author = get_record($table, 'idtome', $idtome)){
+       	// $goto = get_config('wwwroot') . '/artefact/booklet/author.php?id='.$author->id;
+		// return $goto;
+       	return $author;
+	}
+	return null;
+}
+
+/**
+ * Modif JF 2014/12/01
+ * return tome editing status
+ * @input tome id
+ * @output true: not any restriction, false: editing forbidden
+ */
+function get_edition_status($idtome) {
+    $table = 'artefact_booklet_tome';
+    if ($tome = get_record($table, 'idtome', $idtome)){
+		// DEBUG
+		// echo "<br />lib.php :: 339 :: EDITION status<br />\n";
+		// print_object($tome);
+		// exit;
+        return $tome->status; // editing forbidden if status > 0
+	}
+	return 0;   // by default editing allowed
+}
+
+
+
+// *********************************************************************
+
 class ArtefactTypeTab extends ArtefactTypebooklet {
     /* classe pour pieforms et fonctions JS propres a un tome */
     public static function is_singular() { return true;  }
+
+	// Modif JF
+    public static function get_form_status($idtome) {
+        $tome = get_record('artefact_booklet_tome', 'id', $idtome);
+
+		$tabform = pieform(array(
+            'name'        => 'tabform',
+            'plugintype'  => 'artefact',
+            'successcallback' => 'tomestatus_submit',
+            'pluginname'  => 'booklet',
+            'method'      => 'post',
+            'renderer'      => 'table',
+            'elements'    => array(
+				'msg1' => array(
+                    'type' => 'html',
+                    'title' => get_string('tomename', 'artefact.booklet'),
+                    'value' => ((!empty($tome)) ? $tome->title : NULL),
+                ),
+				'msg2' => array(
+                    'type' => 'html',
+                    'title' => get_string('helptome', 'artefact.booklet'),
+                    'value' => ((!empty($tome)) ? $tome->help : NULL),
+                ),
+				'msg3' => array(
+                    'type' => 'html',
+                    'title' => get_string('status', 'artefact.booklet'),
+                    'value' =>  ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
+                ),
+
+                'public' => array(
+                    'type' => 'checkbox',
+                    'title' => get_string('public', 'artefact.booklet'),
+                    'defaultvalue' => ((!empty($tome)) ? $tome->public : NULL)
+                ),
+
+                'title' => array(
+                    'type' => 'hidden',
+                    'value' => ((!empty($tome)) ? $tome->title : NULL),
+                ),
+                'help' => array(
+                    'type'=>'hidden',
+                    'value' => ((!empty($tome)) ? $tome->help : NULL),
+                ),
+                'status' => array(
+                    'type' => 'hidden',
+                    'value' => ((!empty($tome)) ? $tome->status : NULL)
+                ),
+
+                'save' => array(
+                    'type' => 'submitcancel',
+                    'value' => array(get_string('savetome', 'artefact.booklet'),
+                                     get_string('canceltab', 'artefact.booklet')),
+                    'goto' => get_config('wwwroot') . '/artefact/booklet/tomes.php',
+                ),
+                'idtome' => array(
+                    'type' => 'hidden',
+                    'value' => $idtome,
+                )
+            ),
+            'autofocus'  => false,
+        ));
+
+        $tabsform['tabname'] = $tabform;
+        return $tabsform;
+    }
+
     public static function get_form($idtome) {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
+		//if (!empty($tome->status)){
+        if (isset($tome->status)){
+			$status= array(
+                    'type' => 'hidden',
+                    'value' => $tome->status,
+                );
+			$msg= array(
+                    'type' => 'html',
+                    'title' => get_string('status', 'artefact.booklet'),
+                    'value' => ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
+                );
+
+		}
+  /*
+			$status= array(
+                    'type' => 'checkbox',
+                    'title' => get_string('status', 'artefact.booklet'),
+                    'defaultvalue' => ((!empty($tome)) ? $tome->status : NULL)
+                );
+			$msg= array(
+                    'type' => 'html',
+                    'title' => get_string('status', 'artefact.booklet'),
+                    'value' => ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
+                );
+		}
+*/
         $tabform = pieform(array(
             'name'        => 'tabform',
             'plugintype'  => 'artefact',
@@ -317,6 +462,9 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                     'title' => get_string('public', 'artefact.booklet'),
                     'defaultvalue' => ((!empty($tome)) ? $tome->public : NULL)
                 ),
+				'msg' => $msg,
+				'status' => $status,
+
                 'save' => array(
                     'type' => 'submitcancel',
                     'value' => array(get_string('savetome', 'artefact.booklet'),
@@ -412,12 +560,27 @@ EOF;
     }
 }
 
+// Modif JF
+function tomestatus_submit (Pieform $form, $values) {
+    $tome = get_record('artefact_booklet_tome', 'id', $values['idtome']);
+    $tome->title = $values['title'];
+    $tome->help = $values['help'];
+    $tome->public = (!empty($values['public']) ? 1 : 0);
+    $tome->status = (!empty($values['status']) ? 1 : 0);
+    update_record('artefact_booklet_tome', $tome);
+    // $goto = get_config('wwwroot') . '/artefact/booklet/tomes.php';
+    $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
+    redirect($goto);
+}
+
+
 function tomename_submit (Pieform $form, $values) {
     $tome = get_record('artefact_booklet_tome', 'id', $values['idtome']);
     $tome->title = $values['title'];
     $tome->help = $values['help'];
     $tome->public = (!empty($values['public']) ? 1 : 0);
-    update_record('artefact_booklet_tome', $tome);
+    $tome->status = (!empty($values['status']) ? 1 : 0);
+	update_record('artefact_booklet_tome', $tome);
     // $goto = get_config('wwwroot') . '/artefact/booklet/tomes.php';
     $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
     redirect($goto);
@@ -1310,7 +1473,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
     public static function submenu_items($idtome) {
         global $USER;
         $tabs = get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder');
-        // liste des tabs du tome triés par displayorder
+        // liste des tabs du tome tries par displayorder
         $selectedtome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'));
         $opt = null;
         if ($selectedtome && $idtome != $selectedtome->idtome) {

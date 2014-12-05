@@ -11,6 +11,17 @@
 
 defined('INTERNAL') || die();
 
+// Modif JF
+$string['author'] = "Author: ";
+$string['information'] = "Information";
+$string['status'] = "Modification";
+$string['forbidden'] = "Forbidden";
+$string['allowed'] = "Allowed";
+$string['version'] = "Version: ";
+$string['editforbidden'] = "Copyright";
+$string['copyright'] = "Copyright: ";
+$string['copyright_ccnd'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
+
 //Titles
 $string['pluginname'] = 'Booklet';
 $string['booklet'] = 'Booklet';
@@ -24,6 +35,7 @@ $string['bookletsaved'] = "Booklet saved";
 $string['moveup'] = "Move up";
 $string['movedown'] = "Move down";
 $string['edit'] = "Edit";
+$string['editforbidden'] = "Copyright";
 $string['del'] = "Delete";
 $string['cancel'] = "Cancel";
 $string['add'] = "Add";
@@ -124,3 +136,4 @@ $string['usersaved'] = "User saved!";
 $string['deletedesigner'] = "Remove a designer: ";
 $string['delete'] = "Remove";
 $string['userdeleted'] = "Designer removed";
+

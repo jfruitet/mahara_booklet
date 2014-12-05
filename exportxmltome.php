@@ -32,10 +32,31 @@ function xml_tome ($idtome) {
     $doctome = $doc->createElement('booklet');
     $doctome->setAttribute('title', $tome->title);
     $doctome->setAttribute('public', $tome->public);
+	// Modif JF
+	if (isset($tome->status)){
+        $doctome->setAttribute('status', $tome->status);
+	}
     $help = $doc->createCDATASection($tome->help);
     $dochelp = $doc->createElement('help');
     $dochelp->appendChild($help);
     $doctome->appendChild($dochelp);
+    // Modif JF
+	if ($author = get_record('artefact_booklet_author', 'idtome', $idtome)){
+		$docauthor = $doc->createElement('author');
+        $docauthor->setAttribute('authormail', $author->authormail);
+        $docauthor->setAttribute('authorfirstname', $author->authorfirstname);
+        $docauthor->setAttribute('authorlastname', $author->authorlastname);
+        $docauthor->setAttribute('authorinstitution', $author->authorinstitution);
+        $docauthor->setAttribute('authorurl', $author->authorurl);
+        $docauthor->setAttribute('key', $author->key);
+        $docauthor->setAttribute('version', $author->version);
+        $docauthor->setAttribute('timestamp', $author->timestamp);
+		$copyright = $doc->createCDATASection($author->copyright);
+        $doccopyright = $doc->createElement('copyright');
+		$doccopyright->appendChild($copyright);
+        $docauthor->appendChild($doccopyright);
+    	$doctome->appendChild($docauthor);
+	}
     $doc->appendChild($doctome);
     foreach (get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder') as $tab) {
         xml_tab($doctome, $tab->id);

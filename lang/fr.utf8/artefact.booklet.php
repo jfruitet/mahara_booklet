@@ -3,6 +3,18 @@
 
 defined('INTERNAL') || die();
 
+// Modif JF
+$string['author'] = "Auteur : ";
+$string['information'] = "Information";
+$string['status'] = "Modification";
+$string['forbidden'] = "Interdite";
+$string['allowed'] = "Autorisée";
+$string['version'] = "Version : ";
+$string['editforbidden'] = "Copyright";
+$string['copyright'] = "Copyright : ";
+$string['copyright_ccnd'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
+
+
 //Titles
 $string['pluginname'] = 'Livret';
 $string['booklet'] = 'Livret';

@@ -49,6 +49,8 @@ function create_tome ($doc, $owner) {
     $booklets = $doc->getElementsByTagName('booklet');
     $booklet = $booklets->item(0);
     $title = $booklet->getAttribute('title');
+	// Modif JF
+	$status = $booklet->getAttribute('status');
     $help = $booklet->firstChild;
     $cdata = $help->firstChild;
     $classname = 'ArtefactTypeTome';
@@ -62,14 +64,50 @@ function create_tome ($doc, $owner) {
     $data->artefact = $a->get('id');
     $data->title = $title;
     $data->help = $cdata->wholeText;
-    $data->public = false;
+    $data->public = $status;      // Modif JF
+    $data->status = $status;      // Modif JF
     $idtome = insert_record('artefact_booklet_tome', $data, 'id' , true);
+    // Modif JF
+    if ($authors = $doc->getElementsByTagName('author')){
+        $author = $authors->item(0);
+		create_author($author, $idtome);
+	}
+
     $tabs = $booklet->childNodes;
     for ($i = 1; $i < $tabs->length; ++$i) {
         $tab = $tabs->item($i);
         create_tab($tab, $idtome, $i);
     }
 }
+
+// Modif JF
+function create_author ($author, $idparent) {
+    $authormail = $author->getAttribute('authormail');
+    $authorfirstname = $author->getAttribute('authorfirstname');
+    $authorlastname = $author->getAttribute('authorlastname');
+    $authorinstitution = $author->getAttribute('authorinstitution');
+    $authorurl = $author->getAttribute('authorurl');
+    $key = $author->getAttribute('key');
+    $version = $author->getAttribute('version');
+    $timestamp = $author->getAttribute('timestamp');
+    $copyright = $author->firstChild;
+    $cdata = $copyright->firstChild;
+
+	$data = new StdClass;
+    $data->idtome = $idparent;
+    $data->authormail = $authormail;
+    $data->authorfirstname = $authorfirstname;
+    $data->authorlastname = $authorlastname;
+    $data->authorinstitution = $authorinstitution;
+	$data->authorurl = $authorurl;
+	$data->key = $key;
+	$data->version = $version;
+	$data->timestamp = $timestamp;
+    $data->copyright = $cdata->wholeText;
+    $id = insert_record('artefact_booklet_author', $data, 'id' , true);
+}
+
+
 
 function create_tab ($tab, $idparent, $order) {
     $title = $tab->getAttribute('title');
