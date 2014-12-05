@@ -2,7 +2,7 @@ mahara_booklet
 ==============
 Jean.Fruitet@univ-nantes.fr
 
-This is a Mahara 10.1 artefact booklet version of Christophe Declercq-Mauras Mahara artefact Booklet 
+This is a Mahara 10.1 artefact booklet version of Christophe Declercq's Mahara artefact Booklet 
 
 
 ## French presentation 
@@ -37,4 +37,18 @@ dans une base pour permettre d'en changer dynamiquement.
 Nous présenterons le développement réalisé, l'expérimentation en cours avec le « carnet de route » 
 et les améliorations de l'outil pour échanger entre établissements leurs formats de livrets de compétences, 
 et permettre l'interopérabilité.
+
+### Modifications apportées par Jean Fruitet - Décembre 2014
+
+Version 1.0.3 - 2014-12-05
+
+#### Copyright
+
+Support de la licence CC By-Nd (http://creativecommons.org/licenses/by-nd/4.0/)
+pour le modèle de données Booklet (interdiction de modifcation de la structure du Booklet)/
+
+#### Export / Import
+
+Le statut du livret  ainsi que l'auteur et les informations de copyright sont enregistrés sont importés / exportés.
+ 
 
