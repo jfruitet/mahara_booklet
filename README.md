@@ -1,19 +1,42 @@
 mahara_booklet
 ==============
-Jean.Fruitet@univ-nantes.fr
+Mahara 10.1 version - This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
 
-This is a Mahara 10.1 artefact booklet version of Christophe Declercq's Mahara artefact Booklet 
+of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228) 
+
+ 
+### Modifications by JF - December 2014
+
+Version 1.0.3 - 2014-12-06
+
+#### Copyright support
+
+Support de la licence CC By-Nd (http://creativecommons.org/licenses/by-nd/4.0/)
+pour le modèle de données Booklet (l'auteur peut interdire toute modification de la structure du Livret qu'il a créé).
+
+Creative Commons Licence  "By-Nd" (http://creativecommons.org/licenses/by-nd/4.0/) is implemented in Booklet data model.
+So an author may forbid the data structure modification of any of his booklet model.
+
+#### Export / Import author informations and booklet status
+
+Le statut du livret (modification autorisée ou pas) ainsi que le nom de l'auteur et les informations de copyright sont enregistrés, importés, exportés.
+
+Booklet status (modification yes / no) and author information and copyright stuff is imported / exported.  
 
 
-## French presentation 
+## Booklet French presentation
 
-Le « livret universel de compétences » : un méta-artefact pour Mahara
+By Christophe Declercq <chritophe.declercq@univ-nantes.fr>
 
-http://moodlemoot2013.univ-bordeaux.fr/course/view.php?id=55
+*	« Livret universel de compétences » : un méta-artefact pour Mahara
 
-Auteur(s) : Christophe Declercq <christophe.declercq@univ-nantes.fr>
+*	**MoodleMoot / MaharaMoot 2013** : http://moodlemoot2013.univ-bordeaux.fr/course/view.php?id=55
 
-Mots-clés : mahara, eportfolio, artefact, curriculum-vitae
+*	**MoodleMoot / MaharaMoot 2014** : http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228
+
+*	Auteur(s) : Christophe Declercq <christophe.declercq@univ-nantes.fr>
+
+*	Mots-clés : mahara, eportfolio, artefact, curriculum-vitae
 
 ### Résumé
 La définition statique des champs dans le CV de Mahara, pour exprimer les connaissances et les compétences, 
@@ -38,17 +61,4 @@ Nous présenterons le développement réalisé, l'expérimentation en cours avec
 et les améliorations de l'outil pour échanger entre établissements leurs formats de livrets de compétences, 
 et permettre l'interopérabilité.
 
-### Modifications apportées par Jean Fruitet - Décembre 2014
-
-Version 1.0.3 - 2014-12-05
-
-#### Copyright
-
-Support de la licence CC By-Nd (http://creativecommons.org/licenses/by-nd/4.0/)
-pour le modèle de données Booklet (interdiction de modifcation de la structure du Booklet)/
-
-#### Export / Import
-
-Le statut du livret  ainsi que l'auteur et les informations de copyright sont enregistrés sont importés / exportés.
- 
 
