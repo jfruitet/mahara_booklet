@@ -22,6 +22,10 @@ if ($type == 'tome') {
     if ($a->get('owner') != $USER->get('id')) {
         throw new AccessDeniedException(get_string('notartefactowner', 'error'));
     }
+
+	// Modif JF
+	delete_records('artefact_booklet_author', 'idtome', $id);
+
     $tabs = get_records_array('artefact_booklet_tab', 'idtome', $id);
     if ($tabs) {
         foreach ($tabs as $tab) {

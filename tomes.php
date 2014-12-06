@@ -21,11 +21,9 @@ define('TITLE', get_string('booklet', 'artefact.booklet'));
 require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 
-$copyright = 0;
-// JF 2014/12/04 : copyright verification before modification
 $tomeform = ArtefactTypeTome::get_form();
-//$inlinejs = ArtefactTypeTome::get_js('tome', $copyright);
 $inlinejs = ArtefactTypeTome::get_js('tome');
+
 // le formulaire obtenu de pieform et le js sont integres dans le template smarty
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('tomeform', $tomeform);

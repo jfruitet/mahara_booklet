@@ -26,6 +26,28 @@ $name = "export_" . implode('_', explode(' ',trim($titre . date("_Y_m_d"))));
 header("Content-Type: application/force-download");
 header("Content-Disposition: attachment; filename=$name.xml");
 
+function xml_author($doctome, $idtome){
+    // Modif JF
+    global $doc;
+	$author = get_record('artefact_booklet_author', 'idtome', $idtome);
+	if (!empty($author)){
+		$docauthor = $doc->createElement('author');
+        $docauthor->setAttribute('authormail', $author->authormail);
+        $docauthor->setAttribute('authorfirstname', $author->authorfirstname);
+        $docauthor->setAttribute('authorlastname', $author->authorlastname);
+        $docauthor->setAttribute('authorinstitution', $author->authorinstitution);
+        $docauthor->setAttribute('authorurl', $author->authorurl);
+        $docauthor->setAttribute('key', $author->key);
+        $docauthor->setAttribute('version', $author->version);
+        $docauthor->setAttribute('timestamp', $author->timestamp);
+		$copyright = $doc->createCDATASection($author->copyright);
+        $doccopyright = $doc->createElement('copyright');
+		$doccopyright->appendChild($copyright);
+        $docauthor->appendChild($doccopyright);
+        $doctome->appendChild($docauthor);
+	}
+}
+
 function xml_tome ($idtome) {
     global $doc;
     $tome = get_record('artefact_booklet_tome', 'id', $idtome);
@@ -40,27 +62,14 @@ function xml_tome ($idtome) {
     $dochelp = $doc->createElement('help');
     $dochelp->appendChild($help);
     $doctome->appendChild($dochelp);
-    // Modif JF
-	if ($author = get_record('artefact_booklet_author', 'idtome', $idtome)){
-		$docauthor = $doc->createElement('author');
-        $docauthor->setAttribute('authormail', $author->authormail);
-        $docauthor->setAttribute('authorfirstname', $author->authorfirstname);
-        $docauthor->setAttribute('authorlastname', $author->authorlastname);
-        $docauthor->setAttribute('authorinstitution', $author->authorinstitution);
-        $docauthor->setAttribute('authorurl', $author->authorurl);
-        $docauthor->setAttribute('key', $author->key);
-        $docauthor->setAttribute('version', $author->version);
-        $docauthor->setAttribute('timestamp', $author->timestamp);
-		$copyright = $doc->createCDATASection($author->copyright);
-        $doccopyright = $doc->createElement('copyright');
-		$doccopyright->appendChild($copyright);
-        $docauthor->appendChild($doccopyright);
-    	$doctome->appendChild($docauthor);
-	}
     $doc->appendChild($doctome);
+	// Modif JF
+	xml_author($doctome, $idtome);
+
     foreach (get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder') as $tab) {
         xml_tab($doctome, $tab->id);
     }
+
 }
 
 function xml_tab ($doctome, $idtab) {
@@ -124,6 +133,7 @@ function xml_object ($docframe, $idobject) {
 $doc = new DOMDocument();
 $doc->version = '1.0';
 $doc->encoding = 'UTF-8';
+
 xml_tome($idtome);
 $xml = $doc->saveXML();
 print($xml);

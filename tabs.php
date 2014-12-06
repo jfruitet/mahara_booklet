@@ -21,13 +21,21 @@ require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 $idtome = param_integer('id', null);
 $tome = get_record('artefact_booklet_tome', 'id', $idtome);
-
 define('TITLE', $tome->title);
 
-$tabsform = ArtefactTypeTab::get_form($idtome);
+// Modif JF
+if (empty($tome->status)){
+	$tabsform = ArtefactTypeTab::get_form($idtome);
+	$tpl='artefact:booklet:tabs.tpl';
+}
+else{
+    $tabsform = ArtefactTypeTab::get_form_status($idtome);
+    $tpl='artefact:booklet:tabs2.tpl';
+}
 $inlinejs = ArtefactTypeTab::get_js('tab', $idtome);
+
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHEADING', TITLE);
 $smarty->assign('INLINEJAVASCRIPT', $inlinejs);
 $smarty->assign('tabsform', $tabsform);
-$smarty->display('artefact:booklet:tabs.tpl');
+$smarty->display($tpl);

@@ -45,6 +45,45 @@ class ArtefactTypeImporttome extends ArtefactTypebooklet {
     }
 }
 
+
+/**
+ *  Modif JF
+ *  Create author record if exists
+ *
+ *
+ */
+function create_author ($doc, $idtome) {
+	$id=0;
+	if ($authors = $doc->getElementsByTagName('author')){
+        if ($author = $authors->item(0)){
+        	$authormail = $author->getAttribute('authormail');
+		    $authorfirstname = $author->getAttribute('authorfirstname');
+    		$authorlastname = $author->getAttribute('authorlastname');
+	    	$authorinstitution = $author->getAttribute('authorinstitution');
+	    	$authorurl = $author->getAttribute('authorurl');
+		    $key = $author->getAttribute('key');
+    		$version = $author->getAttribute('version');
+		    $timestamp = $author->getAttribute('timestamp');
+    		$copyright = $author->firstChild;
+    		$cdata = $copyright->firstChild;
+
+			$data = new StdClass;
+    		$data->idtome = $idtome;
+    		$data->authormail = $authormail;
+	    	$data->authorfirstname = $authorfirstname;
+    		$data->authorlastname = $authorlastname;
+    		$data->authorinstitution = $authorinstitution;
+			$data->authorurl = $authorurl;
+			$data->key = $key;
+			$data->version = $version;
+			$data->timestamp = $timestamp;
+    		$data->copyright = $cdata->wholeText;
+    		$id = insert_record('artefact_booklet_author', $data, 'id' , true);
+		}
+	}
+	return $id;
+}
+
 function create_tome ($doc, $owner) {
     $booklets = $doc->getElementsByTagName('booklet');
     $booklet = $booklets->item(0);
@@ -67,46 +106,21 @@ function create_tome ($doc, $owner) {
     $data->public = $status;      // Modif JF
     $data->status = $status;      // Modif JF
     $idtome = insert_record('artefact_booklet_tome', $data, 'id' , true);
-    // Modif JF
-    if ($authors = $doc->getElementsByTagName('author')){
-        $author = $authors->item(0);
-		create_author($author, $idtome);
-	}
-
-    $tabs = $booklet->childNodes;
-    for ($i = 1; $i < $tabs->length; ++$i) {
-        $tab = $tabs->item($i);
-        create_tab($tab, $idtome, $i);
+	// Modif JF
+    $start=1;
+    if (create_author($doc, $idtome)){
+  		$start=2;
     }
+	$tabs = $booklet->childNodes;
+    $k=1;
+	// start to node $start
+	for ($i = $start; $i < $tabs->length; ++$i) {
+        $tab = $tabs->item($i);
+        create_tab($tab, $idtome, $k);
+		$k++;
+    }
+    return $idtome;
 }
-
-// Modif JF
-function create_author ($author, $idparent) {
-    $authormail = $author->getAttribute('authormail');
-    $authorfirstname = $author->getAttribute('authorfirstname');
-    $authorlastname = $author->getAttribute('authorlastname');
-    $authorinstitution = $author->getAttribute('authorinstitution');
-    $authorurl = $author->getAttribute('authorurl');
-    $key = $author->getAttribute('key');
-    $version = $author->getAttribute('version');
-    $timestamp = $author->getAttribute('timestamp');
-    $copyright = $author->firstChild;
-    $cdata = $copyright->firstChild;
-
-	$data = new StdClass;
-    $data->idtome = $idparent;
-    $data->authormail = $authormail;
-    $data->authorfirstname = $authorfirstname;
-    $data->authorlastname = $authorlastname;
-    $data->authorinstitution = $authorinstitution;
-	$data->authorurl = $authorurl;
-	$data->key = $key;
-	$data->version = $version;
-	$data->timestamp = $timestamp;
-    $data->copyright = $cdata->wholeText;
-    $id = insert_record('artefact_booklet_author', $data, 'id' , true);
-}
-
 
 
 function create_tab ($tab, $idparent, $order) {
@@ -210,7 +224,7 @@ function importtome_submit (Pieform $form, $values) {
     $doc->preserveWhiteSpace = false;
     $x = libxml_disable_entity_loader(false);
     if ($doc->load($filename)) {
-        create_tome($doc, $USER->get('id'));
+        $idtome=create_tome($doc, $USER->get('id'));
     }
     else {
         $SESSION->add_error_msg(get_string('loadxmlfailed', 'artefact.booklet'));

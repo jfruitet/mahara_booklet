@@ -240,14 +240,11 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
         $delstr = get_string('del','artefact.booklet');
         $js = <<<EOF
           function (r, d) {
-            if (r.status>0){   // Modif JF
-                var copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': config.theme['images/btn_editforbidden.png'], 'alt':'{$editforbiddenstr}'}));
-    			var editlink = A({'href': 'status.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
+            var copyrightlink = '';
+			if (r.status>0){   // Modif JF
+                copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': config.theme['images/btn_editforbidden.png'], 'alt':'{$editforbiddenstr}'}));
 			}
-			else{
-                var copyrightlink = '';
-				var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-			}
+    		var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
             var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$image}', 'alt':'{$exportstr}'}));
             var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
@@ -404,8 +401,26 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
             ),
             'autofocus'  => false,
         ));
-
+        $visuaform = pieform(array(
+            'name' => 'visuaform',
+            'plugintype'  => 'artefact',
+            'pluginname'  => 'booklet',
+            'successcallback' => 'visualizetome_submit',
+            'method'      => 'post',
+            'renderer'      => 'oneline',
+            'elements'    => array(
+                    'save' => array(
+                    'type' => 'submit',
+                    'value' => get_string('visualizetome', 'artefact.booklet'),
+                ),
+                'idtome' => array(
+                    'type' => 'hidden',
+                    'value' => $idtome,
+                )
+            ),
+        ));
         $tabsform['tabname'] = $tabform;
+        $tabsform['visua'] = $visuaform;
         return $tabsform;
     }
 
