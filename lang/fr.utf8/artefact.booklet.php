@@ -5,14 +5,25 @@ defined('INTERNAL') || die();
 
 // Modif JF
 $string['author'] = "Auteur : ";
-$string['information'] = "Information";
+$string['authorform'] = "Enregistrer auteur";
+$string['authorerror'] = "Error : Author's data not saved...";
+$string['mail'] = "Mail";
+$string['url'] = "Url";
+$string['urldesc'] = "Institution's web site";
+$string['copyrightdesc'] = "Input here the copyright licence for this Booklet";
+$string['version'] = "Version";
+$string['information'] = "Information sur l'auteur et le copyright";
 $string['status'] = "Modification";
+$string['selectstatus'] = "Situation de ce livret pour les modifications ";
+$string['selectstatusdesc'] = "Si le satut est 'Interdite' seul l'auteur peut éditer ce livret...";
 $string['forbidden'] = "Interdite";
 $string['allowed'] = "Autorisée";
-$string['version'] = "Version : ";
 $string['editforbidden'] = "Copyright";
 $string['copyright'] = "Copyright : ";
 $string['copyright_ccnd'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
+
+
+
 
 
 //Titles

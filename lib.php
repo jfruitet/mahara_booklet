@@ -234,15 +234,21 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
 
     public static function get_editdel_js() {
         $image = get_config('wwwroot') . 'theme/raw/static/images/btn_export.png';
+        $imagecopyright = get_config('wwwroot') . 'theme/raw/static/images/btn_access.png';
         $editstr = get_string('edit','artefact.booklet');
         $editforbiddenstr = get_string('editforbidden','artefact.booklet');
+        $informationstr = get_string('information','artefact.booklet');
 		$exportstr = get_string('export','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
         $js = <<<EOF
           function (r, d) {
             var copyrightlink = '';
+			// btn_access.png
 			if (r.status>0){   // Modif JF
-                copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': config.theme['images/btn_editforbidden.png'], 'alt':'{$editforbiddenstr}'}));
+                copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': '{$imagecopyright}', 'alt':'{$editforbiddenstr}'}));
+			}
+			else{
+                copyrightlink = A({'href': 'author.php?id=' + r.id, 'title': '{$informationstr}'}, IMG({'src': '{$imagecopyright}', 'alt':'{$informationstr}'}));
 			}
     		var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
             var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$image}', 'alt':'{$exportstr}'}));
