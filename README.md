@@ -26,7 +26,7 @@ Booklet status (modification yes / no) and author information and copyright stuf
 
 ## Booklet French presentation
 
-By Christophe Declercq <chritophe.declercq@univ-nantes.fr>
+By Christophe Declercq <christophe.declercq@univ-nantes.fr>
 
 *	« Livret universel de compétences » : un méta-artefact pour Mahara
 
