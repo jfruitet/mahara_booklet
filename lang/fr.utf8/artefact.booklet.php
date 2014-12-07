@@ -6,13 +6,14 @@ defined('INTERNAL') || die();
 // Modif JF
 $string['author'] = "Auteur : ";
 $string['authorform'] = "Enregistrer auteur";
-$string['authorerror'] = "Error : Author's data not saved...";
+$string['authorerror'] = "Erreur : Les donnés auteur n'ont pas été enregistrées.";
 $string['mail'] = "Mail";
 $string['url'] = "Url";
 $string['urldesc'] = "Institution's web site";
 $string['copyrightdesc'] = "Input here the copyright licence for this Booklet";
 $string['version'] = "Version";
-$string['information'] = "Information sur l'auteur et le copyright";
+$string['information'] = "Information";
+$string['passerror'] = "Erreur : password incorrect.";
 $string['status'] = "Modification";
 $string['selectstatus'] = "Situation de ce livret pour les modifications ";
 $string['selectstatusdesc'] = "Si le satut est 'Interdite' seul l'auteur peut éditer ce livret...";
