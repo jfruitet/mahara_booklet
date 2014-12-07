@@ -11,8 +11,8 @@
 
 defined('INTERNAL') || die();
 
-// Modif JF
-$string['author'] = "Author: ";
+// Author & copyright
+$string['author'] = "Author";
 $string['authorform'] = "Save author";
 $string['authorerror'] = "Error : Author's data not saved...";
 $string['mail'] = "Mail";
@@ -20,15 +20,20 @@ $string['url'] = "Url";
 $string['urldesc'] = "Institution's web site";
 $string['copyrightdesc'] = "Input here the copyright licence for this Booklet";
 $string['version'] = "Version";
-$string['information'] = "Information";
+$string['information'] = "About";
+$string['passdesc'] = "Mandatory to edit this form...";
+$string['newpassword'] = "New password ?";
+$string['newpassdesc'] = "Let it blank or type in a new password if needed...";
 $string['passerror'] = "Error : not matching password.";
-$string['status'] = "Modification";
-$string['selectstatus'] = "Modification status for this booklet ";
+$string['status'] = "Status";
+$string['statusmodif'] = "Modification status";
+$string['selectstatus'] = "Booklet modification";
 $string['selectstatusdesc'] = "If status is 'forbidden' only the author may edit this booklet... and you have to choose <a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
 $string['forbidden'] = "Forbidden";
 $string['allowed'] = "Allowed";
 $string['editforbidden'] = "Copyright";
 $string['copyright'] = "Copyright";
+$string['copyright_cc'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by/4.0/\">CC BY</a>";
 $string['copyright_ccnd'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
 
 //Titles

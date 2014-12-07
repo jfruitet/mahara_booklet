@@ -232,24 +232,21 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
         return "'title',";
     }
 
+/**
+ *  Modif JF
+ *
+ */
+
     public static function get_editdel_js() {
         $image = get_config('wwwroot') . 'theme/raw/static/images/btn_export.png';
-        $imagecopyright = get_config('wwwroot') . 'theme/raw/static/images/btn_access.png';
+        $imageinfo  = get_config('wwwroot') . 'theme/raw/static/images/btn_info.png';
         $editstr = get_string('edit','artefact.booklet');
-        $editforbiddenstr = get_string('editforbidden','artefact.booklet');
-        $informationstr = get_string('information','artefact.booklet');
+        $copyrightstr = get_string('copyright','artefact.booklet');
 		$exportstr = get_string('export','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
         $js = <<<EOF
           function (r, d) {
-            var copyrightlink = '';
-			// btn_access.png
-			if (r.status>0){   // Modif JF
-                copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$editforbiddenstr}'}, IMG({'src': '{$imagecopyright}', 'alt':'{$editforbiddenstr}'}));
-			}
-			else{
-                copyrightlink = A({'href': 'author.php?id=' + r.id, 'title': '{$informationstr}'}, IMG({'src': '{$imagecopyright}', 'alt':'{$informationstr}'}));
-			}
+         	var copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$copyrightstr}'}, IMG({'src': '{$imageinfo}', 'alt':'{$copyrightstr}'}));
     		var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
             var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$image}', 'alt':'{$exportstr}'}));
             var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
@@ -257,7 +254,7 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
                 e.stop();
                 return deleteComposite(d.type, r.id);
             });
-            return TD({'class':'right'}, null, copyrightlink, ' ', editlink, ' ', exportlink, ' ', dellink);
+            return TD({'class':'right'}, null, copyrightlink, ' ',  editlink, ' ', exportlink, ' ', dellink);
         }
     ]
 );
@@ -265,6 +262,7 @@ EOF;
 
         return $js;
     }
+
 
     public static function ensure_composite_value($values, $owner) {
         $compositetype = 'tome';
@@ -371,7 +369,7 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                 ),
 				'msg3' => array(
                     'type' => 'html',
-                    'title' => get_string('status', 'artefact.booklet'),
+                    'title' => get_string('statusmodif', 'artefact.booklet'),
                     'value' =>  ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
                 ),
 

@@ -2,8 +2,8 @@
 /**
  *
  * @package    mahara
- * @subpackage artefact-resume
- * @author     Catalyst IT Ltd
+ * @subpackage artefact-booklet
+ * @author     Christophe DECLERCQ - christophe.declercq@univ-nantes.fr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
@@ -22,6 +22,7 @@ require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 
 $tomeform = ArtefactTypeTome::get_form();
+
 $inlinejs = ArtefactTypeTome::get_js('tome');
 
 // le formulaire obtenu de pieform et le js sont integres dans le template smarty

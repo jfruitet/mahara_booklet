@@ -3,8 +3,8 @@
 
 defined('INTERNAL') || die();
 
-// Modif JF
-$string['author'] = "Auteur : ";
+// Author & copyright
+$string['author'] = "Auteur";
 $string['authorform'] = "Enregistrer auteur";
 $string['authorerror'] = "Erreur : Les donnés auteur n'ont pas été enregistrées.";
 $string['mail'] = "Mail";
@@ -13,19 +13,20 @@ $string['urldesc'] = "Institution's web site";
 $string['copyrightdesc'] = "Input here the copyright licence for this Booklet";
 $string['version'] = "Version";
 $string['information'] = "Information";
+$string['passdesc'] = "Requis pour éditer le formulaire...";
+$string['newpassword'] = "Nouveau mot de passe ?";
+$string['newpassdesc'] = "A laisser vide pour conserver le mot de passe actuel...";
 $string['passerror'] = "Erreur : password incorrect.";
-$string['status'] = "Modification";
-$string['selectstatus'] = "Situation de ce livret pour les modifications ";
+$string['status'] = "Statut";
+$string['statusmodif'] = "Statut de modification";
+$string['selectstatus'] = "Modification du livret ";
 $string['selectstatusdesc'] = "Si le satut est 'Interdite' seul l'auteur peut éditer ce livret...";
 $string['forbidden'] = "Interdite";
 $string['allowed'] = "Autorisée";
 $string['editforbidden'] = "Copyright";
-$string['copyright'] = "Copyright : ";
+$string['copyright'] = "Copyright";
+$string['copyright_cc'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by/4.0/\">CC BY</a>";
 $string['copyright_ccnd'] = "<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-nd/4.0/\">CC BY-ND</a>";
-
-
-
-
 
 //Titles
 $string['pluginname'] = 'Livret';
