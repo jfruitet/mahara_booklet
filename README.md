@@ -23,6 +23,11 @@ Le statut du livret (modification autorisée ou pas) ainsi que le nom de l'auteu
 
 Booklet status (modification yes / no) and author information and copyright stuff is imported / exported.  
 
+#### Frame list display
+
+Quand un cadre de type liste a plus de 5 items l'affichage vertical est sélectionné, sinon c'est l'affichahe horizontal en tableau qui est  maintenu.
+
+When a frame list contains more than 5 items, vertical display is selected; 
 
 ## Booklet French presentation
 
