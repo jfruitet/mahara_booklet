@@ -24,6 +24,7 @@ if ($type == 'tome') {
     }
 
 	// Modif JF
+    delete_records('artefact_booklet_selectedtome', 'idtome', $id);
 	delete_records('artefact_booklet_author', 'idtome', $id);
 
     $tabs = get_records_array('artefact_booklet_tab', 'idtome', $id);
