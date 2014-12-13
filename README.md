@@ -7,7 +7,11 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
  
 ### Modifications by JF - December 2014
 
-Version 1.0.3 - 2014-12-06
+Version 1.0.3 - 2014-12-13
+
+#### Bug correction
+
+La suppression d'un "tome" (Livret) est corrigée
 
 #### Copyright support
 
