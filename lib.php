@@ -1036,8 +1036,8 @@ EOF;
                     ),
                     'idobject' => array(
                         'type' => 'hidden',
-                        'value' => $idobject
-                    )
+                        'value' => $idobject,
+                    ),
                 ),
             );
             $compositeform['choice'] = pieform($choice);
@@ -1217,6 +1217,12 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         parent::commit();
 
         $selectedtome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'));
+		if (empty($selectedtome)){
+			$a = new StdClass;
+			$a->iduser=$USER->get('id');
+            $a->idtome=get_record_sql('SELECT MIN(id) FROM {artefact_booklet_tome}');
+            insert_record('artefact_booklet_selectedtome', $a);
+		}
         if ($blockinstances = get_records_sql_array('
             SELECT id, "view", configdata
             FROM {block_instance}
@@ -1237,7 +1243,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     INNER JOIN {artefact} a
                     ON va.artefact = a.id
                     WHERE va.block = ? ', array($blockinstance->id));
-                if ($arts[0] && $arts[0]->note == $selectedtome-> idtome) {
+                if (!empty($selectedtome->idtome) && $arts[0] && ($arts[0]->note == $selectedtome->idtome)) {
                     ensure_record_exists('view_artefact', $whereobject, $whereobject);
                 }
             }
@@ -2293,12 +2299,12 @@ EOF;
 // fin de la classe : ArtefactTypeVisualization
 
 function visualization_submit(Pieform $form, $values) {
-    // appelé lors de la soumission de données d'un cadre en ajout ou modification
+    // appele lors de la soumission de donnees d'un cadre en ajout ou modification
     // values est un vecteur qui contient les valeurs des champs du formulaire
     // quelques champs cachés permettent de transmettre le contexte
     // idrecord est transmis quand c'est une modification d'un element de liste
     // idtab est le displayorder du tab soumis
-    // idtome est l'id du tome selectionné ou en visualisation
+    // idtome est l'id du tome selectionne ou en visualisation
 
     global $USER, $SESSION, $_SERVER;
     $goto = get_config('wwwroot') . '/artefact/booklet/index.php?tab='.$values['idtab'];

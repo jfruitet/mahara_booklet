@@ -18,10 +18,12 @@ $type = param_alpha('type');
 $id = param_integer('id');
 if ($type == 'tome') {
     $tome = get_record('artefact_booklet_tome', 'id', $id);
-    $a = artefact_instance_from_id($tome->artefact);
+    //$a = artefact_instance_from_id($tome->artefact);
+    $a = artefact_instance_from_id($tome->artefact, true); // modif JF
     if ($a->get('owner') != $USER->get('id')) {
         throw new AccessDeniedException(get_string('notartefactowner', 'error'));
     }
+
 
 	// Modif JF
     delete_records('artefact_booklet_selectedtome', 'idtome', $id);
@@ -49,6 +51,27 @@ if ($type == 'tome') {
                         }
                     }
                     delete_records('artefact_booklet_object', 'idframe', $frame->id);
+
+
+					// Modif JF
+					// Comment reconnaitre les block_instance qui sont dues au tome a supprimer ?
+					// Cette information se trouve dans le champ 'note' de l'artefact 'artefacttype' = 'visualization'
+				    $blocks = get_records_array('block_instance', 'blocktype', 'bookletfield');
+				    if ($blocks) {
+				        foreach ($blocks as $b) {
+				        	$configdata = unserialize($b->configdata);
+				            if (!isset($configdata['artefactid'])) {
+            					continue;
+				            }
+							if ($viz = get_record('artefact', 'id', $configdata['artefactid'])){ // , 'artefacttype', 'visualization' )){
+            					if (($viz->artefacttype=='visualization') && !empty($viz->note) && ($viz->note==$tome->id)){
+                                    delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
+									delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
+                                    delete_records('block_instance', 'id', $b->id);  // delete block instance
+								}
+							}
+        				}
+					}
                 }
             }
             delete_records('artefact_booklet_frame', 'idtab', $tab->id);
@@ -56,6 +79,16 @@ if ($type == 'tome') {
     }
     delete_records('artefact_booklet_tab', 'idtome', $id);
     delete_records('artefact_booklet_tome', 'id', $id);
+
+	if ($viz = get_record('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
+		delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
+		delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
+	}
+
+	if ($arte = get_record('artefact', 'id', $tome->artefact)){   // a priori ce ne devrait pas etre utile...
+    	delete_records('view_artefact', 'artefact', $arte->id);
+        delete_records('artefact', 'id', $arte->id);
+	}
 }
 else if ($type == 'tab') {
     $frames = get_records_array('artefact_booklet_frame', 'idtab', $id);
