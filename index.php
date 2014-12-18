@@ -24,6 +24,9 @@ safe_require('artefact', 'file');
 
 $browse = (int) param_variable('browse', 0);
 
+//Modif JF
+$okdisplay = param_integer('okdisplay', 0);
+
 $idmodifliste = param_integer('idmodifliste', null);
 // pour recuperer idmodiflist passé dans l'url
 $designer = get_record('artefact_booklet_designer', 'id', $USER->get('id'));
@@ -85,10 +88,15 @@ if (isset($idtome)) {
     $tabs = ArtefactTypeVisualization::submenu_items($idtome);
     // construit le tableau des tabs
     define('booklet_SUBPAGE', $tabs[$tab]['page']);
-    $tabs = ArtefactTypeVisualization::submenu_items($idtome);
+    // $tabs = ArtefactTypeVisualization::submenu_items($idtome);
     // ajoute au tableau des tabs mention de celui qui est sélectionné
-
-    $tomeform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
+	// Modif JF :: Hide / Show
+	if ($okdisplay){
+        $tomeform = ArtefactTypeVisualization::get_form_display($idtome, $tab, $idmodifliste, $browse);
+	}
+	else{
+        $tomeform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
+	}
     // renvoit la forme correspondant au tome à afficher
 
     $idtab = get_record('artefact_booklet_tab', 'displayorder', $tab, 'idtome', $tome->id);

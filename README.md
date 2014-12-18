@@ -7,11 +7,13 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
  
 ### Modifications by JF - December 2014
 
-Version 1.0.3 - 2014-12-13
+#### Show / Edit 
+
+Version 1.0.3 - 2014-12-18 : L'utilisateur peut désormais alterner l'affichage et l'édition du livret.
 
 #### Bug correction
 
-La suppression d'un "tome" (Livret) est corrigée
+Version 1.0.3 - 2014-12-13 : La suppression d'un "tome" (Livret) est corrigée.
 
 #### Copyright support
 

@@ -1212,7 +1212,7 @@ function visualizetome_submit (Pieform $form, $values) {
 class ArtefactTypeVisualization extends ArtefactTypebooklet {
 
     public function commit() {
-        // le commit insere un artefact pour un cadre et ajoute dans view artefact mention de ce cadre pour tous les blockinstances concernÃ©s
+        // le commit insere un artefact pour un cadre et ajoute dans view artefact mention de ce cadre pour tous les blockinstances concernés
         global $USER;
         parent::commit();
 
@@ -1346,7 +1346,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     break;
             	}
 
-				// construction d'un tableau des lignes : une par Ã©lÃ©ment, chaque ligne contient les valeurs de tous les objets
+				// construction d'un tableau des lignes : une par élément, chaque ligne contient les valeurs de tous les objets
             	$ligne = array();
             	for ($i = 0; $i < $n; $i++) {
                 	$ligne[$i] = "";
@@ -1587,7 +1587,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $selectedtome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'));
         $opt = null;
         if ($selectedtome && $idtome != $selectedtome->idtome) {
-        // Cas ou un designer regarde un tome qui n'est pas celui qu'il a selectionnÃ©
+        // Cas ou un designer regarde un tome qui n'est pas celui qu'il a selectionné
             $opt = "&tome=" . $idtome;
         }
         $items = array();
@@ -1602,16 +1602,22 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
             }
         }
         if (defined('booklet_SUBPAGE') && isset($items[booklet_SUBPAGE])) {
-        // pour diffÃ©rencier 1er et second appel depuis index.php
+        // pour différencier 1er et second appel depuis index.php
             $items[booklet_SUBPAGE]['selected'] = true;
         }
         return $items;
-        // renvoit le tableau des tabs avec au 2nd appel mention de celui qui est sÃ©lectionnÃ©
+        // renvoit le tableau des tabs avec au 2nd appel mention de celui qui est sélectionné
     }
 
-    public static function get_form($idtome, $idtab, $idmodifliste = null, $browse) {
+	// Modif JF
+    public static function get_form_display($idtome, $idtab, $idmodifliste = null, $browse) {
         // idmodifliste est l'index dans artefact_booklet_resulttext
-        global $USER;
+        global $USER, $THEME;
+        $editstr = get_string('edit','artefact.booklet');
+        $imageedit = $THEME->get_url('images/btn_edit.png');
+		$showstr = get_string('show','artefact.booklet');
+        $imageshow = $THEME->get_url('images/btn_info.png');
+
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         if (!is_null($idmodifliste)) {
             $record = get_record('artefact_booklet_resulttext', 'id', $idmodifliste);
@@ -1625,14 +1631,14 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
             return null;
         }
         foreach (get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder') as $item) {
-            // liste des tabs du tome triÃ©s par displayorder
+            // liste des tabs du tome triés par displayorder
             if ($item->displayorder == $idtab) {
                 // parcours pour trouver le tab dont le displayorder est idtab
                 $tab = $item;
             }
         }
         $frames = get_records_array('artefact_booklet_frame', 'idtab', $tab->id, 'displayorder');
-        // liste des frames du tab ordonnÃ©s par displayorder
+        // liste des frames du tab ordonnés par displayorder
         $elements = array();
         $bookletform = array();
         $bookletform["entete"] = $tab->help;
@@ -1648,8 +1654,468 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                 $objmodifinframe = $objmodif && ($objmodif->idframe == $frame->id);
                 $objmodifotherframe = $objmodif && ($objmodif->idframe != $frame->id);
 
+                if (!$frame->list){  // Not a list
+                    $elements['showedit'] = array(
+						'type' => 'html',
+						'title' => '',
+						//'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idshowliste='.$idmodifliste.'"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a> <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idmodifliste='.$idmodifliste.'"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a></div>',
+						'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a></div>',
+					);
+				}
+
                 $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder');
-                // liste des objets du frame ordonnÃ©s par displayorder
+                // liste des objets du frame ordonnés par displayorder
+                if ($objects) {
+                    foreach ($objects as $object) {
+                        $help = ($object->help != null);
+                        if ($object->type == 'longtext') {
+                            $val = null;
+                            if ($notframelist) {
+                                // ce n'est pas une liste : rechercher le contenu du champ texte
+                                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                // modification d'un element de liste
+                                $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['lt' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                                );
+                            }
+                        }
+                        else if ($object->type == 'area') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['ta' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                                );
+                            }
+                        }
+                        else if ($object->type == 'htmltext') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['ht' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                               );
+                            }
+                        }
+                        else if ($object->type == 'synthesis') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            $rec = false;
+                            if (!is_null($record)) {
+                                $rec = true;
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['ta' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                                );
+								/*
+                                $components['btn' . $object->id] = array(
+                                    'type' => 'button',
+                                    'value' => get_string('generate', 'artefact.booklet'),
+                                    'onclick' => ($rec ? 'sendjsonrequest(\'compositegeneratesynthesis.php\',
+                                                 {\'idsynthesis\': ' . $object->id . ', \'idrecord\': ' . $record->idrecord . '},
+                                                     \'GET\',
+                                                     function(data) {
+                                                         location.reload(true)
+                                                     },
+                                                     function() {
+                                                         // @todo error
+                                                     })'
+                                                     : 'sendjsonrequest(\'compositegeneratesynthesis.php\',
+                                                     {\'idsynthesis\': ' . $object->id . '},
+                                                     \'GET\',
+                                                     function(data) {
+                                                         location.reload(true)
+                                                     },
+                                                     function() {
+                                                        // @todo error
+                                                     })')
+                                );
+								*/
+                            }
+                        }
+                        else if ($object->type == 'shorttext') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['st' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                                );
+                            }
+                        }
+                        else if ($object->type == 'radio') {
+
+							// DEBUG
+							//echo "<br />lib.php :: 1785<br />\n";
+							//print_object($object);
+							//exit;
+                            $val = null;
+                            if (count_records('artefact_booklet_radio', 'idobject', $object->id) != 0) {
+                                if ($res = get_records_array('artefact_booklet_radio', 'idobject', $object->id)){
+                                	if ($notframelist) {
+                                    	$sql = "SELECT * FROM {artefact_booklet_resultradio} WHERE idobject = ? AND idowner = ?";
+	                                    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+    	                                $val = $vals[0];
+        	                        }
+            	                    else if ($objmodifinframe) {
+                	                    $val = get_record('artefact_booklet_resultradio', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                    	            }
+									if ($val){
+	                        	        $strradio = '';
+    	                        	    foreach ($res as $value) {
+											if (!empty($value)){
+												if (!empty($strradio)){
+                	                    	    	$strradio .= ' |';
+												}
+    		            	                    if ($value->id == $val->idchoice){
+													$strradio .= ' <b>'.$value->option. '</b>';
+												}
+												else{
+                    		            	        $strradio .= ' <i>'.$value->option. '</i>';
+												}
+	                            		    }
+										}
+        	                        	if ($notframelist || !$objmodifotherframe) {
+            	                        	$components['ra' . $object->id] = array(
+                	                       		'type' => 'html',
+	                	                       	'help' => $help,
+    	                	                   	'title' => $object->title,
+        	                	               	'value' => ((!empty($val)) ? $strradio : NULL),
+            	                	       );
+                	                	}
+									}
+								}
+							}
+						}
+                        else if ($object->type == 'checkbox') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resultcheckbox} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resultcheckbox', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['cb' . $object->id] = array(
+                                    'type' => 'html',
+                                    'help' => $help,
+                                    'title' => $object->title,
+                                    'value' => ((!empty($val)) ? $val->value : NULL),
+                                );
+                            }
+                        }
+                        else if ($object->type == 'date') {
+                            $val = null;
+                            if ($notframelist) {
+                                $sql = "SELECT * FROM {artefact_booklet_resultdate} WHERE idobject = ? AND idowner = ?";
+                                $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                                $val = $vals[0];
+                            }
+                            else if ($objmodifinframe) {
+                                $val = get_record('artefact_booklet_resultdate', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['da' . $object->id] = array(
+                                    'type' => 'html',
+                                    'value' => ((!empty($val)) ? date("m/d/Y",strtotime($val->value)) : date("m/d/Y",time())),
+                                    'title' => $object->title,
+                                    'description' => get_string('dateofbirthformatguide'),
+                                );
+                            }
+                        }
+                        else if ($object->type == 'attachedfiles') {
+                            $vals = array();
+                            if ($notframelist) {
+                                $vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+                            else if ($objmodifinframe) {
+                                $vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                            }
+							$strfiles='';
+							foreach ($vals as $val){
+								if (!empty($val)){
+									if ($artefactfile=get_record('artefact', 'id', $val)){
+										$strfiles.= '<a target="_blank" href="'.get_config('wwwroot').'/artefact/file/download.php?file='.$val.'">'.$artefactfile->title.'</a> ';
+									}
+								}
+							}
+
+                            if ($notframelist || !$objmodifotherframe) {
+                                $components['af' . $object->id] =  array(
+                                    'type' => 'html',
+                                    'title' => $object->title,
+                                    'help' => $help,
+                                    'value' => $strfiles,
+                                );
+                            }
+                        }
+                    } // fin de foreach objects
+                }
+                if (count($components) != 0 && $notframelist) {
+                    $elements['idtab'] = array(
+                        'type' => 'hidden',
+                        'value' => $idtab
+                    );
+                    $elements['idtome'] = array(
+                        'type' => 'hidden',
+                        'value' => $idtome
+                    );
+					/*
+                    $components['save' . $frame->id] = array(
+                        'type' => 'submit',
+                        'value' => get_string('valid', 'artefact.booklet'),
+                    );
+					*/
+                    $elements['list'] = array(
+                        'type' => 'hidden',
+                        'value' => false
+                    );
+                    $elements[$frame->id] = array(
+                        'type' => 'fieldset',
+                        'legend' => $frame->title,
+                        'help' => ($frame->help != null),
+                        'elements' => $components
+                    );
+                }
+
+                if ($frame->list) {
+                    if ($objmodif) {
+                         $components['idrecord'] = array(
+                            'type' => 'hidden',
+                            'value' => $record->idrecord
+                         );
+                    }
+                    $components['idtab'] = array(
+                        'type' => 'hidden',
+                        'value' => $idtab
+                    );
+                    $components['idtome'] = array(
+                        'type' => 'hidden',
+                        'value' => $idtome
+                    );
+                    $components['list'] = array(
+                        'type' => 'hidden',
+                        'value' => true
+                    );
+					/*
+					if ($objmodifinframe) {
+                        $components['save' . $frame->id] = array(
+                           'type' => 'submit',
+                           'value' => get_string('modify', 'artefact.booklet'),
+                        );
+                    }
+                    if ($framelistnomodif) {
+                        $components['save' . $frame->id] = array(
+                            'type' => 'submit',
+                            'value' => get_string('save', 'artefact.booklet'),
+                        );
+                    }
+					*/
+                    $elements = $components;
+                }
+
+
+                $pf = pieform(array(
+                    'name'        => 'pieform'.$frame->id,
+                    'plugintype'  => 'artefact',
+                    'pluginname'  => 'booklet',
+                    'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
+                    'method'      => 'post',
+                    'renderer'    => 'table',
+                    'successcallback' => '',
+                    'elements'    => $elements,
+                    'autofocus'   => false,
+                ));
+                if ($frame->list) {
+                    if ($framelistnomodif) {
+//                        $pf = "<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>" .
+//                              "<button id='addpieform".$frame->id."button' class='cancel' onclick='toggleCompositeForm(&quot;pieform".$frame->id."&quot;);'>".get_string('add','artefact.booklet')."</button>" ;
+                       $pf = "<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>\n";
+
+                    }
+                    if ($objmodifinframe) {
+                        // $pf = $pf . "<button id='addpieform".$frame->id."button' onclick='javascript:history.back()' class='cancel'>". get_string('cancel','artefact.booklet')."</button>";
+                    }
+
+                    $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id);
+                    $item = null;
+                    if ($objects) {
+                        foreach ($objects as $object) {
+                            if ((substr($object->name, 0, 5) == 'Title' || substr($object->name, 0, 5) == 'title') &&
+                                ($object->type == 'area' || $object->type == 'shorttext' || $object->type == 'longtext'
+                                 || $object->type == 'synthesis' || $object->type == 'htmltext')) {
+                                $item = $object;
+                                break;
+                            }
+                        }
+                    }
+                    if (is_null($item)) {
+                        $sql = "SELECT * FROM {artefact_booklet_object}
+                                WHERE idframe = ?
+                                AND displayorder = (SELECT MIN(displayorder)
+                                                    FROM {artefact_booklet_object}
+                                                    WHERE idframe = ?
+                                                    AND (type='area'
+                                                         OR type='shorttext'
+                                                         OR type='longtext'
+                                                         OR type='htmltext'
+                                                         OR type='synthesis')
+                                                    )";
+                        $item = get_record_sql($sql, array($frame->id, $frame->id));
+                    }
+                    if ($frame->help != null) {
+                        $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
+                    }
+                    else {
+                        $aide = null;
+                    }
+                    $pf = '<fieldset class="pieform-fieldset"><legend>' . $frame->title . ' ' . $aide . '</legend>
+                           <table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
+                               <thead>
+                                   <tr>
+                                       <th class="visualizationcontrols"></th>
+                                       <th class="nom">' . (($item) ? $item->title : "") . '</th>
+                                       <th class="visualizationcontrols"></th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   <tr>
+                                       <td class="buttonscell"></td>
+                                       <td class="toggle"></td>
+                                       <td></td>
+                                       <td class="buttonscell"></td>
+                                   </tr>
+                               </tbody>
+                           </table>
+                           ' . $pf . '
+                           </fieldset>';
+                }
+                $bookletform[$frame->title] = $pf;
+            } // fin de foreach frames
+        }
+        return $bookletform;
+    }
+    // fin de get_form_display
+
+
+    public static function get_form($idtome, $idtab, $idmodifliste = null, $browse) {
+        // idmodifliste est l'index dans artefact_booklet_resulttext
+        global $USER;
+		// Modif JF
+		global $THEME;
+        $editstr = get_string('edit','artefact.booklet');
+        $imageedit = $THEME->get_url('images/btn_edit.png');
+		$showstr = get_string('show','artefact.booklet');
+        $imageshow = $THEME->get_url('images/btn_info.png');
+
+		// Modif JF
+		// Astuce pour forcer l'affichage
+		if ($idmodifliste==-1){
+            $idmodifliste=null;
+		}
+
+
+        require_once(get_config('libroot') . 'pieforms/pieform.php');
+        if (!is_null($idmodifliste)) {
+            $record = get_record('artefact_booklet_resulttext', 'id', $idmodifliste);
+            $objmodif = get_record('artefact_booklet_object', 'id', $record->idobject);
+        }
+        else {
+            $record = null;
+            $objmodif = null;
+        }
+        if (!$tome = get_record('artefact_booklet_tome', 'id', $idtome)) {
+            return null;
+        }
+        foreach (get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder') as $item) {
+            // liste des tabs du tome triés par displayorder
+            if ($item->displayorder == $idtab) {
+                // parcours pour trouver le tab dont le displayorder est idtab
+                $tab = $item;
+            }
+        }
+        $frames = get_records_array('artefact_booklet_frame', 'idtab', $tab->id, 'displayorder');
+        // liste des frames du tab ordonnés par displayorder
+        $elements = array();
+        $bookletform = array();
+        $bookletform["entete"] = $tab->help;
+        if ($frames) {
+            foreach ($frames as $frame) {
+                $components = array();
+                $elements = null;
+                $components = null;
+                $pf = null;
+                // Quatre conditions exclusives
+                $notframelist = !$frame->list;
+                $framelistnomodif = $frame->list && !$objmodif;
+                $objmodifinframe = $objmodif && ($objmodif->idframe == $frame->id);
+                $objmodifotherframe = $objmodif && ($objmodif->idframe != $frame->id);
+
+				// Modif JF
+				if (!$frame->list){  // Not a list
+                    $elements['showedit'] = array(
+						'type' => 'html',
+						'title' => '',
+						//'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idshowliste='.$idmodifliste.'"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a> <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idmodifliste='.$idmodifliste.'"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a></div>',
+						'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a></div>',
+					);
+				}
+
+
+                $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder');
+                // liste des objets du frame ordonnés par displayorder
                 if ($objects) {
                     foreach ($objects as $object) {
                         $help = ($object->help != null);
@@ -1883,7 +2349,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                                         'createfolder' => false,
                                         'edit' => false,
                                         'select' => true,
-                                    ), 
+                                    ),
                                     'defaultvalue' => $vals,
                                     'selectlistcallback' => 'artefact_get_records_by_id',
                                     // 'selectcallback' => 'add_attachment',
@@ -1950,6 +2416,18 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     }
                     $elements = $components;
                 }
+				/*
+				// Modif JF
+				else{  // Not a list
+                    $elements['showedit'] = array(
+						'type' => 'html',
+						'title' => '',
+						//'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idshowliste='.$idmodifliste.'"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a> <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idmodifliste='.$idmodifliste.'"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a></div>',
+						'value' =>  '<div class="right"><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&idshowliste='.$idmodifliste.'"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a></div>',
+					);
+				}
+				*/
+
                 $pf = pieform(array(
                     'name'        => 'pieform'.$frame->id,
                     'plugintype'  => 'artefact',
@@ -2048,6 +2526,11 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $downstr = get_string('movedown','artefact.booklet');
         $editstr = get_string('edit','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
+
+        // Modif JF
+        $showstr = get_string('show','artefact.booklet');
+        $imageshow = json_encode($THEME->get_url('images/btn_info.png'));
+
         $js = <<<EOF
 tableRenderers.{$compositetype}{$id} = new TableRenderer(
     '{$compositetype}{$id}list',
@@ -2080,13 +2563,16 @@ EOF;
         $js .= self::get_tablerenderer_js();
         $js .= <<<EOF
           function (r, d) {
-            var editlink = A({'href': 'index.php?tab={$tab}&idmodifliste=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
+			// Modif JF
+			var showlink = A({'href': 'index.php?tab={$tab}&okdisplay=1&idmodifliste=' + r.id, 'title': '{$showstr}'}, IMG({'src': {$imageshow}, 'alt':'{$showstr}'}));
+            var editlink = A({'href': 'index.php?tab={$tab}&okdisplay=0&idmodifliste=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
             var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id, d.id);
             });
-            return TD({'class':'right'}, null, editlink, ' ', dellink);
+            // Modif JF
+            return TD({'class':'right'}, null, showlink, ' ', editlink, ' ', dellink);
         }
     ]
 );
@@ -2111,7 +2597,7 @@ var tableRenderers = {};
 function toggleCompositeForm(type) {
     var elemName = '';
     elemName = type + 'form';
-    if (hasElementClass(elemName, 'hidden')) {
+	if (hasElementClass(elemName, 'hidden')) {
         removeElementClass(elemName, 'hidden');
         $('add' + type + 'button').innerHTML = '{$cancelstr}';
     }
@@ -2301,7 +2787,7 @@ EOF;
 function visualization_submit(Pieform $form, $values) {
     // appele lors de la soumission de donnees d'un cadre en ajout ou modification
     // values est un vecteur qui contient les valeurs des champs du formulaire
-    // quelques champs cachÃ©s permettent de transmettre le contexte
+    // quelques champs cachés permettent de transmettre le contexte
     // idrecord est transmis quand c'est une modification d'un element de liste
     // idtab est le displayorder du tab soumis
     // idtome est l'id du tome selectionne ou en visualisation
