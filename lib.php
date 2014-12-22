@@ -48,6 +48,12 @@ class PluginArtefactbooklet extends PluginArtefact {
             /* log_warn('pas d installation necessaire de la categorie booklet'); */
         }
     }
+
+    public static function is_active() {
+        return get_field('artefact_installed', 'active', 'name', 'booklet');
+    }
+
+
 }
 
 class ArtefactTypebooklet extends ArtefactType {
