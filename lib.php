@@ -58,8 +58,49 @@ class PluginArtefactbooklet extends PluginArtefact {
 
 class ArtefactTypebooklet extends ArtefactType {
     /* classe pour fonctions JS communes */
-    public static function get_icon($options=null) {
-    }
+
+    /**
+     * Returns a URL for an icon for the appropriate artefact
+     *
+     * @param array $options Options for the artefact. The array MUST have the
+     *                       'id' key, representing the ID of the artefact for
+     *                       which the icon is being generated. Other keys
+     *                       include 'size' for a [width]x[height] version of
+     *                       the icon, as opposed to the default 20x20, and
+     *                       'view' for the id of the view in which the icon is
+     *                       being displayed.
+     * @abstract
+     * @return string URL for the icon
+     */
+	public static function get_icon($options=null) {
+        global $THEME;
+        return $THEME->get_url('images/booklet.png', false, 'artefact/booklet');
+	}
+
+
+    /**
+     * Returns a URL for an icon for the appropriate artefact
+     *
+     * @return string URL for the icon
+     */
+	public static function get_icon_checkpath($options=null) {
+        global $THEME;
+        return $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+	}
+
+
+    /**
+     * Returns a URL for an icon for the appropriate artefact
+     *
+     * @return string URL for the icon
+     */
+	public static function get_icon_showpath($options=null) {
+        global $THEME;
+        return $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+	}
+
+
+
     public static function is_singular() { return false; }
     public static function get_links($id) {}
     public function commit() { parent::commit(); }

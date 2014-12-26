@@ -66,9 +66,13 @@ function xml_tome ($idtome) {
     $doc->appendChild($doctome);
 	// Modif JF
 	xml_author($doctome, $idtome);
-
-    foreach (get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder') as $tab) {
-        xml_tab($doctome, $tab->id);
+	$tabs = get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder');
+	if (!empty($tabs)){
+        foreach ($tabs as $tab) {
+			if (!empty($tab)){
+        		xml_tab($doctome, $tab->id);
+			}
+		}
     }
 
 }
@@ -83,8 +87,13 @@ function xml_tab ($doctome, $idtab) {
     $dochelp->appendChild($help);
     $doctab->appendChild($dochelp);
     $doctome->appendChild($doctab);
-    foreach (get_records_array('artefact_booklet_frame', 'idtab', $idtab, 'displayorder') as $frame) {
-        xml_frame($doctab, $frame->id);
+    $frames = get_records_array('artefact_booklet_frame', 'idtab', $idtab, 'displayorder');
+	if (!empty($frames)){
+    	foreach ($frames as $frame) {
+			if (!empty($frame)){
+        		xml_frame($doctab, $frame->id);
+			}
+		}
     }
 }
 
@@ -99,36 +108,53 @@ function xml_frame ($doctab, $idframe) {
     $dochelp->appendChild($help);
     $docframe->appendChild($dochelp);
     $doctab->appendChild($docframe);
-    foreach (get_records_array('artefact_booklet_object', 'idframe', $idframe, 'displayorder') as $object) {
-        xml_object($docframe, $object->id);
-    }
+    $objects=get_records_array('artefact_booklet_object', 'idframe', $idframe, 'displayorder');
+	if (!empty($objects)){
+		foreach($objects as $object) {
+        	if (!empty($object)){
+				xml_object($docframe, $object->id);
+			}
+    	}
+	}
 }
 
 function xml_object ($docframe, $idobject) {
     global $doc;
     $object = get_record('artefact_booklet_object', 'id', $idobject);
-    $docobject = $doc->createElement('object');
-    $docobject->setAttribute('name', $object->name);
-    $docobject->setAttribute('title', $object->title);
-    $docobject->setAttribute('type', $object->type);
-    $help = $doc->createCDATASection($object->help);
-    $dochelp = $doc->createElement('help');
-    $dochelp->appendChild($help);
-    $docobject->appendChild($dochelp);
-    $docframe->appendChild($docobject);
-    if ($object->type == 'radio') {
-        foreach (get_records_array('artefact_booklet_radio', 'idobject', $idobject) as $radio) {
-            $docoption = $doc->createElement('option', $radio->option);
-            $docobject->appendChild($docoption);
+	if (!empty($object)){
+    	$docobject = $doc->createElement('object');
+	    $docobject->setAttribute('name', $object->name);
+    	$docobject->setAttribute('title', $object->title);
+	    $docobject->setAttribute('type', $object->type);
+    	$help = $doc->createCDATASection($object->help);
+	    $dochelp = $doc->createElement('help');
+    	$dochelp->appendChild($help);
+	    $docobject->appendChild($dochelp);
+    	$docframe->appendChild($docobject);
+	    if ($object->type == 'radio') {
+    	    $radios = get_records_array('artefact_booklet_radio', 'idobject', $idobject);
+			if (!empty($radios)){
+			 	foreach ($radios as $radio) {
+					if (!empty($radio)){
+						$docoption = $doc->createElement('option', $radio->option);
+					    $docobject->appendChild($docoption);
+					}
+				}
+			}
         }
-    }
-    if ($object->type == 'synthesis') {
-        foreach (get_records_array('artefact_booklet_synthesis', 'idobject', $idobject) as $objectlinked) {
-            $obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked);
-            $doclinked = $doc->createElement('linked', $obj->name);
-            $docobject->appendChild($doclinked);
-        }
-    }
+
+    	if ($object->type == 'synthesis') {
+            get_records_array('artefact_booklet_synthesis', 'idobject', $idobject);
+			if (!empty($objectlinked)){
+				foreach ($objectlinked as $objectlinked) {
+	        	    if ($obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked)){
+    	        		$doclinked = $doc->createElement('linked', $obj->name);
+        	    		$docobject->appendChild($doclinked);
+					}
+			   }
+        	}
+    	}
+	}
 }
 
 $doc = new DOMDocument();
