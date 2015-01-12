@@ -48,12 +48,15 @@ if ($type == 'visualization') {
                                          OR type='htmltext'))";
         $item = get_record_sql($sql, array($id, $id));
     }
-    $sql = "SELECT t.value, t.id FROM {artefact_booklet_resulttext} t
-             JOIN {artefact_booklet_resultdisplayorder} do ON t.idrecord = do.idrecord AND t.idowner = do.idowner
+    // Modif JF 2015/01/12
+	// do est un mot protege sur Postgres
+	$sql = "SELECT t.value, t.id FROM {artefact_booklet_resulttext} t
+             JOIN {artefact_booklet_resultdisplayorder} d ON t.idrecord = d.idrecord AND t.idowner = d.idowner
              WHERE t.idobject = ?
              AND t.idowner = ?
-             ORDER BY do.displayorder";
-    if (!$data = get_records_sql_array($sql, array((($item)?$item->id:0), $USER->get('id')))) {
+             ORDER BY d.displayorder";
+
+	if (!$data = get_records_sql_array($sql, array((($item)?$item->id:0), $USER->get('id')))) {
         $data = array();
     }
     $count = count($data);

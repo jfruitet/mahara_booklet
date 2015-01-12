@@ -85,11 +85,15 @@ if ($frameslinked) {
             // pour chaque objet, on complete toutes les lignes
             foreach ($objectsframelinked as $object) {
                 if ($object->type == 'longtext' || $object->type == 'shorttext' || $object->type == 'area' || $object->type == 'htmltext' || $object->type == 'synthesis') {
-                    $sql="SELECT * FROM {artefact_booklet_resulttext} re
-                           JOIN {artefact_booklet_resultdisplayorder} do ON (re.idrecord = do.idrecord AND re.idowner = do.idowner)
+					// MODIF JF 2015/01/22
+					// do est un mot réserve pour PostGres : do -> rd
+					$sql="SELECT * FROM {artefact_booklet_resulttext} re
+                           JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
-                           ORDER BY do.displayorder";
+                           ORDER BY rd.displayorder";
+
+
                     $txts = get_records_sql_array($sql, array($object->id, $USER->get('id')));
                     $i = 0;
                     foreach ($txts as $txt) {
@@ -98,12 +102,15 @@ if ($frameslinked) {
                     }
                 }
                 else if ($object->type == 'radio') {
+					// MODIF JF 2015/01/22
+					// do est un mot réserve pour PostGres : do -> rd
                     $sql="SELECT * FROM {artefact_booklet_resultradio} re
-                           JOIN {artefact_booklet_resultdisplayorder} do ON (re.idrecord = do.idrecord AND re.idowner = do.idowner)
+                           JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            JOIN {artefact_booklet_radio} ra ON (ra.id = re.idchoice)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
-                           ORDER BY do.displayorder";
+                           ORDER BY rd.displayorder";
+
                     $radios = get_records_sql_array($sql, array($object->id, $USER->get('id')));
                     $i = 0;
                     foreach ($radios as $radio) {
@@ -112,11 +119,13 @@ if ($frameslinked) {
                     }
                 }
                 else if ($object->type == 'checkbox') {
+					// MODIF JF 2015/01/22
+					// do est un mot réserve pour PostGres : do -> rd
                     $sql="SELECT * FROM {artefact_booklet_resultcheckbox} re
-                           JOIN {artefact_booklet_resultdisplayorder} do ON (re.idrecord = do.idrecord AND re.idowner = do.idowner)
+                           JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
-                           ORDER BY do.displayorder";
+                           ORDER BY rd.displayorder";
                     $checkboxes = get_records_sql_array($sql, array($object->id, $USER->get('id')));
                     $i = 0;
                     foreach ($checkboxes as $checkbox) {
@@ -125,11 +134,13 @@ if ($frameslinked) {
                     }
                 }
                 else if ($object->type == 'date') {
-                    $sql="SELECT * FROM {artefact_booklet_resultdate} re
-                           JOIN {artefact_booklet_resultdisplayorder} do ON (re.idrecord = do.idrecord AND re.idowner = do.idowner)
+					// MODIF JF 2015/01/22
+					// do est un mot réserve pour PostGres :  do -> rd
+					$sql="SELECT * FROM {artefact_booklet_resultdate} re
+                           JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
-                           ORDER BY do.displayorder";
+                           ORDER BY rd.displayorder";
                     $dates = get_records_sql_array($sql, array($object->id, $USER->get('id')));
                     $i = 0;
                     foreach ($dates as $date) {
