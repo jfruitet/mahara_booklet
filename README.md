@@ -14,6 +14,7 @@ Version 1.0.3 - 2014-12-18 : L'utilisateur peut désormais alterner l'affichage 
 #### Bug correction
 
 Version 1.0.4 - 2015-01-12 : Fichier install.xml corrigé ; Correction d'un bug subtil : "do" est un mot réservé qui ne peut être utilisé comme alias de table dans les requêtes SQL sur Postgres
+
 Version 1.0.3 - 2014-12-13 : La suppression d'un "tome" (Livret) est corrigée.
 
 #### Copyright support
