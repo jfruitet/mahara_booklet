@@ -216,7 +216,7 @@ class ArtefactTypeAuthor extends ArtefactTypebooklet {
                     'rows' => 5,
                     'cols' => 60,
                     'title' => get_string('copyright', 'artefact.booklet'),
-					'defaultvalue' => ((!empty($author)) ? $author->copyright : get_string('copyright_cc', 'artefact.booklet')),
+					'defaultvalue' => ((!empty($author) && (!empty($author->copyright)) ) ? $author->copyright : get_string('copyright_cc', 'artefact.booklet')),
                     'help' => true,
                 ),
 

@@ -51,7 +51,12 @@ if (!empty($idtome)){
     	    $smarty->assign('authorurl', '<a target="_blank" href="'. $author->authorurl .'">'.$author->authorurl.'</a>');
         	$smarty->assign('version', $author->version);
 			$smarty->assign('dateversion', $author->timestamp);
-    	    $smarty->assign('copyright', '<b>'.get_string('copyright','artefact.booklet')."</b>\n<pre>".$author->copyright."</pre>\n");
+    	    if (!empty($author->copyright)){
+				$smarty->assign('copyright', '<b>'.get_string('copyright','artefact.booklet')."</b>\n<pre>".$author->copyright."</pre>\n");
+			}
+			else{
+                $smarty->assign('copyright', get_string('copyright','artefact.booklet').' '.get_string('copyright_ccnd','artefact.booklet'));
+			}
 		}
 		else{
     		$smarty->assign('author', 0);
