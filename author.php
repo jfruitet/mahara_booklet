@@ -20,8 +20,10 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
 require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 class ArtefactTypeAuthor extends ArtefactTypebooklet {
+
     public static function is_singular() { return true;  }
     public static function get_form($tome, $author) {
+
 	if (empty($author)){
         $authorform = pieform(array(
             'name'        => 'authorform',
@@ -216,7 +218,7 @@ class ArtefactTypeAuthor extends ArtefactTypebooklet {
                     'rows' => 5,
                     'cols' => 60,
                     'title' => get_string('copyright', 'artefact.booklet'),
-					'defaultvalue' => ((!empty($author) && (!empty($author->copyright)) ) ? $author->copyright : get_string('copyright_cc', 'artefact.booklet')),
+					'defaultvalue' => ( (!empty($author) && !empty($author->copyright)) ? $author->copyright : get_string('copyright_cc', 'artefact.booklet')),
                     'help' => true,
                 ),
 
@@ -271,14 +273,6 @@ class ArtefactTypeAuthor extends ArtefactTypebooklet {
 
 function authorform_submit(Pieform $form, $values) {
     global $USER, $SESSION, $DB;
-	// DEBUG
-	/*
-	echo "<br />----------------------<br />DEBUG :: author.php:: FORM<br/>\n";
-	print_object($form);
-    echo "<br />----------------------<br />DEBUG :: VALUES<br/>\n";
-	print_object($values);
-	exit;
-	*/
 
 	if (!empty($values['idtome'])){
 		// Tome data
@@ -373,8 +367,7 @@ function authorform_submit(Pieform $form, $values) {
 $idtome = param_integer('id', null);
 $tome = get_record('artefact_booklet_tome', 'id', $idtome);
 $author = get_record('artefact_booklet_author', 'idtome', $idtome);
-$authorform = ArtefactTypeAuthor ::get_form($tome, $author);
-
+$authorform = ArtefactTypeAuthor::get_form($tome, $author);
 if (!empty($tome)){
     define('TITLE', $tome->title);
     $smarty = smarty(array('tablerenderer','jquery'));

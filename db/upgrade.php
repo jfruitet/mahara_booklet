@@ -59,7 +59,7 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
 
     if ($oldversion < 2014112902) {
         $table = new XMLDBTable('artefact_booklet_author');
-        $field = new XMLDBField('copyrigth');
+        $field = new XMLDBField('copyright');
         $field->setAttributes(XMLDB_TYPE_TEXT);
         $status = $status && add_field($table, $field);
     }
@@ -70,6 +70,13 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
         $field->setAttributes(XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0', 'public');
         $status = $status && add_field($table, $field);
 
+    }
+
+    if ($oldversion < 2015011800) {
+        $table = new XMLDBTable('artefact_booklet_author');
+        $field = new XMLDBField('copyright');
+        $field->setAttributes(XMLDB_TYPE_TEXT);
+        $status = $status && add_field($table, $field);
     }
 
     return $status;

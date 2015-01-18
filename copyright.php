@@ -23,6 +23,7 @@ $idtome = param_integer('id', null);
 
 if (!empty($idtome)){
 	$tome = get_record('artefact_booklet_tome', 'id', $idtome);
+
 	if (!empty($tome)){
     	$imageauthor = get_config('wwwroot') . 'theme/raw/static/images/btn_access.png';
 
@@ -41,6 +42,7 @@ if (!empty($idtome)){
         $smarty->assign('idtome', $idtome);
 
 		$author = get_record('artefact_booklet_author', 'idtome', $idtome);
+
 		if (!empty($author)){
     		$smarty->assign('author', 1);
             $smarty->assign('authortitle', get_string('author','artefact.booklet'));
