@@ -1,13 +1,63 @@
 mahara_booklet
 ==============
-Mahara 10.1 version - This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
+Mahara 10.1 and Mahara 10.2
 
-of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228) 
+This is a fork
+of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228)
+
+by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
+
 
  
-### Modifications by JF - December 2014
+## Modifications by JF
 
-#### Show / Edit 
+### February 2015
+
+**Version 1.1.1 - 2015-01-22**
+
+Modification majeure permettant de capturer des structures de formulaires arborescentes.
+
+Il est possible de déclarer des "frames" (cadres) conteneurs de frames.
+
+Autrement dit un cadre peut êtres "inclus" dans un autre cadre selon une hiérarchie d'arbre n-aire.
+
+										  PAGE 1
+										  |
+				   -------------------------------------------------------------------------------------------------------
+				   |                                               |                                                     |
+	niveau1		CADRE1                                          CADRE2                                                CADRE10
+				   |                                               |
+            --------------------                            --------------------------------------------------
+	        |                  |                            |                  |               |             |
+	niveau2 CADRE4             CADRE5                       CADRE3           CADRE6          CADRE7        CADRE9
+								 |                            |
+					----------------------           --------...
+					|                    |           |
+	niveau3 		CADRE7              CADRE11      CADRE12
+						|
+						-------
+							   |
+	niveau4					CADRE8
+
+La seule limite d'ordre pratique porte sur l'affichage qui est limitées à 52 cadres différents par niveau.
+
+L'affichage se fait selon un parcours en profondeur d'abord
+
+	PAGE1
+	CADRE1 --> CADRE4
+	       --> CADRE5 --> CADRE7 --> CADRE8
+	                  --> CADRE11
+	CADRE2 --> CADRE3 --> CADRE12
+	       --> CADRE6
+	       --> CADRE7
+           --> CADRE9
+	CADRE10
+
+
+
+### December 2014
+
+#### Show / Edit
 
 Version 1.0.3 - 2014-12-18 : L'utilisateur peut désormais alterner l'affichage et l'édition du livret.
 

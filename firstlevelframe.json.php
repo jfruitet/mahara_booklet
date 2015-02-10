@@ -2,8 +2,9 @@
 /**
  *
  * @package    mahara
- * @subpackage artefact-resume
- * @author     Catalyst IT Ltd
+ * @subpackage artefact-booklet
+  * @author    Christophe DECLERCQ - christophe.declercq@univ-nantes.fr*
+ * @author     Jean.Fruitet@univ-nantes.fr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
@@ -61,40 +62,12 @@ if ($type == 'visualization') {
         $data = array();
     }
     $count = count($data);
+
 }
 // type <> visualization
-else if ($type == 'synthesis') {
-    if (!$data = get_records_array($othertable, 'idobject', $id)) {
-        $data = array();
-    }
-    else {
-        foreach ($data as $item) {
-            $temp = get_record('artefact_booklet_object', 'id', $item->idobjectlinked);
-            $item->title = $temp->title;
-        }
-    }
-    $count = count_records($othertable, 'idobject', $id);
-}
-else if ($type == 'radio') {
-    $sql = 'SELECT ar.* FROM {' . $othertable . '} ar WHERE ar.idobject = ?';
-    if (!$data = get_records_sql_array($sql, array($id))) {
-        $data = array();
-    }
-    $count = count_records($othertable, 'idobject', $id);
-}
-else if ($type == 'object') {
-    $sql = 'SELECT ar.* FROM {' . $othertable . '} ar WHERE ar.idframe = ? ORDER BY ar.displayorder';
-    if (!$data = get_records_sql_array($sql, array($id))) {
-        $data = array();
-    }
-    foreach ($data as $item) {
-        $item->type = get_string($item->type, 'artefact.booklet');
-    }
-    $count = count_records($othertable, 'idframe', $id);
-}
-else if ($type == 'frame') {
-    $sql = 'SELECT ar.* FROM {' . $othertable . '} ar WHERE ar.idtab = ? ORDER BY ar.displayorder';
-    if (!$data = get_records_sql_array($sql, array($id))) {
+else if ($type == 'frame') {   // ONLY FIRSTLEVEL FRAME are displayed
+    $sql = 'SELECT ar.* FROM {' . $othertable . '} ar WHERE ar.idtab = ? AND ar.idparentframe = ? ORDER BY ar.displayorder';
+    if (!$data = get_records_sql_array($sql, array($id, 0))) {
         $data = array();
     }
     else {
@@ -108,19 +81,6 @@ else if ($type == 'frame') {
         }
     }
     $count = count_records($othertable, 'idtab', $id);  // idtome
-}
-else if ($type == 'tab') {
-    $sql = 'SELECT ar.* FROM {' . $othertable . '} ar WHERE ar.idtome = ? ORDER BY ar.displayorder';
-    if (!$data = get_records_sql_array($sql, array($id))) {
-        $data = array();
-    }
-    $count = count_records($othertable, 'idtome', $id);
-}
-else if ($type == 'tome') {
-    if (!$data = get_records_select_array($othertable)) {
-        $data = array();
-    }
-    $count = count_records($othertable);
 }
 
 json_reply(false, array(

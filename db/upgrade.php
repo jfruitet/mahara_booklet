@@ -72,10 +72,10 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
 
     }
 
-    if ($oldversion < 2015011800) {
-        $table = new XMLDBTable('artefact_booklet_author');
-        $field = new XMLDBField('copyright');
-        $field->setAttributes(XMLDB_TYPE_TEXT);
+    if ($oldversion < 2015012200) {
+        $table = new XMLDBTable('artefact_booklet_frame');
+        $field = new XMLDBField('idparentframe');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '0', 'displayorder');
         $status = $status && add_field($table, $field);
     }
 

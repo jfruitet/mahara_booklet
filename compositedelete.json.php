@@ -44,10 +44,18 @@ if ($type == 'tome') {
                             else {
                                 $typeobj = $item->type;
                             }
-                            delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
-                            if ($item->type == 'radio' || $item->type == 'synthesis') {
-                                delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
-                            }
+							//
+
+							// Modif JF
+							if ($typeobj == 'text'){
+                                $rslts = get_records('artefact_booklet_resulttext', 'idobject', $item->id);
+								foreach ($rslts as $rslt){
+                                    delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord);
+                            	}
+								delete_records('artefact_booklet_resulttext', 'id', $item->id);
+							}
+							// Modif JF
+                            delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
                         }
                     }
                     delete_records('artefact_booklet_object', 'idframe', $frame->id);
@@ -80,9 +88,11 @@ if ($type == 'tome') {
     delete_records('artefact_booklet_tab', 'idtome', $id);
     delete_records('artefact_booklet_tome', 'id', $id);
 
-	if ($viz = get_record('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
-		delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
-		delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
+	if ($vizs = get_records('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
+		foreach($vizs as $vid){
+			delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
+			delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
+		}
 	}
 
 	if ($arte = get_record('artefact', 'id', $tome->artefact)){   // a priori ce ne devrait pas etre utile...
@@ -135,18 +145,19 @@ else if ($type == 'frame') {
     delete_records('artefact_booklet_frame', 'id', $id);
 }
 else if ($type == 'object') {
-    $object = get_record('artefact_booklet_object', 'id', $id);
-    if ($object->type == "area" || $object->type == "shorttext" || $object->type == "longtext" || $object->type == "synthesis"|| $object->type == "htmltext") {
-        $typeobj = 'text';
-    }
-    else {
-        $typeobj = $object->type;
-    }
-    delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
-    if ($object->type == 'radio' || $object->type == 'synthesis') {
-        delete_records('artefact_booklet_'.$object->type, 'idobject', $id);
-    }
-    delete_records('artefact_booklet_object', 'id', $id);
+    if ($object = get_record('artefact_booklet_object', 'id', $id)){
+    	if ($object->type == "area" || $object->type == "shorttext" || $object->type == "longtext" || $object->type == "synthesis"|| $object->type == "htmltext") {
+        	$typeobj = 'text';
+    	}
+    	else {
+        	$typeobj = $object->type;
+    	}
+    	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
+    	if ($object->type == 'radio' || $object->type == 'synthesis') {
+        	delete_records('artefact_booklet_'.$object->type, 'idobject', $id);
+    	}
+    	delete_records('artefact_booklet_object', 'id', $id);
+	}
 }
 else if ($type == 'radio') {
     delete_records('artefact_booklet_result'.$type, 'idchoice', $id);

@@ -48,6 +48,7 @@ else if ($type == 'visualization') {
                                        WHERE idowner = ? AND idobject = ?
                                        )
                           ORDER BY displayorder', array($USER->get('id'), $USER->get('id'), $item->idobject));
+    // $temp = get_record('artefact_booklet_resultdisplayorder', 'idrecord', $item->idrecord, 'idowner', $USER->get('id'));
     $temp = get_record('artefact_booklet_resultdisplayorder', 'idrecord', $item->idrecord, 'idowner', $USER->get('id'));
     $id = $temp->id;
     // item est un élément de resulttext

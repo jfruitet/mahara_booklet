@@ -22,7 +22,7 @@ require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 
 $idtab = param_integer('id', null);
-
+$idparentframe = param_integer('idparentframe', 0);
 
 $tab = get_record('artefact_booklet_tab', 'id', $idtab);
 
@@ -30,11 +30,10 @@ $tome = get_record('artefact_booklet_tome', 'id', $tab->idtome);
 
 define('TITLE', $tome->title.' -> '.$tab->title);
 
-
-
-$framesform = ArtefactTypeFrame::get_form($idtab);
-$inlinejs = ArtefactTypeFrame::get_js('frame', $idtab);
-
+$framesform = ArtefactTypeFrame::get_form($idtab, $idparentframe);
+$inlinejs = ArtefactTypeFrame::get_js_2('frame', $idtab, true, 0);  // true : only first level frames are displayed
+//echo "<br>$inlinejs\n";
+//exit;
 
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHEADING', TITLE);

@@ -83,6 +83,14 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
             safe_require('artefact', 'booklet');
             $artefacttypes = implode(', ', array_map('db_quote', PluginArtefactbooklet::get_artefact_types()));
             // Get all artefacts that are booklet related and belong to the correct owner
+
+/****************** MODIF JF *****************************
+ *
+ *    Ordonner l'affichage des artefacts en fonction des frames
+ *    Dans artefact 'visualization' le champ description = frameid et le champ note = tomeid
+ *
+ **************************************************************/
+/****************** Version non hierarchique *****************************
             $artefacts = get_records_sql_array('
                 SELECT id
                 FROM {artefact}
@@ -93,6 +101,82 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
                     FROM {view}
                     WHERE id = ? )',
             array($selectedtome->idtome, $blockinstance->get('view')));
+ **************************************************************/
+
+ /****************** Version hierarchique *****************************/
+			$artefacts=array();
+            $rec_artefacts = get_records_sql_array('
+                SELECT id, description
+                FROM {artefact}
+                WHERE artefacttype = \'visualization\'
+                AND note = ?
+                AND "owner" = (
+                    SELECT "owner"
+                    FROM {view}
+                    WHERE id = ? )',
+            array($selectedtome->idtome, $blockinstance->get('view')));
+
+			if ($rec_artefacts){
+				$where='';
+                $params = array();
+                $tab_frame_to_artefact=array();
+			 	foreach ($rec_artefacts as $artefact){
+					if (empty($where)){
+						$where = ' id = ? ';
+					}
+					else{
+                        $where .= ' OR id = ? ';
+					}
+					$params[] = $artefact->description;
+					$tab_frame_to_artefact[$artefact->description] = $artefact->id;
+				}
+
+				$recframes=get_records_sql_array('
+					SELECT id, displayorder, idparentframe
+					FROM {artefact_booklet_frame}
+					WHERE '.$where.' ORDER BY idparentframe ASC, displayorder ASC', $params);
+
+				// REORDONNER sous forme d'arbre parcours en profondeur d'abord
+			    $tabaff_niveau = array();
+			    $tabaff_codes = array();
+				// 52 cadres possibles a chaque niveau de profondeur, ca devrait suffire ...
+				$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+			    $niveau_courant = 0;
+			    $ordre_courant = 0;
+			    $parent_courant = 0;
+
+				// Reordonner
+			    if ($recframes) {
+					foreach ($recframes as $recframe) {
+						if ($recframe->idparentframe == 0){
+			                $niveau_courant = 0;
+						}
+						else if ($recframe->idparentframe != $parent_courant){
+							// changement de niveau
+							$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
+            		        $ordre_courant = 0;
+						}
+						$tabaff_niveau[$recframe->id] = $niveau_courant;
+						$parent_courant = $recframe->idparentframe;
+                            			    $code='';
+						if ($niveau_courant>0){
+							$code =  $tabaff_codes[$recframe->idparentframe];
+						}
+            		    $code.=$tcodes[$ordre_courant];
+			               $tabaff_codes[$recframe->id] = $code;
+            		    $ordre_courant++;
+					}
+				}
+        		asort($tabaff_codes);
+
+
+				// REORGANISER LES ARTEFACTS DANS CET ORDRE
+				foreach ($tabaff_codes as $key => $val){
+            		$artefacts[] = get_record('artefact', 'id', $tab_frame_to_artefact[$key]) ;
+				}
+			}
+ /***********************FIN MODIF JF ******************************/
+
             if ($artefacts) {
                 // Make sure they're registered as being in this view
                 foreach ($artefacts as $artefact) {

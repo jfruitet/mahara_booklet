@@ -11,6 +11,12 @@
 
 defined('INTERNAL') || die();
 
+// debug
+$string['incorrectbooklettab'] = "This booklet is bugged";
+
+// Included frame
+$string['addsuccessorframe'] = "Add a new included frame";
+$string['successorframe'] = "Included in frame %s";
 // Author & copyright
 $string['author'] = "Author";
 $string['authorform'] = "Save author";
@@ -81,9 +87,10 @@ $string['addttab'] = "Add a new tab";
 $string['canceltab'] = "Return";
 $string['public'] = "Public";
 $string['visualizetab'] = "Visualize the tab";
-
+$string['tabsavefailed'] = "Fail: frame creation";
 
 //frames.php
+$string['frame'] = "Frame";
 $string['frames'] = "Frames";
 $string['tabname'] = "Title of tab";
 $string['helptab'] = "Tab help";
@@ -94,6 +101,8 @@ $string['addframe'] = "Add a new frame";
 $string['islist'] = "List";
 $string['yes'] = "Yes";
 $string['no'] = "No";
+$string['framesavefailed'] = "Fail: included frame creation";
+$string['selectframe'] = "Select a frame";
 
 //objects.php
 $string['nomobjects'] = "Titles of objects";

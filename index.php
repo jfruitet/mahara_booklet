@@ -25,6 +25,7 @@ safe_require('artefact', 'file');
 $browse = (int) param_variable('browse', 0);
 
 //Modif JF
+$idframe  = param_integer('idframe', 0);
 $okdisplay = param_integer('okdisplay', 0);
 
 $idmodifliste = param_integer('idmodifliste', null);
@@ -51,6 +52,7 @@ else {
         $idtome = $tomeselected->id;
     }
 }
+
 $visuatest = false;
 if (count($designer) != 0) {
     // si user est designer
@@ -65,6 +67,8 @@ if (count($designer) != 0) {
         }
     }
 }
+
+// Affichage d'un tome
 if (isset($idtome)) {
     // si idtome est défini, ce qui est vrai dans tous les cas sauf avant que le 1er tome soit public
     $tome = get_record('artefact_booklet_tome', 'id', $idtome);
@@ -85,39 +89,57 @@ if (isset($idtome)) {
     }
     // parametre tab transmis dans l'url, par defaut ou si > max, on prend le min
 
-    $tabs = ArtefactTypeVisualization::submenu_items($idtome);
-    // construit le tableau des tabs
-    define('booklet_SUBPAGE', $tabs[$tab]['page']);
-    // $tabs = ArtefactTypeVisualization::submenu_items($idtome);
+    if (!$tabs = ArtefactTypeVisualization::submenu_items($idtome)){
+        $SESSION->add_error_msg(get_string('incorrectbooklettab', 'artefact.booklet'));
+        redirect(get_config('wwwroot') . '/artefact/internal/index.php');
+	}
+
+	// construit le tableau des tabs
+    define('BOOKLET_SUBPAGE', $tabs[$tab]['page']);
+	// $tabs = ArtefactTypeVisualization::submenu_items($idtome);
     // ajoute au tableau des tabs mention de celui qui est sélectionné
 	// Modif JF :: Hide / Show
-	if ($okdisplay){
-        $tomeform = ArtefactTypeVisualization::get_form_display($idtome, $tab, $idmodifliste, $browse);
-	}
-	else{
-        $tomeform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
-	}
-    // renvoit la forme correspondant au tome à afficher
+    $inlinejs = "";
 
-    $idtab = get_record('artefact_booklet_tab', 'displayorder', $tab, 'idtome', $tome->id);
+	$idtab = get_record('artefact_booklet_tab', 'displayorder', $tab, 'idtome', $tome->id);
     // tab du tome dont le display order est $tab
+
     $frames = get_records_array('artefact_booklet_frame', 'idtab', $idtab->id);
     // frames du tab courant
     $ids = array();
     // tableau pour listes id -> id
-    if ($frames) {
-        foreach ($frames as $frame) {
+	if ($frames) {
+    	foreach ($frames as $frame) {
             if ($frame->list) {
-                $ids[$frame->id] = $frame->id;
-            }
-        }
-        // pour generer le tableau des fonctions js pour chaque frame
+           	    $ids[$frame->id] = $frame->id;
+	    	}
+	    }
+    	// pour generer le tableau des fonctions js pour chaque frame
         $inlinejs = ArtefactTypeVisualization::get_js('visualization', $ids, $tab);
     }
-    else {
-        $inlinejs = "";
-    }
-    $indexform = $tomeform;
+
+	// Menu
+	$menuspecialform =  ArtefactTypeVisualization::get_menu_frames($idtome, $tab, $idframe, $idmodifliste, $browse, $okdisplay);
+
+    // renvoit la forme correspondant au tome à afficher
+	if (!empty($idframe)){
+		if ($okdisplay){
+    		$tomeform = ArtefactTypeVisualization::get_aframeform_display($idtome, $tab, $idframe, $idmodifliste, $browse);
+		}
+		else{
+    		$tomeform = ArtefactTypeVisualization::get_aframeform($idtome, $tab, $idframe, $idmodifliste, $browse);
+		}
+	}
+	else{
+		if ($okdisplay){
+    		$tomeform = ArtefactTypeVisualization::get_form_display($idtome, $tab, $idmodifliste, $browse);
+		}
+		else{
+    		$tomeform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
+		}
+	}
+
+	$indexform = $tomeform;
 }
 else {
     define('TITLE', get_string('booklet', 'artefact.booklet'));
@@ -126,8 +148,9 @@ else {
     $indexform = "";
 }
 
+// Selection d'un tome
 if ($tomes) {
-    // pour forme de choix du tome, le selectionné par défaut
+    // pour formulaire de choix du tome, le selectionné par défaut
     $options = array();
     // construit dans options un tableau des tomes : id -> title
     foreach ($tomes as $item) {
@@ -158,6 +181,7 @@ else {
     $choiceform = "";
 }
 
+// Modification des booklets
 if ($designer) {
     $modform = array(
         'name'        => 'modform',
@@ -243,10 +267,13 @@ if (isset($idtome)) {
 else {
     $aide = '';
 }
+
+
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHELPNAME', true);
 $smarty->assign('PAGEHELPICON', $aide);
 $smarty->assign('PAGEHEADING', TITLE);
+$smarty->assign('menuspecialform', $menuspecialform);
 $smarty->assign('help', $aide);
 $smarty->assign('indexform', $indexform);
 $smarty->assign('choiceform', $choiceform);

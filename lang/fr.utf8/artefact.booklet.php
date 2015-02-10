@@ -3,6 +3,12 @@
 
 defined('INTERNAL') || die();
 
+// debug
+$string['incorrectbooklettab'] = "Ce livret est bogué...";
+
+// Included frame
+$string['addsuccessorframe'] = "Ajouter un sous-cadre";
+$string['successorframe'] = "Inclus dans le cadre %s";
 // Author & copyright
 $string['author'] = "Auteur";
 $string['authorform'] = "Enregistrer auteur";
@@ -72,8 +78,10 @@ $string['addttab'] = "Ajouter une nouvelle page";
 $string['canceltab'] = "Retour";
 $string['public'] = "Rendre public";
 $string['visualizetab'] = "Visualiser la page";
+$string['tabsavefailed'] = "Erreur à la création du cadre.";
 
 //frames.php
+$string['frame'] = "Cadre";
 $string['frames'] = "Cadres";
 $string['tabname'] = "Titre de la page";
 $string['helptab'] = "Aide de la page";
@@ -84,6 +92,8 @@ $string['addframe'] = "Ajouter un nouveau cadre";
 $string['islist'] = "Liste";
 $string['yes'] = "Oui";
 $string['no'] = "Non";
+$string['framesavefailed'] = "Erreur à la création d\'un cadre inclus.";
+$string['selectframe'] = "Sélectionnez un cadre";
 
 //objects.php
 $string['nomobjects'] = "Titres des objets";

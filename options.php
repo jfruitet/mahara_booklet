@@ -21,33 +21,43 @@ require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 
 $idobject = param_integer('id', null);
-$object = get_record('artefact_booklet_object', 'id', $idobject);
-$frame = get_record('artefact_booklet_frame', 'id', $object->idframe);
-$tab = get_record('artefact_booklet_tab', 'id', $frame->idtab);
-$tome = get_record('artefact_booklet_tome', 'id', $tab->idtome);
-define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title.' -> '.$object->title);
+if ($idobject){
+	if ($object = get_record('artefact_booklet_object', 'id', $idobject)){
+		if ($frame = get_record('artefact_booklet_frame', 'id', $object->idframe)){
+			if ($tab = get_record('artefact_booklet_tab', 'id', $frame->idtab)){
+				if ($tome = get_record('artefact_booklet_tome', 'id', $tab->idtome)){
+					define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title.' -> '.$object->title);
 
-//Allow to show or hide table needed for radiobtn and synthese
-if ($object->type == 'synthesis' ) {
-    $synthese = true;
-    $radio = false;
-    $inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
+					//Allow to show or hide table needed for radiobtn and synthese
+					if ($object->type == 'synthesis' ) {
+    					$synthese = true;
+					    $radio = false;
+					    $inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
+					}
+					else if ($object->type == 'radio') {
+					    $radio = true;
+					    $synthese = false;
+					    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
+					}
+					else {
+					    $radio = false;
+					    $synthese = false;
+					    $inlinejs = "";
+					}
+
+					$optionsform = ArtefactTypeSynthesis::get_form($idobject);
+					$smarty = smarty(array('tablerenderer','jquery'));
+					$smarty->assign('PAGEHEADING', TITLE);
+					$smarty->assign('INLINEJAVASCRIPT', $inlinejs);
+					$smarty->assign('optionsform', $optionsform);
+					$smarty->assign('radio', $radio);
+					$smarty->assign('synthese', $synthese);
+					$smarty->display('artefact:booklet:options.tpl');
+					exit;
+				}
+			}
+		}
+	}
 }
-else if ($object->type == 'radio') {
-    $radio = true;
-    $synthese = false;
-    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
-}
-else {
-    $radio = false;
-    $synthese = false;
-    $inlinejs = "";
-}
-$optionsform = ArtefactTypeSynthesis::get_form($idobject);
-$smarty = smarty(array('tablerenderer','jquery'));
-$smarty->assign('PAGEHEADING', TITLE);
-$smarty->assign('INLINEJAVASCRIPT', $inlinejs);
-$smarty->assign('optionsform', $optionsform);
-$smarty->assign('radio', $radio);
-$smarty->assign('synthese', $synthese);
-$smarty->display('artefact:booklet:options.tpl');
+$SESSION->add_error_msg(get_string('failed', 'artefact.booklet'));
+redirect(get_config('wwwroot') . '/artefact/booklet/index.php');

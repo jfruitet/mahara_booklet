@@ -91,3 +91,136 @@ fieldset legend.bookleth3 a {
     font-weight: bold;
     font-size: 1em;
 }
+
+
+#menubookletwrap table {
+    padding: 1;
+    text-align : center;
+/*
+    border-left: #6480b8 1px solid;
+    border-right: #6480b8 1px solid;
+    border-top: #6480b8 1px solid;
+    border-bottom: #6480b8 1px solid;
+*/
+	float: left;
+    margin: 5px 0px 0px;
+	width: 100%;
+    background-color: black;
+}
+
+#menubookletwrap table td {
+    padding: 1;
+    text-align : center;
+	/*
+    border-left: #6480b8 1px solid;
+    border-right: #6480b8 1px solid;
+    border-top: #6480b8 1px solid;
+    border-bottom: #6480b8 1px solid;
+	*/
+}
+
+#menubookletwrap table td.blank {
+    padding: 1;
+    text-align : center;
+	/*
+    border-left: #6480b8 1px solid;
+    border-right: #6480b8 1px solid;
+    border-top: #6480b8 1px solid;
+    border-bottom: #6480b8 1px solid;
+*/
+    background-color: #ffffee;
+	border-spacing: 1;
+}
+
+#menubookletwrap table td.select {
+    color: #ffffaa;
+    background-color: black;
+	border-spacing: 1;
+    text-align : center;
+}
+
+a.menu {
+	color: white;
+}
+a.menu:hover {
+  text-decoration: underline;
+}
+
+a.select {
+	color: #ffffaa;
+}
+
+a.select:hover {
+  text-decoration: underline;
+}
+
+
+.vide {background-color: lightgrey; height : 8}
+.gold {color: #cccccc; background-color: black; height : 8}
+
+.niveau_A1 {background-color: #552200; height : 8}
+.niveau_B1 {background-color: #666600; height : 8}
+.niveau_C1 {background-color: #336600; height : 8}
+.niveau_D1 {background-color: #006633; height : 8}
+.niveau_E1 {background-color: #114466; height : 8}
+.niveau_F1 {background-color: #002255; height : 8}
+.niveau_G1 {background-color: #440044; height : 8}
+.niveau_H1 {background-color: #673300; height : 8}
+.niveau_I1 {background-color: #887722; height : 8}
+.niveau_J1 {background-color: #44aa55; height : 8}
+.niveau_K1 {background-color: #007766; height : 8}
+.niveau_L1 {background-color: #003388; height : 8}
+.niveau_M1 {background-color: #550055; height : 8}
+
+.niveau_A2 {background-color: #663311; height : 8}
+.niveau_B2 {background-color: #887711; height : 8}
+.niveau_C2 {background-color: #448811; height : 8}
+.niveau_D2 {background-color: #118844; height : 8}
+.niveau_E2 {background-color: #115577; height : 8}
+.niveau_F2 {background-color: #112266; height : 8}
+.niveau_G2 {background-color: #551155; height : 8}
+.niveau_H2 {background-color: #774411; height : 8}
+.niveau_I2 {background-color: #a88732; height : 8}
+.niveau_J2 {background-color: #55bb66; height : 8}
+.niveau_K2 {background-color: #008888; height : 8}
+.niveau_L2 {background-color: #223399; height : 8}
+.niveau_M2 {background-color: #662266; height : 8}
+
+
+.niveau_A3 {background-color: #884422; height : 8}
+.niveau_B3 {background-color: #998822; height : 8}
+.niveau_C3 {background-color: #559922; height : 8}
+.niveau_D3 {background-color: #229955; height : 8}
+.niveau_E3 {background-color: #226688; height : 8}
+.niveau_F3 {background-color: #223377; height : 8}
+.niveau_G3 {background-color: #662266; height : 8}
+.niveau_H3 {background-color: #995522; height : 8}
+.niveau_I3 {background-color: #b99843; height : 8}
+.niveau_J3 {background-color: #66cc77; height : 8}
+.niveau_K3 {background-color: #33aaaa; height : 8}
+.niveau_L3 {background-color: #3344aa; height : 8}
+.niveau_M3 {background-color: #872287; height : 8}
+
+.niveau_A4 {background-color: #995533; height : 8}
+.niveau_B4 {background-color: #aa9933; height : 8}
+.niveau_C4 {background-color: #66aa33; height : 8}
+.niveau_D4 {background-color: #33aa66; height : 8}
+.niveau_E4 {background-color: #337799; height : 8}
+.niveau_F4 {background-color: #334488; height : 8}
+.niveau_G4 {background-color: #773377; height : 8}
+.niveau_H4 {background-color: #aa5533; height : 8}
+.niveau_I4 {background-color: #caa954; height : 8}
+.niveau_J4 {background-color: #77dd88; height : 8}
+.niveau_K4 {background-color: #44bbbb; height : 8}
+.niveau_L4 {background-color: #5566cc; height : 8}
+.niveau_M4 {background-color: #994499; height : 8}
+
+span.menu{
+ 	color: #ffffee;
+    background-color: black;
+	font-family : sans-serif;
+	font-size : 10pt;
+	font-weight : normal;
+    padding-top : 1pt;
+    margin-right : 1pt;
+}
