@@ -94,48 +94,20 @@ fieldset legend.bookleth3 a {
 
 
 #menubookletwrap table {
-    padding: 1;
-    text-align : center;
-/*
-    border-left: #6480b8 1px solid;
-    border-right: #6480b8 1px solid;
-    border-top: #6480b8 1px solid;
-    border-bottom: #6480b8 1px solid;
-*/
 	float: left;
-    margin: 5px 0px 0px;
+    margin: 4px;
 	width: 100%;
     background-color: black;
 }
 
-#menubookletwrap table td {
-    padding: 1;
-    text-align : center;
-	/*
-    border-left: #6480b8 1px solid;
-    border-right: #6480b8 1px solid;
-    border-top: #6480b8 1px solid;
-    border-bottom: #6480b8 1px solid;
-	*/
-}
-
 #menubookletwrap table td.blank {
-    padding: 1;
     text-align : center;
-	/*
-    border-left: #6480b8 1px solid;
-    border-right: #6480b8 1px solid;
-    border-top: #6480b8 1px solid;
-    border-bottom: #6480b8 1px solid;
-*/
     background-color: #ffffee;
-	border-spacing: 1;
 }
 
 #menubookletwrap table td.select {
     color: #ffffaa;
-    background-color: black;
-	border-spacing: 1;
+    background-color: #000044;
     text-align : center;
 }
 
@@ -143,6 +115,13 @@ a.menu {
 	color: white;
 }
 a.menu:hover {
+  text-decoration: underline;
+}
+
+a.menu1 {
+	color: black;
+}
+a.menu1:hover {
   text-decoration: underline;
 }
 
@@ -158,6 +137,7 @@ a.select:hover {
 .vide {background-color: lightgrey; height : 8}
 .gold {color: #cccccc; background-color: black; height : 8}
 
+/*
 .niveau_A1 {background-color: #552200; height : 8}
 .niveau_B1 {background-color: #666600; height : 8}
 .niveau_C1 {background-color: #336600; height : 8}
@@ -214,6 +194,71 @@ a.select:hover {
 .niveau_K4 {background-color: #44bbbb; height : 8}
 .niveau_L4 {background-color: #5566cc; height : 8}
 .niveau_M4 {background-color: #994499; height : 8}
+
+*/
+.niveau_A1 {background-color: #ffaaaa; height : 8}
+.niveau_B1 {background-color: #ffff77; height : 8}
+.niveau_C1 {background-color: #aaff00; height : 8}
+.niveau_D1 {background-color: #00ffaa; height : 8}
+.niveau_E1 {background-color: #66ddff; height : 8}
+.niveau_F1 {background-color: #00ccff; height : 8}
+.niveau_G1 {background-color: #ff99ff; height : 8}
+.niveau_H1 {background-color: #ffaa00; height : 8}
+.niveau_I1 {background-color: #dede00; height : 8}
+.niveau_J1 {background-color: #77ff00; height : 8}
+.niveau_K1 {background-color: #00ff77; height : 8}
+.niveau_L1 {background-color: #44ccff; height : 8}
+.niveau_M1 {background-color: #2299ff; height : 8}
+.niveau_N1 {background-color: #dd00dd; height : 8}
+
+.niveau_A2 {background-color: #ff9999; height : 8}
+.niveau_B2 {background-color: #ffff66; height : 8}
+.niveau_C2 {background-color: #99ff00; height : 8}
+.niveau_D2 {background-color: #00ff99; height : 8}
+.niveau_E2 {background-color: #66ccff; height : 8}
+.niveau_F2 {background-color: #00bbff; height : 8}
+.niveau_G2 {background-color: #ff88ff; height : 8}
+.niveau_H2 {background-color: #ff9900; height : 8}
+.niveau_I2 {background-color: #cece00; height : 8}
+.niveau_J2 {background-color: #66ee00; height : 8}
+.niveau_K2 {background-color: #00ee66; height : 8}
+.niveau_L2 {background-color: #44bbee; height : 8}
+.niveau_M2 {background-color: #2288ee; height : 8}
+.niveau_N2 {background-color: #cc00cc; height : 8}
+
+
+.niveau_A3 {background-color: #ff8888; height : 8}
+.niveau_B3 {background-color: #ffff55; height : 8}
+.niveau_C3 {background-color: #88ff00; height : 8}
+.niveau_D3 {background-color: #00ff88; height : 8}
+.niveau_E3 {background-color: #55ccff; height : 8}
+.niveau_F3 {background-color: #22aaff; height : 8}
+.niveau_G3 {background-color: #ff77ff; height : 8}
+.niveau_H3 {background-color: #ff8800; height : 8}
+.niveau_I3 {background-color: #bebe00; height : 8}
+.niveau_J3 {background-color: #66dd00; height : 8}
+.niveau_K3 {background-color: #00dd66; height : 8}
+.niveau_L3 {background-color: #44bbdd; height : 8}
+.niveau_M3 {background-color: #2288dd; height : 8}
+.niveau_N3 {background-color: #bb00bb; height : 8}
+
+
+.niveau_A4 {background-color: #ff7777; height : 8}
+.niveau_B4 {background-color: #ffff44; height : 8}
+.niveau_C4 {background-color: #77ff00; height : 8}
+.niveau_D4 {background-color: #00ff77; height : 8}
+.niveau_E4 {background-color: #44ccff; height : 8}
+.niveau_F4 {background-color: #229eff; height : 8}
+.niveau_G4 {background-color: #ff66ff; height : 8}
+.niveau_H4 {background-color: #ff7700; height : 8}
+.niveau_I4 {background-color: #aeae00; height : 8}
+.niveau_J4 {background-color: #66cc00; height : 8}
+.niveau_K4 {background-color: #00cc66; height : 8}
+.niveau_L4 {background-color: #44bbcc; height : 8}
+.niveau_M4 {background-color: #2288cc; height : 8}
+.niveau_N4 {background-color: #aa00aa; height : 8}
+
+
 
 span.menu{
  	color: #ffffee;

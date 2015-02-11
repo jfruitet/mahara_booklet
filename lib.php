@@ -3094,7 +3094,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 		// REORDONNER sous forme d'arbre parcours en profondeur d'abord
         $tabaff_niveau = array();
         $tabaff_codes = array();
-		// 52 branches possibles a chauque neoud, ÃƒÂ§a devrait suffire ...
+		// 52 branches possibles a chauque noeud, cela devrait suffire ...
 		$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
         $niveau_courant = 0;
         $ordre_courant = 0;
@@ -4645,9 +4645,9 @@ EOF;
                 $a->rang = $ordre_courant;
                 $a->position = $position;
 				// A completer dans une seconde passe
-                $a->nbfeuilles = 0;
                 $a->nodelist = array();
                 $a->nodenumber = 0;
+                $a->nbfeuilles=0;
                 // A completer dans une troisieme passe
                 $a->colspan = 0;
                 $a->col = 0;
@@ -4767,7 +4767,7 @@ EOF;
 				// Notez notre utilisation de !==.  != ne fonctionnerait pas comme attendu
 				// car la position de 'a' est la 0-ieme (premier) caractere.
 				if ($pos !== false) {
-				    //La chaine '$code_courant' a etetrouvee dans la chaine '$code' et debute a la position $pos<br />\n";
+				    //La chaine '$code_courant' a ete trouvee dans la chaine '$code' et debute a la position $pos<br />\n";
 					if ($pos===0){
 						// C'est un fils
                         $object->nodelist[]=$idframe;
@@ -4780,27 +4780,26 @@ EOF;
 
         // CREATION du tableau a afficher (Suite)
 		// Pour chaque cadre dans le parcours en profondeur completer
-		// nombre de feuilles et nombre de case
-		// Nombre_feuille(code) = longueur_code(fils le plus profond) - longueur_code(code)
-		// fils_le_plus_profond(code) = liste_des_fils[DERNIER]
-		// Nbcases = ($nbfeuilles == 0) ?  1 :  $nbfeuilles;
-		//
-		foreach ($tabaff_codes_profondeur as $idframe => $code){
-			$object = $tabaff_codes_ordonnes[$idframe];
-			$code_len = strlen($code);
-            $index = $object->nodenumber - 1;
-            $code_fils_profond = $tabaff_codes_profondeur[$object->nodelist[$index]];
-			$fils_profond_len = strlen($code_fils_profond);
-            $nbfeuilles = $fils_profond_len - $code_len;
-            // echo "<br />CODE_FILS_PROFOND : $code_fils_profond, LEN : $fils_profond_len, NBFEUILLES : $nbfeuilles\n";
-            $object->nbfeuilles = $nbfeuilles;
-            $object->colspan = ($nbfeuilles == 0) ?  1 :  $nbfeuilles;
+		// nombre de feuilles et nombre de cases (colspan)
+
+		foreach ($tabaff_codes_profondeur as $key => $val){
+			$object = $tabaff_codes_ordonnes[$key];
+			$code_courant = $object->code;
+			// rechercher les fils
+            $i=0;
+			$ok=true;
+   			foreach ($object->nodelist as $idnode){
+    			if ($tabaff_codes_ordonnes[$idnode]->nodenumber == 1){    // Les noeuds feuilles ont un nodelist reduite � eux-memes
+                    $object->nbfeuilles++;
+				}
+			}
+            $object->colspan = $object->nbfeuilles;
 		}
 
         // CREATION du tableau a afficher (Fin)
 		// Pour chaque cadre dans le parcours en LARGEUR completer col
 		// Si changement de niveau col = col du pere
-		// Sinon col = colspan occupÃ©es + cospan du precedant
+		// Sinon col = colspan occupees + cospan du precedant
 		$niveau_courant=0;
         $col_precedant=0;
         $nb_col=0;
@@ -4834,6 +4833,7 @@ EOF;
             $col_precedant = $object->col;
             //echo "<br />COLSPAN : ".$object->col ."\n";
 		}
+
 		/*
 		echo "<br />DEBUG :: lib.php :: 2222 :: TABLEAU DES DATA <i>APRES</i> TRAITEMENT<br />\n";
 		echo "<br />NB_COL : $nb_col, MAX_LIG = $max_lig\n";
@@ -4844,8 +4844,10 @@ EOF;
             echo "<br />\n";
 		}
         echo "<br />\n";
-		*/
 
+		// EXIT
+		//exit;
+		*/
 		// RECOPIER LES DONNEES
 /******************************
 		// Table en largeur d'abord
@@ -4900,27 +4902,30 @@ EOF;
 		}
 
         $table_affichee.='</tr>'."\n".'</table>'."\n";
-
+		$str_menu1=$table_affichee;
 **************/
 
-		/*
+
 		// palette de couleurs
-        $table_affichee = "\n".'<table>'."\n";
-        for ($i=0; $i<13; $i++){
-            $table_affichee.='<tr>';
+        $palette ='';
+		/*
+        $palette = "\n".'<table>'."\n";
+        for ($i=0; $i<14; $i++){
+            $palette.='<tr>';
 			for ($j=0; $j<4; $j++){
 		        $index_color = ($j  % 4) + 1;
             	$color=chr(65+$i) . "$index_color";
 				//echo "<br />COLOR : niveau_$color\n";
-                $table_affichee.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">niveau_'.$color.' '.$i.' '.$j.'</td>';
+                $palette.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">niveau_'.$color.' '.$i.' '.$j.'</td>';
 			}
-            $table_affichee.='</tr>'."\n";
+            $palette.='</tr>'."\n";
 		}
-        $table_affichee .= "\n".'</table>'."\n";
-*/
+        $palette .= "\n".'</table>'."\n";
+		*/
 
 		// RECOPIER LES DONNEES
 		// Table en profondeur d'abord
+
         $return_str='';
 		$table_affichee = "\n".'<table>'."\n";
 		//."\n".'<tbody><tr><th colspan="'.$nb_lig.'">'.$tab->title.' <i>'.get_string('selectframe','artefact.booklet').'</i></th></tr></tbody>'."\n";
@@ -4934,7 +4939,7 @@ EOF;
 			// print_object($object);
 
 			$linkselect='<a class="select" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'"><b>'.$object->title.'</b></a>';
-			$linkunselect='<a class="menu" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'">'.$object->title.'</a>';
+			$linkunselect='<a class="menu1" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'">'.$object->title.'</a>';
 
             $parentid = $object->idparentframe;
             $colposition = 0;
@@ -4969,20 +4974,25 @@ EOF;
                 //$table_affichee.='<tr class="niveau_'.$object->niveau.'">';
                 $table_affichee.='<tr>';
                 $nouvelleligne=false;
-                $col_courante = $colposition;
+                //$col_courante = $colposition;
+                $col_courante = 0;
 			}
+
 			if (!empty($colposition)){
                 $colposition--;
 			}
+
 			//echo "<br />$object->code ::  COL_COURANTE : $col_courante -&gt; COLPOSITION : $colposition\n";
 
 			if ($col_courante < $colposition){
                 //echo "<br />AVANT : $object->code ALLER DE $col_courante A $colposition\n";
 				for ($i=0; $i<$colposition; $i++){
-            		$table_affichee.='<td class="blank">&nbsp;</td>';
+            		// $table_affichee.='<td class="blank">&nbsp;</td>';
 					$col_courante++;
 				}
 			}
+
+
             $index_color = (($object->niveau - 1) % 4) + 1;
             $color=strtoupper(substr($code,0,1)) . "$index_color";
 			//echo "<br />COLOR : niveau_$color\n";
@@ -5006,7 +5016,7 @@ EOF;
 			}
 
    // DEBUG
-/*
+ /*
             if ($object->id == $idselectedframe){
 				$table_affichee.='<td class="gold" rowspan="'.$object->colspan.'">'.
 					'<b>'.$object->code.'</b></td>';
@@ -5037,7 +5047,7 @@ EOF;
         if (!empty($hierarchy_str)){
 			$return_str='<div><span class="menu">'.$hierarchy_str.'</span></div>';
 		}
-        $return_str.=$table_affichee;
+        $return_str.=$palette.$table_affichee;
 
 		//echo "<br />DEBUG :: lib.php :: 2269 :: TABLE AFFICHEE <br />$table_affichee\n";
 		//exit;
