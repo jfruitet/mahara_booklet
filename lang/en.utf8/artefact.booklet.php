@@ -56,6 +56,8 @@ $string['bookletsaved'] = "Booklet saved";
 //table
 $string['moveup'] = "Move up";
 $string['movedown'] = "Move down";
+$string['moveright'] = "Move right";
+$string['moveleft'] = "Move left";
 $string['edit'] = "Edit";
 $string['editforbidden'] = "Copyright";
 $string['del'] = "Delete";

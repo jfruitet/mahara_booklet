@@ -110,8 +110,13 @@ class ArtefactTypebooklet extends ArtefactType {
         global $THEME;
         $imagemoveblockup   = json_encode($THEME->get_url('images/btn_moveup.png'));
         $imagemoveblockdown = json_encode($THEME->get_url('images/btn_movedown.png'));
+        $imageincluded = json_encode($THEME->get_url('images/btn_included.png', false, 'artefact/booklet'));
+        $imageempty = json_encode($THEME->get_url('images/btn_empty.png', false, 'artefact/booklet'));
         $upstr = get_string('moveup','artefact.booklet');
         $downstr = get_string('movedown','artefact.booklet');
+        $includedstr = get_string('included','artefact.booklet');
+        $videstr = '';
+
         $js = self::get_common_js();
 		$js .= <<<EOF
 tableRenderers.{$compositetype} = new TableRenderer(
@@ -120,7 +125,51 @@ tableRenderers.{$compositetype} = new TableRenderer(
     [
 EOF;
 
-        if ($compositetype!='tome' && $compositetype!='synthesis' && $compositetype!='radio') {
+        if ($compositetype=='frame') {
+            $js .= <<<EOF
+        function (r, d) {
+            var buttons = [];
+            if (r._rownumber > 1) {
+                var up = A({'href': ''}, IMG({'src': {$imagemoveblockup}, 'alt':'{$upstr}'}));
+                connect(up, 'onclick', function (e) {
+                    e.stop();
+                    return moveComposite(d.type, r.id, r.artefact, 'up');
+                });
+                buttons.push(up);
+            }
+			else{
+                var vide = IMG({'src': {$imageempty}, 'alt':'{$videstr}'});
+                buttons.push(' ');
+                buttons.push(vide);
+			}
+
+            if (!r._last) {
+                var down = A({'href': '', 'class':'movedown'}, IMG({'src': {$imagemoveblockdown}, 'alt':'{$downstr}'}));
+                connect(down, 'onclick', function (e) {
+                    e.stop();
+                    return moveComposite(d.type, r.id, r.artefact, 'down');
+                });
+                buttons.push(' ');
+                buttons.push(down);
+            }
+			else{
+                var vide = IMG({'src': {$imageempty}, 'alt':'{$videstr}'});
+                buttons.push(' ');
+                buttons.push(vide);
+			}
+
+            if (r.idparentframe!=0) {
+                var included = IMG({'src': {$imageincluded}, 'alt':'{$includedstr}'});
+                buttons.push(' ');
+                buttons.push(included);
+            }
+
+            return TD({'class':'movebuttons'}, buttons);
+        },
+EOF;
+        }
+
+        else if ($compositetype!='tome' && $compositetype!='synthesis' && $compositetype!='radio') {
             $js .= <<<EOF
         function (r, d) {
             var buttons = [];

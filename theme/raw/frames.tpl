@@ -3,9 +3,11 @@
 
 {$framesform.tabname|safe}
 
+
 <fieldset><legend>{str tag='frames' section='artefact.booklet'}</legend>
+
 <table id="framelist" class="tablerenderer framecomposite">
-    <thead>
+   <thead>
         <tr>
             <th class="framecontrols"></th>
             <th class="nom">{str tag='framesname' section='artefact.booklet'}</th>
@@ -13,17 +15,7 @@
             <th class="framecontrols"></th>
         </tr>
     </thead>
-    <tbody>
-        {foreach from=$rows item=row}
-        <tr>
-            <td class="buttonscell"></td>
-            <td class="toggle">{$row->title}</td>
-            <td class="toggle">{$row->list}</td>
-            <td class="buttonscell"></td>
-        </tr>
-        {/foreach}
-    </tbody>
-</table>
+</table>	
 
 {$framesform.addframe|safe}
 </fieldset>

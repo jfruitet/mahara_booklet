@@ -13,12 +13,13 @@ by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
 
 ### February 2015
 
-**Version 1.1.2 - 2015-01-22**
+**Version 1.1.2 - 2015-02-20** (Wordk in progress)
 
 Nouvelle structure de données list of skills
-(Wordk in progress)
-Designer may import list of skills and scale
-User has to checks skills and achievement
+
+Designer may import list of skills and scale ; user has to checks skills and achievement
+
+### January 2015
 
 **Version 1.1.1 - 2015-01-22**
 

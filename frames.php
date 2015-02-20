@@ -31,7 +31,7 @@ $tome = get_record('artefact_booklet_tome', 'id', $tab->idtome);
 define('TITLE', $tome->title.' -> '.$tab->title);
 
 $framesform = ArtefactTypeFrame::get_form($idtab, $idparentframe);
-$inlinejs = ArtefactTypeFrame::get_js('frame', $idtab);  // true : only first level frames are displayed
+$inlinejs = ArtefactTypeFrame::get_js('frame', $idtab);
 
 //echo "<br>$inlinejs\n";
 //exit;
