@@ -140,6 +140,46 @@ $string['fieldlinkedname'] = "Field linked title";
 $string['addfield'] = "Add a new field to link";
 $string['addfieldsavefailed'] = "This field is already linked to this object!";
 
+// list of skills
+$string['addlist'] = "New list of skills";
+$string['code'] = "Code";
+$string['checked'] = "Checked";
+
+$string['deleteskills'] = "Delete ?";
+$string['deleteskillsdesc'] = "If checked all selected skills are deleted from the list";
+$string['descriptionlist'] = "Description";
+$string['descriptionlistdesc'] = "Describe the context where such skills, outcomes, competencies may be gained.";
+$string['descriptionlistmodel'] = "Check skills and assessments";
+$string['description'] = "Description";
+$string['domain'] = "Domain";
+$string['domaindesc'] = "A collection of skills related to the same theme or booklet.";
+
+$string['generalscale'] = "Skill Assessment Scale";
+$string['generalscalemodel'] = "Needs more work,Meets the mark,Going beyond,Super!";
+$string['generalscaledesc'] = "A list of values used for the skill evaluation";
+$string['inputnewskills'] = "Add some new skills";
+$string['listofskills'] = "Input list of skills";
+$string['inputlistofskillsmodel'] = "domain;code;description;[scale_value_value1,scale_value2,scale_value3,...,scale_valueN|threshold]";
+$string['listskills'] = "List of skills";
+$string['multiselect'] = "Multi selection allowed";
+$string['savechecklist'] = "Save selected skills";
+$string['savedomainchoice'] = "Save selected domains";
+$string['scale'] = "Scale";
+
+$string['selectdomain'] = "Select a domain";
+$string['selectdomains'] = "Selectionner some domains";
+$string['selectskills'] = "Select skills";
+$string['skill'] = "Skill";
+$string['skills'] = "Skills";
+
+$string['threshold'] = "Threshold";
+$string['thresholdscale'] = "Threshold";
+$string['thresholdscalemodel'] = "Index of the 'passed' value for the used scale";
+$string['thresholdscaledesc'] = "Il the list of scale values is ''<i>Needs more work,<b>Meets the mark</b>,Going beyond,Super!</i>''  then the threshold is 2";
+$string['thresholdscalemodel'] = "2";
+$string['unknown'] = "Unknown";
+$string['unknowncode'] = "CODE";
+$string['unknowndomain'] = "DOMAIN";
 
 //visua
 $string['save'] = "Save";

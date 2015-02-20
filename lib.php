@@ -21,6 +21,7 @@ class PluginArtefactbooklet extends PluginArtefact {
             'frame',
             'object',
             'radio',
+            'listskills',
             'synthesis',
             'visualization'
         );
@@ -229,171 +230,6 @@ EOF;
         return $js;
     }
 
-/*************************************************************************/
-	// MODIF JF
-	// firstlevel = true : only first level frames are displayed
-    public static function get_js_2($compositetype, $id = null, $firstlevel=false, $idframe=0) {
-        global $THEME;
-        $imagemoveblockup   = json_encode($THEME->get_url('images/btn_moveup.png'));
-        $imagemoveblockdown = json_encode($THEME->get_url('images/btn_movedown.png'));
-        $upstr = get_string('moveup','artefact.booklet');
-        $downstr = get_string('movedown','artefact.booklet');
-        $js = self::get_common_js_2($compositetype);
-        if ($firstlevel==false){
-			$js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype} = new TableRenderer(
-    '{$compositetype}list',
-    'composite.json.php',
-    [
-EOF;
-		}
-		else if (($firstlevel==true) && ($idframe==0))  {
-			$js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype} = new TableRenderer(
-    '{$compositetype}list',
-    'firstlevelframe.json.php',
-    [
-EOF;
-		}
-		else{
-			$js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype} = new TableRenderer(
-    '{$compositetype}list',
-    'secondlevelframe.json.php',
-    [
-EOF;
-		}
-
-        if ($compositetype!='tome' && $compositetype!='synthesis' && $compositetype!='radio') {
-            $link='';
-			if ($compositetype=='frame'){
-				$link= 'frames.php?id='.$id;
-			}
-			else if ($compositetype=='object'){
-                $link= 'objects.php?id='.$id;
-			}
-
-            $js .= <<<EOF
-        function (r, d) {
-            var buttons = [];
-            if (r._rownumber > 1) {
-                var up = A({'href': '{$link}'}, IMG({'src': {$imagemoveblockup}, 'alt':'{$upstr}'}));
-                connect(up, 'onclick', function (e) {
-                    e.stop();
-                    return moveComposite(d.type, r.id, r.artefact, 'up');
-                });
-                buttons.push(up);
-            }
-            if (!r._last) {
-                var down = A({'href': '{$link}', 'class':'movedown'}, IMG({'src': {$imagemoveblockdown}, 'alt':'{$downstr}'}));
-                connect(down, 'onclick', function (e) {
-                    e.stop();
-                    return moveComposite(d.type, r.id, r.artefact, 'down');
-                });
-                buttons.push(' ');
-                buttons.push(down);
-            }
-            return TD({'class':'movebuttons'}, buttons);
-        },
-EOF;
-
-        }
-
-		$js .= call_static_method(generate_artefact_class_name($compositetype), 'get_tablerenderer_js');
-
-		$js .= call_static_method(generate_artefact_class_name($compositetype), 'get_editdel_js');
-		if (isset($id)) {
-            settype($id, 'integer');
-            $js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype}.id = '{$id}';
-tableRenderers_{$compositetype}.{$compositetype}.statevars.push('id');
-EOF;
-        }
-		if (isset($idframe)) {
-            settype($idframe, 'integer');
-            $js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype}.idframe = '{$idframe}';
-tableRenderers_{$compositetype}.{$compositetype}.statevars.push('idframe');
-EOF;
-        }
-
-        $js .= <<<EOF
-tableRenderers_{$compositetype}.{$compositetype}.type = '{$compositetype}';
-tableRenderers_{$compositetype}.{$compositetype}.statevars.push('type');
-tableRenderers_{$compositetype}.{$compositetype}.emptycontent = '';
-tableRenderers_{$compositetype}.{$compositetype}.updateOnLoad();
-EOF;
-        return $js;
-    }
-
-/*****************************************************************************/
-// MODIF JF
-
-    public static function get_common_js_2($compositetype) {
-        $cancelstr = get_string('cancel','artefact.booklet');
-        $addstr = get_string('add','artefact.booklet');
-        $confirmdelstr = get_string('compositedeleteconfirm','artefact.booklet');
-        $js = <<<EOF
-var tableRenderers_{$compositetype} = {};
-function toggleCompositeForm(type) {
-    var elemName = '';
-    elemName = type + 'form';
-    if (hasElementClass(elemName, 'hidden')) {
-        removeElementClass(elemName, 'hidden');
-        $('add' + type + 'button').innerHTML = '{$cancelstr}';
-    }
-    else {
-        $('add' + type + 'button').innerHTML = '{$addstr}';
-        addElementClass(elemName, 'hidden');
-    }
-}
-function compositeSaveCallback(form, data) {
-    key = form.id.substr(3);
-    tableRenderers_{$compositetype}[key].doupdate();
-    toggleCompositeForm(key);
-    // Can't reset() the form here, because its values are what were just submitted,
-    // thanks to pieforms
-    forEach(form.elements, function(element) {
-        if (hasElementClass(element, 'text') || hasElementClass(element, 'textarea')) {
-            element.value = '';
-        }
-    });
-}
-function deleteComposite(type, id) {
-    if (confirm('{$confirmdelstr}')) {
-        sendjsonrequest('compositedelete.json.php',
-            {'id': id, 'type': type},
-            'GET',
-            function(data) {
-                tableRenderers_{$compositetype}[type].doupdate();
-            },
-            function() {
-                // @todo error
-            }
-        );
-    }
-    return false;
-}
-function moveComposite(type, id, artefact, direction) {
-    sendjsonrequest('compositemove.json.php',
-        {'id': id, 'type': type, 'direction':direction},
-        'GET',
-        function(data) {
-            tableRenderers_{$compositetype}[type].doupdate();
-        },
-        function() {
-            // @todo error
-        }
-    );
-    return false;
-}
-
-
-EOF;
-        $js .= self::get_showhide_composite_js();
-        return $js;
-    }
-/********************************************************/
 
     static function get_showhide_composite_js() {
         return "
@@ -1059,6 +895,7 @@ class ArtefactTypeObject extends ArtefactTypebooklet {
                         'date' => get_string('date', 'artefact.booklet'),
                         'synthesis' => get_string('synthesis', 'artefact.booklet'),
                         'attachedfiles' => get_string('attachedfiles', 'artefact.booklet'),
+                        'listskills' => get_string('listskills', 'artefact.booklet'),
                     ) : array(
                         'longtext' => get_string('longtext', 'artefact.booklet'),
                         'shorttext' => get_string('shorttext', 'artefact.booklet'),
@@ -1068,6 +905,7 @@ class ArtefactTypeObject extends ArtefactTypebooklet {
                         'checkbox' => get_string('checkbox', 'artefact.booklet'),
                         'date' => get_string('date', 'artefact.booklet'),
                         'attachedfiles' => get_string('attachedfiles', 'artefact.booklet'),
+                        'listskills' => get_string('listskills', 'artefact.booklet'),
                     )),
                     'title' => get_string('typefield', 'artefact.booklet'),
                 ),
@@ -1237,6 +1075,668 @@ function addsuccessorframe_submit(Pieform $form, $values) {
 }
 
 
+/*****************************************************
+ *
+ *
+ MODIF JF
+ *
+ *
+ ****************************************************/
+
+class ArtefactTypeListSkills extends ArtefactTypebooklet {
+    /* classe pour pieforms et fonctions JS propres a une option */
+    protected $code = '';
+    protected $description = '';
+    protected $scale = '';
+    protected $threshold = 0;
+    protected $skillslist = '';
+
+    public static function is_singular() { return true; }
+    public static function get_tablerenderer_js() {
+        return "
+                'description',
+				'skillslist',
+                ";
+    }
+
+    public static function get_editdel_js() {
+        $delstr = get_string('del','artefact.booklet');
+        $js = <<<EOF
+          function (r, d) {
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            connect(dellink, 'onclick', function (e) {
+                e.stop();
+                return deleteComposite(d.type, r.id);
+            });
+            return TD({'class':'right'}, dellink);
+        }
+    ]
+);
+EOF;
+         return $js;
+    }
+
+    public static function get_form($idobject, $domainsselected=null) {
+        $object = get_record('artefact_booklet_object', 'id', $idobject);
+		//print_object($object);
+		//exit;
+        $elements = array();
+		$tab_selected = array();
+		$idlist=0;
+
+		// Selected skills
+		if ($skillslist = get_record('artefact_booklet_list', 'idobject', $idobject)){
+            $idlist =  $skillslist->id;
+			// items associes
+			$items  = get_records_array('artefact_booklet_listofskills', 'idlist', $skillslist->id);
+			if (!empty($items)){
+				foreach ($items as $item){
+					if ($skill = get_record('artefact_booklet_skill', 'id', $item->idskill)){
+                        $tab_selected[$skill->id] = $item->id;
+					}
+				}
+			}
+		}
+
+		// Domains
+        // Skills
+        $list_of_domains_selected = array();
+        if (!empty($domainsselected)){
+            $tab_domainsselected = explode('-', $domainsselected);
+			//print_object($tab_domainsselected);
+			//exit;
+			foreach($tab_domainsselected as $a_domainselected){
+				if (!empty($a_domainselected)){
+                    $list_of_domains_selected[] = trim($a_domainselected);
+				}
+			}
+		}
+
+		//print_object($list_of_domains_selected);
+		//exit;
+		$sql = "SELECT DISTINCT domain FROM {artefact_booklet_skill} ORDER BY domain ASC";
+        $domains = get_records_sql_array($sql, array());
+        //print_object($domains);
+		//exit;
+
+		if (!empty($domains)){
+        	$nbdomains = count($domains);
+			if ($nbdomains>1){
+		    	$domain_options = array();
+				$domain_selected = array();
+				$d=0;
+				foreach ($domains as $domain){
+                	$domain_options[$domain->domain]=$domain->domain;
+					if (array_search($domain->domain, $list_of_domains_selected)){
+    	                $domain_selected[] = $d;
+					}
+					$d++;
+				}
+    	        //print_object($domain_options);
+				//exit;
+
+    			$elementdomains['domainselect'] = array(
+	        		'type' => 'select',
+	    	    	'title' => '', //get_string('selectdomains','artefact.booklet'),
+		        	'multiple' => true,
+    		    	'options' => $domain_options,
+        			'defaultvalue' => $domain_selected,
+        			//'size' => count($domains),
+	                'size' => 3,
+    	            'description' => get_string('multiselect', 'artefact.booklet'),
+	    		);
+
+            	$elementdomains['submit'] = array(
+            		'type' => 'submitcancel',
+        	    	'value' => array(get_string('savedomainchoice','artefact.booklet'), get_string('cancel')),
+    	         	'goto' => get_config('wwwroot') . '/artefact/booklet/objects.php?id='.$object->idframe,
+	        	);
+
+		        $elementdomains['idobject'] = array(
+                        'type' => 'hidden',
+                        'value' => $idobject,
+    	        );
+
+				$elementdomains['compositetype'] = array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+        		);
+
+   	    		$domainchoice = array(
+            	    'name' => 'domainchoice',
+                	'plugintype' => 'artefact',
+	                'pluginname' => 'booklet',
+    	    	    // 'validatecallback' => 'validate_selectlist',
+        	    	'successcallback' => 'selectdomains_submit',
+            	    'renderer' => 'table',
+                	'elements' => $elementdomains,
+	            );
+    	    	$compositeform['domainchoice'] = pieform($domainchoice);
+			}
+		}
+
+        // -------------------------------------
+        if (!empty($list_of_domains_selected)){
+            $where='';
+			$params = array();
+			foreach($list_of_domains_selected as $a_domain){
+				if (!empty($where)){
+					$where.=' OR domain = ? ';
+				}
+				else{
+                    $where.=' domain = ? ';
+				}
+				$params[]= $a_domain;
+			}
+			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE ".$where." ORDER BY code ASC";
+		    $skills = get_records_sql_array($sql, $params);
+		}
+		else{
+			$sql = "SELECT * FROM {artefact_booklet_skill} ORDER BY domain ASC, code ASC";
+		    $skills = get_records_sql_array($sql, array());
+		}
+
+		// -------------------------------------
+		if (!empty($skills) && !empty($idlist)){
+			$i=0;
+            $elementsskills = array();
+        	foreach ($skills as $skill){
+				if (!empty($tab_selected[$skill->id])){
+                    $elementsskills['select'.$i] = array(
+        		        	'type' => 'checkbox',
+                			'defaultvalue' => $tab_selected[$skill->id],
+		                	'title' => $skill->code,
+        		        	//'description' => get_string('checked', 'artefact.booklet'),
+           			);
+				}
+				else{
+                    $elementsskills['select'.$i] = array(
+        		        	'type' => 'checkbox',
+                			'defaultvalue' => 0,
+		                	'title' => $skill->code,
+        		        	//'description' => '',
+           			);
+				}
+                $elementsskills['html'.$i] = array(
+                			'type' => 'html',
+                			'value' => $skill->domain.'; '.$skill->description.'; ['.$skill->scale.'|'.$skill->threshold.']'."\n",
+           		);
+                $elementsskills['id'.$i] = array(
+		                	'type' => 'hidden',
+        		        	'value' => $skill->id,
+           		);
+                $i++;
+			}
+
+	        $elementsskills['nbitems'] = array(
+                	'type' => 'hidden',
+                	'value' => $i,
+    	    );
+/*
+       		$elementsskills['submit'] = array(
+            	'type' => 'submitcancel',
+            	'value' => array(get_string('savechecklist','artefact.booklet'), get_string('cancel')),
+                'goto' => get_config('wwwroot') . '/artefact/booklet/objects.php?id='.$object->idframe,
+        	);
+*/
+       		$elementsskills['submit'] = array(
+            	'type' => 'submit',
+            	'value' => get_string('savechecklist','artefact.booklet'),
+        	);
+
+			$elementsskills['delete'] = array(
+                'type' => 'checkbox',
+                'help' => false,
+                'title' => get_string('deleteskills','artefact.booklet'),
+                'defaultvalue' => 0,
+                'description' => get_string('deleteskillsdesc','artefact.booklet'),
+        	);
+
+	        $elementsskills['idobject'] = array(
+                        'type' => 'hidden',
+                        'value' => $idobject,
+            );
+	        $elementsskills['idframe'] = array(
+                        'type' => 'hidden',
+                        'value' => $object->idframe,
+            );
+
+			$elementsskills['compositetype'] = array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+        	);
+
+
+	        $elementsskills['idlist'] = array(
+                        'type' => 'hidden',
+                        'value' => $idlist,
+            );
+
+            $elementsskills['domainsselected'] = array(
+                    'type' => 'hidden',
+                    'value' => $domainsselected,
+            );
+
+    	    $choice = array(
+                'name' => 'listchoice',
+                'plugintype' => 'artefact',
+                'pluginname' => 'booklet',
+        	    // 'validatecallback' => 'validate_selectlist',
+            	'successcallback' => 'selectskilllist_submit',
+                'renderer' => 'table',
+                'elements' => $elementsskills,
+            );
+        	$compositeform['choice'] = pieform($choice);
+		}
+
+
+		// -------------------------------------
+        //print_object($object);
+		//exit;
+        $cform = array(
+            'name' => 'modifform',
+            'plugintype' => 'artefact',
+            'pluginname' => 'booklet',
+            'renderer' => 'table',
+            'elements' => array(
+                'title' => array(
+                    'type' => 'text',
+                    'title' => get_string('titleobject', 'artefact.booklet'),
+                    'size' => 20,
+                    'defaultvalue' => ((!empty($object)) ? $object->title : NULL),
+                ),
+                'name' => array(
+                    'type' => 'text',
+                    'title' => get_string('nameobject', 'artefact.booklet'),
+                    'size' => 20,
+                    'defaultvalue' => ((!empty($object)) ? $object->name : NULL),
+                    'rules' => array(
+                        'required' => true,
+                    ),
+                    'help' => true
+                ),
+                'help' => array(
+                    'type' => 'wysiwyg',
+                    'rows' => 5,
+                    'cols' => 60,
+                    'title' => get_string('helpobject', 'artefact.booklet'),
+                        'defaultvalue' => ((!empty($object)) ? $object->help : NULL),
+                ),
+                'description' => array(
+                    	'type' => 'wysiwyg',
+                    	'rows' => 5,
+                    	'cols' => 60,
+                    	'title' => get_string('descriptionlist', 'artefact.booklet'),
+                        'defaultvalue' => ((!empty($skillslist) && !empty($skillslist->description)) ? $skillslist->description : get_string('descriptionlistmodel', 'artefact.booklet')),
+						'description' => get_string('descriptionlistdesc', 'artefact.booklet'),
+                        'help' => true,
+               	),
+
+				'submit' => array(
+                    'type' => 'submitcancel',
+                    'value' => array(get_string('saveobject', 'artefact.booklet'),
+                                     get_string('canceloption', 'artefact.booklet')),
+                    'goto' => get_config('wwwroot') . '/artefact/booklet/objects.php?id='.$object->idframe,
+                ),
+
+
+				'compositetype' => array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+                ),
+                'id' => array(
+                    'type' => 'hidden',
+                    'value' => $idobject
+                ),
+
+
+            ),
+            'successcallback' => 'objectbase_submit',
+        );
+        $compositeform['form'] = pieform($cform);
+
+		if (!empty($idlist)){
+        	$sform = array(
+            	'name' => 'inputskills',
+            	'plugintype' => 'artefact',
+        	    'pluginname' => 'booklet',
+    	        'renderer' => 'table',
+	            'elements' => array(
+            		'title' => array(
+                			'type' => 'html',
+                			'value' => '<h3>'.get_string('inputnewskills', 'artefact.booklet').'</h3>',
+           			),
+
+            		'skillslist' => array(
+                    	'type' => 'textarea',
+                    	'rows' => 10,
+                    	'cols' => 100,
+                    	'title' => get_string('listofskills', 'artefact.booklet'),
+                        'defaultvalue' => '',
+                        'description' => get_string('inputlistofskillsmodel', 'artefact.booklet'),
+						'help' => true
+            		),
+
+            		'domainsselected' => array(
+                	    'type' => 'hidden',
+                    	'value' => $domainsselected,
+        	    	),
+    	        	'submit' => array(
+         	           'type' => 'submit',
+            	        'value' => get_string('saveobject', 'artefact.booklet'),
+                   	),
+            		'compositetype' => array(
+	                    'type' => 'hidden',
+    	                'value' => $object->type,
+        	    	),
+            		'id' => array(
+        	            'type' => 'hidden',
+            	        'value' => $idobject,
+    	        	),
+	            	'idlist' => array(
+                	    'type' => 'hidden',
+                    	'value' => $idlist,
+            		),
+				),
+           		'successcallback' => 'objectskillslist_submit',
+        	);
+        	$compositeform['skillsform'] = pieform($sform);
+		}
+
+        $frame = get_record('artefact_booklet_frame', 'id', $object->idframe);
+        $visuaform = pieform(array(
+            'name' => 'visuaform',
+            'plugintype'  => 'artefact',
+            'pluginname'  => 'booklet',
+            'successcallback' => 'visualizetome_submit',
+            'method'      => 'post',
+            'renderer'      => 'table',
+            'elements'    => array(
+                'save' => array(
+                    'type' => 'submit',
+                    'value' => get_string('visualizetab', 'artefact.booklet'),
+                ),
+                'idtab' => array(
+                    'type' => 'hidden',
+                    'value' => $frame->idtab,
+                )
+            ),
+        ));
+
+        $compositeform['visuaform'] = $visuaform;
+
+        //print_object($compositeform);
+		//exit;
+        return $compositeform;
+    }
+}
+
+// -------------------------------------
+function selectdomains_submit(Pieform $form, $values) {
+    global $_SESSION;
+	global $_SERVER;
+	//print_object($values);
+	//exit;
+	// Domain selection
+    $domainsselected='';
+
+	if (!empty($values['domainselect'])){
+		foreach($values['domainselect'] as $a_domain){
+			if (!empty($domainsselected)){
+				$domainsselected .= '-'.$a_domain;
+			}
+			else{
+                $domainsselected .= $a_domain;
+			}
+		}
+		//echo "$domainsselected";
+		//exit;
+
+		if (!empty($domainsselected)){
+            $goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $values['idobject'] . '&domainsselected='.$domainsselected;
+		}
+		else{
+			$goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $values['idobject'];
+		}
+
+	}
+	else{
+        $goto = $_SERVER['HTTP_REFERER'];
+	}
+	redirect($goto);
+}
+
+
+// -------------------------------------
+function selectskilllist_submit(Pieform $form, $values) {
+    global $_SESSION;
+    $displayorder = 0;
+	$t_skillslist=array();
+	$where='';
+	$params = array();
+
+	//print_object($values);
+	//exit;
+    if (!empty($values['idlist'])){
+		// A priori inutile car les lignes sont reinitialisees plus bas
+		//		if ($recslistofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $values['idlist'])){
+        //	$displayorder = count($recslistofskills);
+		//}
+        $select = ' (idlist = ?) ';
+        $params[] = $values['idlist'];
+
+		if (!empty($values['nbitems'])){
+
+	 		for ($i=0; $i<$values['nbitems']; $i++){
+				if (!empty($values['select'.$i])){
+					// Creer l'association
+					$a_listskill = new stdclass();
+           			$a_listskill->idlist = $values['idlist'];
+	            	$a_listskill->idskill = $values['id'.$i];
+                    $t_skillslist[]=$a_listskill;
+					if (empty($where)){
+						$where .= ' (idskill = ?) ';
+					}
+					else{
+        	    	    $where .= ' OR (idskill = ?) ';
+					}
+					$params[] = $values['id'.$i];
+				}
+			}
+		}
+
+		if (!empty($t_skillslist)){
+			// Remettre à vide car il peut y avoir des de-selections
+			if (!empty($where)){
+				$select .= ' AND ('. $where . ') ';
+			}
+            delete_records_select('artefact_booklet_listofskills', $select, $params);
+			if (!$values['delete']){
+				// how many
+				$rec_listofskills = get_records_array('artefact_booklet_listofskills', 'idlist',  $values['idlist']);
+
+				$displayorder = count($rec_listofskills);
+				foreach($t_skillslist as $a_listskill){
+    	            $a_listskill->displayorder = $displayorder;
+					//if ($rec_a_list_skill = get_record('artefact_booklet_listofskills', 'idlist',  $a_listskill->idlist, 'idskill', $a_listskill->idskill)){
+				    //	$a_listskill->id = $rec_a_list_skill->id;
+    				//    update_record('artefact_booklet_listofskills', $a_listskill);
+					//}
+					//else{
+	    				insert_record('artefact_booklet_listofskills', $a_listskill);
+					//}
+                	$displayorder++;
+				}
+			}
+		}
+		if (!empty($values['domainsselected'])){
+            $goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $values['idobject'] . '&domainsselected='.$values['domainsselected'];
+		}
+		else{
+			$goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $values['idobject'] . '&domainsselected=';
+		}
+
+		redirect($goto);
+	}
+    redirect(get_config('wwwroot') . '/artefact/booklet/index.php');
+}
+
+function objectbase_submit(Pieform $form, $values){
+    global $_SESSION;
+    if ($object = get_record('artefact_booklet_object', 'id', $values['id'])){
+		//echo "<br />lib.php :: 1733 :: OBJECT <br >\n";
+		//print_object($object);
+		$nameexist = get_record('artefact_booklet_object', 'name', $values['name']);
+	    if ($nameexist != false && $nameexist->id != $values['id']) {
+    	    $form->reply(PIEFORM_ERR, array('message'=>get_string('objectsavefailed', 'artefact.booklet'),
+                                        'goto' => $_SERVER['HTTP_REFERER']));
+    	}
+		$object->title = $values['title'];
+	    $object->name = $values['name'];
+    	$object->help = $values['help'];
+	    update_record('artefact_booklet_object', $object);
+
+		// List value
+		$list = new stdclass();
+    	$list->idobject = $object->id;
+
+		if (!empty($values['description'])){
+    	    $list->description = $values['description'];
+		}
+
+		// enregistrer la liste
+		if (!empty($list)){
+    		if ($rec_list = get_record('artefact_booklet_list', 'idobject', $object->id)){
+				$idlist = $rec_list->id;
+				$list->id = $rec_list->id;
+    	        $list->idobject = $object->id;
+	            update_record('artefact_booklet_list', $list);
+			}
+   			else{
+    			if (empty($list->description)){
+	        		$list->description = get_string('descriptionlistmodel', 'artefact.booklet');
+				}
+        	    $idlist=insert_record('artefact_booklet_list', $list, 'id', true);
+			}
+		}
+
+  		$goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $object->id;
+    	redirect($goto);
+	}
+}
+
+function objectskillslist_submit(Pieform $form, $values){
+    global $_SESSION;
+    $t_skill = array();
+    $unknown_domain = get_string('unknowndomain', 'artefact.booklet');
+	$current_domain = $unknown_domain;
+    srand();
+    if ($object = get_record('artefact_booklet_object', 'id', $values['id'])){
+		//echo "<br />lib.php :: 1781 :: OBJECT <br >\n";
+		//print_object($object);
+
+        if ($list = get_record('artefact_booklet_list', 'id', $values['idlist'])){
+			if (!empty($values['skillslist'])){
+    	    	//
+				if ($tlist=explode("\n", strip_tags($values['skillslist']))){
+					foreach ( $tlist as $line){
+						if (!empty($line)){
+							$skill = new stdclass();
+
+							// "domain1;code1;description1;[scale_value_value11,scale_value12,scale_value13,...,scale_value1N;threshold1]
+							if ($fields = explode("[", $line)){
+		                        if (!empty($fields[0])){
+    		                       	// "domain1;code1;description1;
+        		                    if ($domain_code_description = explode(";", $fields[0])){
+										if (!empty($domain_code_description[0])){
+                		                	$skill->domain =  trim(str_replace("-","",$domain_code_description[0]));
+											$current_domain = $skill->domain;
+                    	    	        }
+										else{
+                            	    	    $skill->domain = $current_domain;
+										}
+		                                if (!empty($domain_code_description[1])){
+    		                                $skill->code = trim($domain_code_description[1]);
+										}
+										else{
+                		                    $skill->code = strtoupper($current_domain).'_'.$object->id.'_'.rand();
+										}
+	                        	        if (!empty($domain_code_description[2])){
+    	                        	        $skill->description = trim($domain_code_description[2]);
+										}
+										else{
+        	        	                    $skill->description = get_string('unknown', 'artefact.booklet');
+										}
+									}
+								}
+    	                	    if (!empty($fields[1])){
+	        	                    // scale_value_value11,scale_value12,scale_value13,...,scale_value1N|threshold1]
+    	        	                if ($scale_threshold = explode("|", $fields[1])){
+										if (!empty($scale_threshold[0])){
+            	        	                // scale_value_value11,scale_value12,scale_value13,...,scale_value1N
+                	        	        	$skill->scale = trim($scale_threshold[0]);
+                    	        	    }
+										else{
+	                        	            //$skill->scale = $values['scale'];
+	                                        $skill->scale = get_string('generalscalemodel','artefact.booklet');
+    	                                    $skill->threshold  = '3';
+										}
+        		                        if (!empty($scale_threshold[1])){
+            		                        // threshold1]
+											// Chasser ']'
+                    		                $skill->threshold = trim(substr($scale_threshold[1],0,-1));
+										}
+									}
+								}
+							}
+							$t_skill[] = $skill;
+						}
+					}
+				}
+			}
+			// enregistrer les skills
+			if (!empty($t_skill)){
+				$displayorder=0;
+            	if ($recslistofskills = get_records_array('artefact_booklet_listofskills', 'idlist',  $list->id)){
+	                $displayorder= count($recslistofskills);
+				}
+
+				foreach ($t_skill as $a_skill){
+					// Creer le skill
+					if ($rec_skill = get_record('artefact_booklet_skill', 'code', $a_skill->code)){
+						$idskill = $rec_skill->id;
+	                	$a_skill->id = $rec_skill->id;
+		            	update_record('artefact_booklet_skill', $a_skill);
+					}
+   					else{
+						$idskill = insert_record('artefact_booklet_skill', $a_skill, 'id', true);
+					}
+					// Creer l'association
+					$a_listskill = new stdclass();
+            		$a_listskill->idlist = $list->id;
+		            $a_listskill->idskill = $idskill;
+    		        $a_listskill->displayorder = $displayorder;
+
+        	    	if ($rec_a_list_skill = get_record('artefact_booklet_listofskills', 'idlist',  $list->id, 'idskill', $idskill)){
+	        	        $a_listskill->id = $rec_a_list_skill->id;
+    	        	    update_record('artefact_booklet_listofskills', $a_listskill);
+					}
+					else{
+	                	insert_record('artefact_booklet_listofskills', $a_listskill, 'id', true);
+					}
+    	    	    $displayorder++;
+				}
+			}
+
+   			$goto = get_config('wwwroot') . '/artefact/booklet/options.php?id=' . $object->id;
+			redirect($goto);
+		}
+	}
+}
+
+
+
+/*****************************************************************/
 class ArtefactTypeOption extends ArtefactTypebooklet {
     /* classe pour pieforms et fonctions JS propres a une option */
     public static function is_singular() { return true; }
@@ -4986,7 +5486,7 @@ EOF;
 
 			if ($col_courante < $colposition){
                 //echo "<br />AVANT : $object->code ALLER DE $col_courante A $colposition\n";
-				for ($i=0; $i<$colposition; $i++){
+				for ($i=0; $i < $colposition; $i++){
             		// $table_affichee.='<td class="blank">&nbsp;</td>';
 					$col_courante++;
 				}
@@ -5031,11 +5531,13 @@ EOF;
 			// Nouvelle ligne ?
 			if ($object->nodenumber == 1){
 	            //echo "<br /> APRES :  $object->code ALLER DE $col_courante A $max_lig\n";
+				/*
 				if ($col_courante<$max_lig){
 					for ($i=$col_courante; $i<$max_lig; $i++){
        	    	       	$table_affichee.='<td class="blank">&nbsp;</td>';
 					}
 				}
+				*/
                 $table_affichee.='</tr>'."\n";
                 $nouvelleligne=true;
 			}
@@ -5341,7 +5843,7 @@ function visualization_submit(Pieform $form, $values) {
                 else {
                     if (!$list) {
                         if (!$idrecord) {
-                            $obj = get_records('artefact_booklet_resultattachedfiles', 'idowner', $USER->get('id'), 'idobject', $idobject);
+                            $obj = get_records_array('artefact_booklet_resultattachedfiles', 'idowner', $USER->get('id'), 'idobject', $idobject);
                             $idrecord = $obj[0]->idrecord;
                             $newidrecord = 0;
                         }

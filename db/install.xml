@@ -72,7 +72,48 @@
                 <KEY NAME="framefk" TYPE="foreign" FIELDS="idframe" REFTABLE="artefact_booklet_frame" REFFIELDS="id" />
             </KEYS>
          </TABLE>
-         <TABLE NAME="artefact_booklet_radio">
+
+		  <TABLE NAME="artefact_booklet_list">
+            <FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+				<FIELD NAME="description" TYPE="text" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+             </KEYS>
+         </TABLE>
+
+		  <TABLE NAME="artefact_booklet_skill">
+            <FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="domain" TYPE="char" LENGTH="255" NOTNULL="false" />
+                <FIELD NAME="code" TYPE="char" LENGTH="255" NOTNULL="false" />
+				<FIELD NAME="description" TYPE="text" NOTNULL="false" />
+                <FIELD NAME="scale" TYPE="char" LENGTH="255" NOTNULL="false" />
+                <FIELD NAME="threshold" TYPE="int" LENGTH="4" />
+            </FIELDS>
+            <KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id" />
+             </KEYS>
+         </TABLE>
+
+        <TABLE NAME="artefact_booklet_listofskills">
+            <FIELDS>
+				<FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idlist" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idskill" TYPE="int" LENGTH="10" NOTNULL="true" />
+				<FIELD NAME="displayorder" TYPE="int" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+				<KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="listfk" TYPE="foreign" FIELDS="idlist" REFTABLE="artefact_booklet_list" REFFIELDS="id" />
+                <KEY NAME="skillfk" TYPE="foreign" FIELDS="idskill" REFTABLE="artefact_booklet_skill" REFFIELDS="id" />
+             </KEYS>
+         </TABLE>
+
+          <TABLE NAME="artefact_booklet_radio">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
                 <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
@@ -133,6 +174,22 @@
                 <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
             </KEYS>
         </TABLE>
+        <TABLE NAME="artefact_booklet_lskillsresult">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="skillid" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="value" TYPE="int" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="skillfk" TYPE="foreign" FIELDS="skillid" REFTABLE="artefact_booklet_skill" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
         <TABLE NAME="artefact_booklet_resultradio">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
@@ -189,6 +246,7 @@
                 <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
             </KEYS>
         </TABLE>
+
          <!-- This table is supposed to have a 1-1 relation with every row in the table artefact_booklet_tome. -->
     	<TABLE NAME="artefact_booklet_author">
         	<FIELDS>

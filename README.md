@@ -13,6 +13,13 @@ by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
 
 ### February 2015
 
+**Version 1.1.2 - 2015-01-22**
+
+Nouvelle structure de données list of skills
+(Wordk in progress)
+Designer may import list of skills and scale
+User has to checks skills and achievement
+
 **Version 1.1.1 - 2015-01-22**
 
 Modification majeure permettant de capturer des structures de formulaires arborescentes.

@@ -48,7 +48,7 @@ if ($type == 'tome') {
 
 							// Modif JF
 							if ($typeobj == 'text'){
-                                $rslts = get_records('artefact_booklet_resulttext', 'idobject', $item->id);
+                                $rslts = get_records_array('artefact_booklet_resulttext', 'idobject', $item->id);
 								foreach ($rslts as $rslt){
                                     delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord);
                             	}
@@ -88,7 +88,7 @@ if ($type == 'tome') {
     delete_records('artefact_booklet_tab', 'idtome', $id);
     delete_records('artefact_booklet_tome', 'id', $id);
 
-	if ($vizs = get_records('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
+	if ($vizs = get_records_array('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
 		foreach($vizs as $vid){
 			delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
 			delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
@@ -152,10 +152,19 @@ else if ($type == 'object') {
     	else {
         	$typeobj = $object->type;
     	}
-    	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
-    	if ($object->type == 'radio' || $object->type == 'synthesis') {
-        	delete_records('artefact_booklet_'.$object->type, 'idobject', $id);
+		// MODIF JF
+    	if ($object->type == 'listskills') {
+            delete_records('artefact_booklet_lskillsresult', 'idobject', $id);
+    		delete_records('artefact_booklet_istofskills', 'idlist', $id);
+        	delete_records('artefact_booklet_list', 'idobject', $id);
     	}
+		else{
+            delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
+
+	    	if ($object->type == 'radio' || $object->type == 'synthesis') {
+    	    	delete_records('artefact_booklet_'.$object->type, 'idobject', $id);
+    		}
+		}
     	delete_records('artefact_booklet_object', 'id', $id);
 	}
 }
@@ -166,6 +175,41 @@ else if ($type == 'radio') {
 else if ($type == 'synthesis') {
     delete_records('artefact_booklet_'.$type, 'id', $id);
 }
+else if ($type == 'listskills') {
+
+// MODIF JF
+/*
+'artefact_booklet_object'
+			 id
+			 ^
+			 |
+		   1:1
+------------|
+|   'artefact_booklet_list' <-- n ::'artefact_booklet_listofskills' :: m --> 'artefact_booklet_skill'
+-->   'idobject',  <--------------> 'idlist'                                    'code'
+'description'                       'idskill'  <-------------------->           'id'
+									'id'     					                'description'
+                                    'displayorder'                              'scale'
+
+                                                                                'displayorder'
+									^
+									|
+!------------------------------------
+v
+ :: -->	'artefact_booklet_lskillsresult'
+        'idobject'
+        'idowner'
+        'skillid'
+        'value'
+        'idrecord'
+*/
+
+
+    delete_records('artefact_booklet_lskillsresult', 'idobject', $id);
+    delete_records('artefact_booklet_listofskills', 'idlist', $id);
+    delete_records('artefact_booklet_list', 'idoject', $id);
+}
+
 else if ($type == 'visualization') {
     $rslt = get_record('artefact_booklet_resulttext', 'id', $id);
     delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));

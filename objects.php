@@ -30,8 +30,12 @@ if (!empty($idframe)  && ($frame = get_record('artefact_booklet_frame', 'id', $i
     	if ($tome = get_record('artefact_booklet_tome', 'id', $tab->idtome)){
 			define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title);
             $objectsform = ArtefactTypeObject::get_form($idframe);
-			$inlinejs = ArtefactTypeObject::get_js_2('object', $idframe, false);  // sans les cadres inclus
-			$inlinejs .= ArtefactTypeFrame::get_js_2('frame', $frame->idtab, true, $frame->id);  // sans les cadres inclus
+			// NON HIERARCHIQUE
+			$inlinejs = ArtefactTypeObject::get_js('object', $idframe);
+
+			// HIERARCHIQUE
+			//$inlinejs = ArtefactTypeObject::get_js_2('object', $idframe, false);  // sans les cadres inclus
+			//$inlinejs.= ArtefactTypeFrame::get_js_2('frame', $frame->idtab, true, $frame->id);  // sans les cadres inclus
 			//echo "<br />$inlinejs\n";
 			//exit;
 			$smarty = smarty(array('tablerenderer','jquery'));

@@ -131,6 +131,34 @@ $string['fieldlinkedname'] = "Titre des champs liés";
 $string['addfield'] = "Ajouter un nouveau champ lié";
 $string['addfieldsavefailed'] = "Ce champ a déjà été lié à cet objet!";
 
+// list of skills
+$string['addlist'] = "Ajouter une liste de compétences";
+$string['checked'] = "Coché";
+$string['code'] = "Code";
+$string['description'] = "Description";
+$string['scale'] = "Barème";
+$string['threshold'] = "Seuil";
+$string['descriptionlist'] = "Description";
+$string['descriptionlistdesc'] = "Descrivez le contexte dans lequel on peut acquérir ces savoir-faire, compétences, habiletés.";
+$string['descriptionlistmodel'] = "Cochez les compétences acquises";
+$string['generalscale'] = "Barème de validation de compétences";
+$string['generalscalemodel'] = "Non acquis,Notion,Application,Maîtrise,Expertise";
+$string['generalscaledesc'] = "Une liste de valeurs destinées à l'évaluation de compétences";
+$string['listofskills'] = "Saisir une compétence par ligne (Lire l'aide pour les détails)";
+$string['inputlistofskillsmodel'] = "code1;description1;[valeur_bareme11,valeur_bareme12,valeur_bareme13,...,valeur_bareme1N|seuil1]<br />code2;description2;[valeur_bareme21,valeur_bareme22,valeur_bareme23,...,valeur_bareme2N|seuil2]";
+$string['inputnewskills'] = "Ajouter de nouvelles compétences";
+$string['listskills'] = "Liste de compétences";
+$string['savechecklist'] = "Enregistrer les compétences sélctionnées";
+$string['selectskills'] = "Sélectionnez de compétences";
+$string['skill'] = "Compétence";
+$string['skills'] = "Compétences";
+$string['thresholdscale'] = "Seuil";
+$string['thresholdscalemodel'] = "Index de la valeur 'Objectif atteint' pour le barème utilisé";
+$string['thresholdscaledesc'] = "Si le barèùe est ''<i>Non acquis,Notion,<b>Application</b>,Maîtrise,Expertise</i>''  alors le seuil est de 2";
+$string['thresholdscalemodel'] = "2";
+$string['unknown'] = "Inconnu";
+$string['unknowncode'] = "Code inconnu";
+
 //visua
 $string['save'] = "Enregistrer";
 $string['valid'] = "Valider";
