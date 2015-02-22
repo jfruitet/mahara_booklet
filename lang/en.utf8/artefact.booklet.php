@@ -146,6 +146,7 @@ $string['addfieldsavefailed'] = "This field is already linked to this object!";
 
 // list of skills
 $string['addlist'] = "New list of skills";
+$string['assessment'] = "Check assessment";
 $string['code'] = "Code";
 $string['checked'] = "Checked";
 
@@ -166,6 +167,7 @@ $string['listofskills'] = "Input list of skills";
 $string['inputlistofskillsmodel'] = "domain;code;description;[scale_value_value1,scale_value2,scale_value3,...,scale_valueN|threshold]";
 $string['listskills'] = "List of skills";
 $string['multiselect'] = "Multi selection allowed";
+$string['notanyskillselected'] = "Not any skill selected";
 $string['savechecklist'] = "Save selected skills";
 $string['savedomainchoice'] = "Save selected domains";
 $string['scale'] = "Scale";

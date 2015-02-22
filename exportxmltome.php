@@ -186,58 +186,6 @@ function xml_object ($docframe, $idobject) {
 	}
 }
 
-/**
- * collecte la liste des cadres associés à une page données en les restitutant dans l'ordre en profondeur d'abord
- * input : id tab
- * output : array of frames
- */
-function get_frames($idtab){
-    $result = array();
-	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
-	$recframes = get_records_sql_array('SELECT ar.* FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
-	// DEBUG
-	//print_object( $frames);
-	//exit;
-	// REORDONNER sous forme d'arbre parcours en profondeur d'abord
-    $tabaff_niveau = array();
-    $tabaff_codes = array();
-	// 52 branches possibles a chauque noeud, cela devrait suffire ...
-	$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
-    $niveau_courant = 0;
-    $ordre_courant = 0;
-    $parent_courant = 0;
-
-	// Reordonner
-    if ($recframes) {
-			foreach ($recframes as $recframe) {
-				if ($recframe->idparentframe == 0){
-                    $niveau_courant = 0;
-				}
-				else if ($recframe->idparentframe != $parent_courant){
-					// changement de niveau
-					$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
-                    $ordre_courant = 0;
-				}
-				$tabaff_niveau[$recframe->id] = $niveau_courant;
-				$parent_courant = $recframe->idparentframe;
-
-                $code='';
-				if ($niveau_courant>0){
-					$code =  $tabaff_codes[$recframe->idparentframe];
-				}
-                $code.=$tcodes[$ordre_courant];
-                $tabaff_codes[$recframe->id] = $code;
-                $ordre_courant++;
-			}
-	}
-	asort($tabaff_codes);
-
-    foreach ($tabaff_codes as $key => $val){
-            // echo "<br />DEBUG :: ".$key."=".$val."\n";
-            $result[] = get_record('artefact_booklet_frame', 'id', $key);
-	}
-	return $result;
-}
 
 $doc = new DOMDocument();
 $doc->version = '1.0';

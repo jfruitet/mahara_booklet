@@ -199,35 +199,6 @@ else if ($type == 'synthesis') {
     delete_records('artefact_booklet_'.$type, 'id', $id);
 }
 else if ($type == 'listskills') {
-
-// MODIF JF
-/*
-'artefact_booklet_object'
-			 id
-			 ^
-			 |
-		   1:1
-------------|
-|   'artefact_booklet_list' <-- n ::'artefact_booklet_listofskills' :: m --> 'artefact_booklet_skill'
--->   'idobject',  <--------------> 'idlist'                                    'code'
-'description'                       'idskill'  <-------------------->           'id'
-									'id'     					                'description'
-                                    'displayorder'                              'scale'
-
-                                                                                'displayorder'
-									^
-									|
-!------------------------------------
-v
- :: -->	'artefact_booklet_lskillsresult'
-        'idobject'
-        'idowner'
-        'skillid'
-        'value'
-        'idrecord'
-*/
-
-
     delete_records('artefact_booklet_lskillsresult', 'idobject', $id);
     delete_records('artefact_booklet_listofskills', 'idlist', $id);
     delete_records('artefact_booklet_list', 'idoject', $id);
