@@ -182,6 +182,7 @@ else {
 }
 
 // Modification des booklets
+/*
 if ($designer) {
     $modform = array(
         'name'        => 'modform',
@@ -200,6 +201,30 @@ if ($designer) {
     );
     $indexform['modform'] = pieform($modform);
 }
+*/
+
+// Modification des booklets
+if ($designer) {
+    $modform = array(
+        'name'        => 'modform',
+        'plugintype'  => 'artefact',
+        'successcallback' => 'modform_submit',
+        'pluginname'  => 'booklet',
+        'method'      => 'post',
+        'renderer'    => 'oneline',
+        'elements'    => array(
+            'save' => array(
+                'type' => 'submit',
+                'value' => get_string('modif', 'artefact.booklet'),
+            )
+        ),
+        'autofocus'  => false,
+    );
+
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('modifbooklet', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($modform) . '<i>'.get_string('modifbookletdesc', 'artefact.booklet').'</i> </div></fieldset>';
+    $indexform['modform'] = $pf;
+}
+
 
 if ($admin->admin) {
     // si admin : formulaires de gestion des concepteurs

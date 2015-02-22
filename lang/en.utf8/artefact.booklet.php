@@ -50,6 +50,8 @@ $string['booklet'] = 'Booklet';
 
 //index.php
 $string['modif'] = "Modify booklets";
+$string['modifbooklet'] = "Modifier l'architecture des livrets";
+$string['modifbookletdesc'] = "Be carrefull when editing booklet's architecture. It may impact a lot of user data.";
 $string['tomechoice'] = "Choose the booklet to use : ";
 $string['bookletsaved'] = "Booklet saved";
 

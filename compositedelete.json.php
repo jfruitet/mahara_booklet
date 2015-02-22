@@ -38,24 +38,36 @@ if ($type == 'tome') {
                     $items = get_records_array('artefact_booklet_object', 'idframe', $frame->id);
                     if ($items) {
                         foreach ($items as $item) {
-                            if ($item->type == "area" || $item->type == "shorttext" || $item->type == "longtext" || $item->type == "synthesis" || $item->type == "htmltext") {
+							if ($item->type == "area" || $item->type == "shorttext" || $item->type == "longtext" || $item->type == "synthesis" || $item->type == "htmltext") {
                                 $typeobj = 'text';
                             }
                             else {
                                 $typeobj = $item->type;
                             }
-							//
-
 							// Modif JF
 							if ($typeobj == 'text'){
-                                $rslts = get_records_array('artefact_booklet_resulttext', 'idobject', $item->id);
-								foreach ($rslts as $rslt){
-                                    delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord);
-                            	}
-								delete_records('artefact_booklet_resulttext', 'id', $item->id);
+                                if ($rslts = get_records_array('artefact_booklet_resulttext', 'idobject', $item->id)){
+									foreach ($rslts as $rslt){
+                                    	delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord);
+                            		}
+									delete_records('artefact_booklet_resulttext', 'id', $item->id);
+								}
 							}
-							// Modif JF
-                            delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+                            else {
+								if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
+									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
+										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+                                    	delete_records('artefact_booklet_list', 'id', $list->id);
+										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+									}
+ 								}
+								else{
+                                    delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
+				                    if ($item->type == 'radio' || $item->type == 'synthesis') {
+    	    			                delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+        	            			}
+								}
+							}
                         }
                     }
                     delete_records('artefact_booklet_object', 'idframe', $frame->id);
@@ -88,14 +100,7 @@ if ($type == 'tome') {
     delete_records('artefact_booklet_tab', 'idtome', $id);
     delete_records('artefact_booklet_tome', 'id', $id);
 
-	if ($vizs = get_records_array('artefact', 'artefacttype', 'visualization', 'note', $tome->id)){ // , 'artefacttype', 'visualization' )){
-		foreach($vizs as $vid){
-			delete_records('view_artefact', 'artefact', $viz->id);      // delete artefact visualization
-			delete_records('artefact', 'id', $viz->id);      // delete artefact visualization
-		}
-	}
-
-	if ($arte = get_record('artefact', 'id', $tome->artefact)){   // a priori ce ne devrait pas etre utile...
+	if ($arte = get_record('artefact', 'id', $tome->artefact)){
     	delete_records('view_artefact', 'artefact', $arte->id);
         delete_records('artefact', 'id', $arte->id);
 	}
@@ -113,10 +118,19 @@ else if ($type == 'tab') {
                     else {
                         $typeobj = $item->type;
                     }
-                    delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
-                    if ($item->type == 'radio' || $item->type == 'synthesis') {
-                        delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
-                    }
+					if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
+									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
+										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+                                    	delete_records('artefact_booklet_list', 'id', $list->id);
+										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+									}
+ 					}
+					else{
+                    	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
+	                    if ($item->type == 'radio' || $item->type == 'synthesis') {
+    	                    delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+        	            }
+					}
                 }
             }
             delete_records('artefact_booklet_object', 'idframe', $frame->id);
@@ -135,10 +149,19 @@ else if ($type == 'frame') {
             else {
                 $typeobj = $item->type;
             }
-            delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
-            if ($item->type == 'radio' || $item->type == 'synthesis') {
-                delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
-            }
+			if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
+									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
+										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+                                    	delete_records('artefact_booklet_list', 'id', $list->id);
+										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+									}
+ 			}
+			else{
+            	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
+                if ($item->type == 'radio' || $item->type == 'synthesis') {
+                	delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+            	}
+			}
         }
     }
     delete_records('artefact_booklet_object', 'idframe', $id);
@@ -152,15 +175,15 @@ else if ($type == 'object') {
     	else {
         	$typeobj = $object->type;
     	}
-		// MODIF JF
-    	if ($object->type == 'listskills') {
-            delete_records('artefact_booklet_lskillsresult', 'idobject', $id);
-    		delete_records('artefact_booklet_istofskills', 'idlist', $id);
-        	delete_records('artefact_booklet_list', 'idobject', $id);
-    	}
+		if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
+									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
+										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+                                    	delete_records('artefact_booklet_list', 'id', $list->id);
+										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+									}
+ 		}
 		else{
             delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
-
 	    	if ($object->type == 'radio' || $object->type == 'synthesis') {
     	    	delete_records('artefact_booklet_'.$object->type, 'idobject', $id);
     		}

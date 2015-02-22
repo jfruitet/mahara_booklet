@@ -87,7 +87,9 @@ function xml_tab ($doctome, $idtab) {
     $dochelp->appendChild($help);
     $doctab->appendChild($dochelp);
     $doctome->appendChild($doctab);
-    $frames = get_records_array('artefact_booklet_frame', 'idtab', $idtab, 'displayorder');
+    // $frames = get_records_array('artefact_booklet_frame', 'idtab', $idtab, 'displayorder');
+	// Niveau hierarchique à traiter
+    $frames = get_frames($idtab);
 	if (!empty($frames)){
     	foreach ($frames as $frame) {
 			if (!empty($frame)){
@@ -101,8 +103,10 @@ function xml_frame ($doctab, $idframe) {
     global $doc;
     $frame = get_record('artefact_booklet_frame', 'id', $idframe);
     $docframe = $doc->createElement('frame');
-    $docframe->setAttribute('title', $frame->title);
+    $docframe->setAttribute('id', '@SPECIAL@'.$frame->id.'@SPECIAL@');
+	$docframe->setAttribute('title', $frame->title);
     $docframe->setAttribute('list', $frame->list);
+    $docframe->setAttribute('idparentframe', '@SPECIAL@'.$frame->idparentframe.'@SPECIAL@');
     $help = $doc->createCDATASection($frame->help);
     $dochelp = $doc->createElement('help');
     $dochelp->appendChild($help);
@@ -130,7 +134,7 @@ function xml_object ($docframe, $idobject) {
 	    $dochelp = $doc->createElement('help');
     	$dochelp->appendChild($help);
 	    $docobject->appendChild($dochelp);
-    	$docframe->appendChild($docobject);
+
 	    if ($object->type == 'radio') {
     	    $radios = get_records_array('artefact_booklet_radio', 'idobject', $idobject);
 			if (!empty($radios)){
@@ -154,7 +158,85 @@ function xml_object ($docframe, $idobject) {
 			   }
         	}
     	}
+	    if ($object->type == 'listskills') {
+    	    if ($list = get_record('artefact_booklet_list', 'idobject', $idobject)){
+            	$description = $doc->createCDATASection($list->description);
+	    		$docdesc = $doc->createElement('description');
+    			$docdesc->appendChild($description);
+	    		$docobject->appendChild($docdesc);
+
+                if ($itemskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
+			 		foreach ($itemskills as $itemskill) {
+						if (!empty($itemskill)){
+                    		if ($skill = get_record('artefact_booklet_skill', 'id', $itemskill->idskill)){
+                                $docitemskill = $doc->createElement('item');
+						    	$docitemskill->setAttribute('domain', $skill->domain);
+                            	$docitemskill->setAttribute('code', $skill->code);
+                                $docitemskill->setAttribute('description', strip_tags($skill->description));
+								$docitemskill->setAttribute('scale', $skill->scale);
+                            	$docitemskill->setAttribute('threshold', $skill->threshold);
+                                $docobject->appendChild($docitemskill);
+							}
+						}
+					}
+				}
+			}
+        }
+        $docframe->appendChild($docobject);
 	}
+}
+
+/**
+ * collecte la liste des cadres associés à une page données en les restitutant dans l'ordre en profondeur d'abord
+ * input : id tab
+ * output : array of frames
+ */
+function get_frames($idtab){
+    $result = array();
+	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
+	$recframes = get_records_sql_array('SELECT ar.* FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
+	// DEBUG
+	//print_object( $frames);
+	//exit;
+	// REORDONNER sous forme d'arbre parcours en profondeur d'abord
+    $tabaff_niveau = array();
+    $tabaff_codes = array();
+	// 52 branches possibles a chauque noeud, cela devrait suffire ...
+	$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+    $niveau_courant = 0;
+    $ordre_courant = 0;
+    $parent_courant = 0;
+
+	// Reordonner
+    if ($recframes) {
+			foreach ($recframes as $recframe) {
+				if ($recframe->idparentframe == 0){
+                    $niveau_courant = 0;
+				}
+				else if ($recframe->idparentframe != $parent_courant){
+					// changement de niveau
+					$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
+                    $ordre_courant = 0;
+				}
+				$tabaff_niveau[$recframe->id] = $niveau_courant;
+				$parent_courant = $recframe->idparentframe;
+
+                $code='';
+				if ($niveau_courant>0){
+					$code =  $tabaff_codes[$recframe->idparentframe];
+				}
+                $code.=$tcodes[$ordre_courant];
+                $tabaff_codes[$recframe->id] = $code;
+                $ordre_courant++;
+			}
+	}
+	asort($tabaff_codes);
+
+    foreach ($tabaff_codes as $key => $val){
+            // echo "<br />DEBUG :: ".$key."=".$val."\n";
+            $result[] = get_record('artefact_booklet_frame', 'id', $key);
+	}
+	return $result;
 }
 
 $doc = new DOMDocument();

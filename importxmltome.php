@@ -20,6 +20,9 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
 require_once('pieforms/pieform.php');
 safe_require('artefact', 'booklet');
 
+// gestion des index hierarchiques des cadres
+$tab_frames_index = array();
+
 class ArtefactTypeImporttome extends ArtefactTypebooklet {
     public static function is_singular() { return true;  }
     public static function get_form() {
@@ -142,8 +145,18 @@ function create_tab ($tab, $idparent, $order) {
 }
 
 function create_frame ($frame, $idparent, $order) {
+	global $tab_frames_index;
+
+	$idspecial = trim(str_replace("@SPECIAL@","",$frame->getAttribute('id')));
+    $idparentframespecial = trim(str_replace("@SPECIAL@","",$frame->getAttribute('idparentframe')));
+	if (!empty($idspecial)){
+		// initialisation
+		$tab_frames_index[$idspecial] = 0;
+	}
+
     $title = $frame->getAttribute('title');
     $list = $frame->getAttribute('list');
+
     $help = $frame->firstChild;
     $cdata = $help->firstChild;
     $data = new StdClass;
@@ -152,7 +165,16 @@ function create_frame ($frame, $idparent, $order) {
     $data->help = $cdata->wholeText;
     $data->idtab = $idparent;
     $data->displayorder = $order;
-    $idframe = insert_record('artefact_booklet_frame', $data, 'id' , true);
+
+	if (!empty($idparentframespecial) && isset($tab_frames_index[$idspecial])){
+         $data->idparentframe = $tab_frames_index[$idparentframespecial];
+	}
+	else{
+         $data->idparentframe = 0;
+	}
+	$idframe = insert_record('artefact_booklet_frame', $data, 'id' , true);
+    $tab_frames_index[$idspecial] = $idframe;
+
     $objects = $frame->childNodes;
     for ($i = 1; $i < $objects->length; ++$i) {
         $object = $objects->item($i);
@@ -175,6 +197,28 @@ function create_object ($object, $idparent, $order, $idtab) {
     $data->displayorder = $order;
     $idobject = insert_record('artefact_booklet_object', $data, 'id' , true);
     $options = $object->childNodes;
+	if ($type == "listskills") {
+	    /*
+		for ($i = 0; $i < $options->length; ++$i) {
+			echo "<br /> I : $i <br />OPTION\n";
+			print_object($options->item($i));
+    	}
+		*/
+        $description = $options->item(1);
+    	$cdata = $description->firstChild;
+
+	    $list = new StdClass;
+        $list->idobject = $idobject;
+		$list->description = $cdata->wholeText;
+
+	    if ($idlist = insert_record('artefact_booklet_list', $list, 'id' , true)){
+            for ($i = 2; $i < $options->length; ++$i) {
+            	$itemskill = $options->item($i);
+            	create_skill($itemskill, $idlist, $i - 1);
+        	}
+		}
+    }
+
     if ($type == "radio") {
         for ($i = 1; $i < $options->length; ++$i) {
             $option = $options->item($i);
@@ -189,6 +233,49 @@ function create_object ($object, $idparent, $order, $idtab) {
     }
 }
 
+function create_skill($itemskill, $idlist, $displayorder){
+ 	if ($itemskill->hasAttributes()){
+
+		$data = array();
+        foreach ($itemskill->attributes as $attr){
+            $data[$attr->nodeName] = $attr->nodeValue;
+		}
+        //print_object($data);
+		//exit;
+
+		$a_skill = new stdclass();
+		$a_skill->domain = $data['domain'];
+        $a_skill->code =  $data['code'];
+
+        $a_skill->description =  $data['description'];
+        $a_skill->scale =  $data['scale'];
+        $a_skill->threshold =  $data['threshold'];
+
+        //echo "<br />importxmltome.php ::209 :: <br />\n";
+		//print_object($a_skill);
+		//exit;
+
+		// verifier presence de la competence
+		$rec_skills = get_records_sql_array("SELECT * FROM {artefact_booklet_skill} WHERE domain = ? AND code = ? ", array($a_skill->domain, $a_skill->code));
+  		if ($rec_skills){
+			//	print_object( $rec_skills         );
+			// exit;
+			$idskill  = $rec_skills[0]->id;
+		}
+		else{
+            $idskill = insert_record('artefact_booklet_skill', $a_skill, 'id' , true);
+		}
+	    if ($idskill){
+			$lofskills = new stdclass();
+	        $lofskills->idlist = $idlist;
+    	    $lofskills->idskill = $idskill;
+        	$lofskills->displayorder = $displayorder;
+            insert_record('artefact_booklet_listofskills', $lofskills);
+  		}
+	}
+}
+
+
 function create_option ($object, $idparent) {
     $option = $object->textContent;
     $data = new StdClass;
@@ -196,6 +283,7 @@ function create_option ($object, $idparent) {
     $data->idobject = $idparent;
     insert_record('artefact_booklet_radio', $data);
 }
+
 
 // ne rechercher l'objet lié que parmi les objets du meme idtab
 function create_linked ($object, $idparent, $idtab) {

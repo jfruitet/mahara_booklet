@@ -136,6 +136,7 @@ a.select:hover {
 
 .vide {color: #000000; background-color: #ffffff; height : 8}
 .gold {color: #ffffaa; background-color: #000044; height : 8}
+.surligne { text-align : center; color: #000044; background-color: #aaccff; height : 8}
 
 span.menu{
  	color: #ffffee;
