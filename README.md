@@ -2,10 +2,10 @@ mahara_booklet
 ==============
 Mahara 10.1 and Mahara 10.2
 
-This is a fork
+This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr> (https://github.com/jfruitet/mahara_booklet)
+
 of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228)
 
-by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
 
 
  
@@ -13,53 +13,56 @@ by Jean Fruitet <Jean.Fruitet@univ-nantes.fr>
 
 ### February 2015
 
-**Version 1.1.2 - 2015-02-20** (Wordk in progress)
+**Version 1.1.2 - 2015-02-22**
 
-Nouvelle structure de données list of skills
+Nouvelle structure de données "**liste de compétences avec barème**" - New data structure "**list of skills**"
 
-Designer may import list of skills and scale ; user has to checks skills and achievement
+Le concepteur peut importer des listes de compétences ; l'utilisateur peut évaluer sa progression.
+
+Designer may import list of skills with scale ; user may check achievement
 
 ### January 2015
 
 **Version 1.1.1 - 2015-01-22**
 
-Modification majeure permettant de capturer des structures de formulaires arborescentes.
+Modification majeure permettant de capturer des **structures de formulaires arborescentes**.
+Un "formulaire" peut être "inclus" dans un autre formulaire selon une hiérarchie d'arbre n-aire.
 
-Il est possible de déclarer des "frames" (cadres) conteneurs de frames.
+Major improvement : **hierarchical frames** (n-ary tree).
 
-Autrement dit un cadre peut êtres "inclus" dans un autre cadre selon une hiérarchie d'arbre n-aire.
+
 
 										  PAGE 1
 										  |
 				   -------------------------------------------------------------------------------------------------------
 				   |                                               |                                                     |
-	niveau1		CADRE1                                          CADRE2                                                CADRE10
+	niveau1		CADRE.0/1                                       CADRE.0/2                                             CADRE.0/3
 				   |                                               |
-            --------------------                            --------------------------------------------------
-	        |                  |                            |                  |               |             |
-	niveau2 CADRE4             CADRE5                       CADRE3           CADRE6          CADRE7        CADRE9
-								 |                            |
+				--------------------                            --------------------------------------------------
+				|                  |                            |                  |               |             |
+	niveau2   CADRE.1/1     CADRE.1/2                       CADRE.1/3           CADRE.1/4       CADRE.1/5     CADRE.1/6
+					    		 |                            |
 					----------------------           --------...
 					|                    |           |
-	niveau3 		CADRE7              CADRE11      CADRE12
+	niveau3 	CADRE.2/1           CADRE.2/2      CADRE.2/3
 						|
 						-------
 							   |
-	niveau4					CADRE8
+	niveau4					CADRE.3/1
 
 La seule limite d'ordre pratique porte sur l'affichage qui est limitées à 52 cadres différents par niveau.
 
-L'affichage se fait selon un parcours en profondeur d'abord
+L'affichage du menu se fait selon un parcours en profondeur d'abord
 
 	PAGE1
-	CADRE1 --> CADRE4
-	       --> CADRE5 --> CADRE7 --> CADRE8
-	                  --> CADRE11
-	CADRE2 --> CADRE3 --> CADRE12
-	       --> CADRE6
-	       --> CADRE7
-           --> CADRE9
-	CADRE10
+	CADRE01 --> CADRE11
+	        --> CADRE12 --> CADRE21 --> CADRE31
+	                    --> CADRE22
+	CADRE02 --> CADRE13 --> CADRE23
+	        --> CADRE14
+	        --> CADRE15
+            --> CADRE16
+	CADRE03
 
 
 
@@ -67,13 +70,13 @@ L'affichage se fait selon un parcours en profondeur d'abord
 
 #### Show / Edit
 
-Version 1.0.3 - 2014-12-18 : L'utilisateur peut désormais alterner l'affichage et l'édition du livret.
+**Version 1.0.3 - 2014-12-18** : L'utilisateur peut désormais alterner l'affichage et l'édition du livret.
 
 #### Bug correction
 
-Version 1.0.4 - 2015-01-12 : Fichier install.xml corrigé ; Correction d'un bug subtil : "do" est un mot réservé qui ne peut être utilisé comme alias de table dans les requêtes SQL sur Postgres
+**Version 1.0.4 - 2015-01-12** : Fichier install.xml corrigé ; Correction d'un bug subtil : "do" est un mot réservé qui ne peut être utilisé comme alias de table dans les requêtes SQL sur Postgres
 
-Version 1.0.3 - 2014-12-13 : La suppression d'un "tome" (Livret) est corrigée.
+**Version 1.0.3 - 2014-12-13** : La suppression d'un "tome" (Livret) est corrigée.
 
 #### Copyright support
 
