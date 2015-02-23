@@ -44,21 +44,22 @@ if ($type == 'tome') {
                             else {
                                 $typeobj = $item->type;
                             }
+
 							// Modif JF
 							if ($typeobj == 'text'){
                                 if ($rslts = get_records_array('artefact_booklet_resulttext', 'idobject', $item->id)){
 									foreach ($rslts as $rslt){
                                     	delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord);
+                                        delete_records('artefact_booklet_resulttext', 'id', $rslt->id);
                             		}
-									delete_records('artefact_booklet_resulttext', 'id', $item->id);
 								}
 							}
                             else {
 								if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
 									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
 										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
-                                    	delete_records('artefact_booklet_list', 'id', $list->id);
 										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+                                        delete_records('artefact_booklet_list', 'id', $list->id);
 									}
  								}
 								else{

@@ -1181,7 +1181,7 @@ EOF;
 			$items  = get_records_array('artefact_booklet_listofskills', 'idlist', $skillslist->id);
 			if (!empty($items)){
 				foreach ($items as $item){
-					if ($skill = get_record('artefact_booklet_skill', 'id', $item->idskill)){
+					if ($skill = get_record('artefact_booklet_skill', 'id', $item->skillid)){
                         $tab_selected[$skill->id] = $item->id;
 					}
 				}
@@ -2140,14 +2140,20 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 					}
 					$rslt .= "</tr></thead>";
 				}
-
+                $n=0;
+                $n1=0;
+				$n2=0;
+				$n3=0;
+				$n4=0;
+				$n5=0;
+				$n6=0;
 				// calcul du nombre d'elements de la liste
 				switch ($objects[0]->type) {
                 case 'longtext':
                 case 'shorttext':
                 case 'area':
                 case 'htmltext':
-                    $n = count_records('artefact_booklet_resulttext', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n1 = count_records('artefact_booklet_resulttext', 'idobject', $objects[0]->id, 'idowner', $this -> author);
 					// MODIF JF 2015/01/22
 					// do est un mot reserve pour PostGres :  do -> rd
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_resulttext} re
@@ -2159,7 +2165,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
                     break;
                 case 'radio':
-                    $n = count_records('artefact_booklet_resultradio', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n2 = count_records('artefact_booklet_resultradio', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     // MODIF JF 2015/01/22
 					// do est un mot reserve pour PostGres :  do -> rd
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_resultradio} re
@@ -2171,7 +2177,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
                     break;
                 case 'checkbox':
-                    $n = count_records('artefact_booklet_resultcheckbox', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n3 = count_records('artefact_booklet_resultcheckbox', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     // MODIF JF 2015/01/22
 					// do est un mot reserve pour PostGres :  do -> rd
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_resultcheckbox} re
@@ -2183,7 +2189,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
                     break;
                 case 'date':
-                    $n = count_records('artefact_booklet_resultdate', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n4 = count_records('artefact_booklet_resultdate', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     // MODIF JF 2015/01/22
 					// do est un mot reserve pour PostGres :  do -> rd
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_resultdate} re
@@ -2195,11 +2201,11 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
                     break;
                 case 'attachedfiles':
-                    $n = count_records('artefact_booklet_resultattachedfiles', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n5 = count_records('artefact_booklet_resultattachedfiles', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     // TO DO : ne compter que les records ayant un idrecord different
                     break;
                 case 'listskills':
-                    $n = count_records('artefact_booklet_lskillsresult', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n6 = count_records('artefact_booklet_lskillsresult', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_lskillsresult} re
                             JOIN {artefact_booklet_resultdisplayorder} rd
                             ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
@@ -2211,6 +2217,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     break;
 
             	}
+
+				$n = max($n1, $n2, $n3, $n4, $n5, $n6);
+				// DEBUG
+				echo "<br /> lib.php :: 2223 :: $n = max ($n1, $n2, $n3, $n4, $n5, $n6)\n";
 
 				// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
             	$ligne = array();
@@ -2229,6 +2239,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                             AND re.idowner = ?
                             ORDER BY rd.displayorder";
                     $txts = get_records_sql_array($sql, array($object->id, $this -> author));
+					//print_object( $txts               );
+					//exit;
                     $i = 0;
                     foreach ($txts as $txt) {
 
@@ -2247,6 +2259,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                         $i++ ;
                     }
                 }
+/*****************
                 else if ($object->type == 'listskills') {
                     $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_lskillsresult} re
                             JOIN {artefact_booklet_resultdisplayorder} rd
@@ -2285,6 +2298,93 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     	}
 					}
                 }
+**************/
+            	            		else if ($object->type == 'listskills') {
+										if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
+                                            $i = 0;
+											if ($vertical){
+        	           		                    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
+											}
+                                			$ligne[$i].= "<td class=\"tablerenderer2\"><ul>\n";
+											$str_skills='';
+
+            	                    		if ($res_lofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
+												foreach ($res_lofskills as $res){
+													if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
+														$index = 0;
+
+														// donnees saisies
+        		                                        $rec=null;
+                                               			$sql = "SELECT * FROM {artefact_booklet_lskillsresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ JOIN {artefact_booklet_skill} rs
+ ON (rs.id = re.idskill)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
+ AND re.idskill = ?
+ ORDER BY re.idrecord, rd.displayorder";
+                            	                    	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
+                                                			foreach ($recs as $rec){
+                                                                if ($rec){
+																	$index = $rec->value - 1;
+																	$nboptions=0;
+                                                                    $str_choice = '';
+																	if ($tab_scale = explode(",", $skill->scale)){
+																		for ($j=0; $j<count($tab_scale); $j++){
+                                		                    				$a_scale_element = trim($tab_scale[$j]);
+																			if (!empty($a_scale_element)){
+																				if ($index == $nboptions){
+                																	if ($str_choice){
+																						$str_choice .= ' | <b>'.$a_scale_element.'</b>';
+																					}
+																					else{
+        	                                                    	        			$str_choice .= '<b>'.$a_scale_element.'</b>';
+																					}
+																				}
+																				else if ($skill->threshold == $nboptions){
+                																	if ($str_choice){
+																						$str_choice .= ' | <i>'.$a_scale_element.'</i>';
+																					}
+																					else{
+        	                                                    	        			$str_choice .= '<i>'.$a_scale_element.'</i>';
+																					}
+																				}
+																				else{
+			        	        													if ($str_choice){
+																						$str_choice .= ' | '.$a_scale_element;
+																					}
+																					else{
+                        	                    				                        $str_choice .= $a_scale_element;
+																					}
+																				}
+            			                        		                        $nboptions++;
+																			}
+																		}
+																	}
+
+                			           	            	    		$str_skills .= '<li>'.$skill->domain.' :: '.$skill->code.' :: '.$str_choice. '<br /><span="small">'.$skill->description.'</span></li>'."\n";
+																}
+															}
+														}
+				               						}
+												}
+											}
+                                            $ligne[$i].=$str_skills."\n</ul></td>\n";
+
+											if ($vertical){
+												if (!$lastposition[$object->id]){
+													$ligne[$i].=$separateur;
+												}
+												else{
+            	    		        	           	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+												}
+											}
+            	    		        	   	$i++ ;
+
+										}
+									}
+
                 else if ($object->type == 'radio') {
 					// MODIF JF 2015/01/22
 					// do est un mot reserve pour PostGres :  do -> rd
@@ -2795,7 +2895,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 														// donnees saisies
             											$index = 0;
 			                    		                $rec=null;
-                            	        	            $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and skillid = ?";
+                            	        	            $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and idskill = ?";
 	                    		            	    	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                     	                        	    	$rec = $recs[0]; // le premier suffit car le cadre n'est pas une liste
 														}
@@ -3129,10 +3229,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
  JOIN {artefact_booklet_resultdisplayorder} rd
  ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
  JOIN {artefact_booklet_skill} rs
- ON (rs.id = re.skillid)
+ ON (rs.id = re.idskill)
  WHERE re.idobject = ?
  AND re.idowner = ?
- AND re.skillid = ?
+ AND re.idskill = ?
  ORDER BY re.idrecord, rd.displayorder";
                             	                    	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                                 			foreach ($recs as $rec){
@@ -3624,7 +3724,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												// donnees saisies
             									$index = 0;
 			                                    $rec=null;
-                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and skillid = ?";
+                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and idskill = ?";
 	                    	                	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                                 	$rec = $recs[0]; // le premier suffit car le cadre n'est pas une liste
 												}
@@ -4158,7 +4258,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												// donnees saisies
             									$index = 0;
 			                                    $rec=null;
-                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and skillid = ?";
+                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and idskill = ?";
 	                    	                	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                                 	$rec = $recs[0]; // le premier suffit car le cadre n'est pas une liste
 												}
@@ -4491,10 +4591,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
  JOIN {artefact_booklet_resultdisplayorder} rd
  ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
  JOIN {artefact_booklet_skill} rs
- ON (rs.id = re.skillid)
+ ON (rs.id = re.idskill)
  WHERE re.idobject = ?
  AND re.idowner = ?
- AND re.skillid = ?
+ AND re.idskill = ?
  ORDER BY re.idrecord, rd.displayorder";
                             	                    	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                                 			foreach ($recs as $rec){
@@ -5004,7 +5104,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												// donnees saisies
             									$index = 0;
 			                                    $rec=null;
-                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and skillid = ?";
+                                                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} WHERE idobject = ? AND idowner = ? and idskill = ?";
 	                    	                	if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                                 	$rec = $recs[0]; // le premier suffit car le cadre n'est pas une liste
 												}
@@ -6077,13 +6177,13 @@ function visualization_submit(Pieform $form, $values) {
                 //print_object($values);
 	            // idobject est l'id dans artefact_booklet_object du champ $element
 				// astuce pour stocker l'id du skill dans l'id du radio bouton
-                $skillid = trim(substr($element['name'], strrpos($element['name'] , '_') + 1 ));
-                //echo "<br />SKILL ID: $skillid\n";
+                $idskill = trim(substr($element['name'], strrpos($element['name'] , '_') + 1 ));
+                //echo "<br />SKILL ID: $idskill\n";
 
     	        $data = new StdClass;
         	    $data->idobject = $idobject;
             	$data->idowner = $USER->get('id');
-	            $data->skillid = $skillid;
+	            $data->idskill = $idskill;
                 $data->value = $values[$element['name']] + 1; // on incremente l'index pour l'enregistrer
     	        if ($idrecord) {
         	        $data->idrecord = $idrecord;
@@ -6092,10 +6192,10 @@ function visualization_submit(Pieform $form, $values) {
 				//exit;
 
                 if (!$modifelementlist) {
-    	            $count = count_records('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'skillid', $skillid);
+    	            $count = count_records('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill);
         	    }
             	else {
-                	$count = count_records('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'skillid', $skillid, 'idrecord', $idrecord);
+                	$count = count_records('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill, 'idrecord', $idrecord);
 	            }
 
 
@@ -6112,15 +6212,15 @@ function visualization_submit(Pieform $form, $values) {
             	        if (!$list) {
                 	        // n'est pas dans une liste
                     	    if (!$idrecord) {
-                        	    $obj = get_record('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'skillid', $skillid);
+                        	    $obj = get_record('artefact_booklet_lskillsresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill);
                             	$idrecord = $obj->idrecord;
 	                            $newidrecord = 0;
     	                    }
-        	                update_record('artefact_booklet_lskillsresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'skillid'=> $skillid));
+        	                update_record('artefact_booklet_lskillsresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'idskill'=> $idskill));
                 	    }
                     	else {
                         	// est dans une liste
-	                        update_record('artefact_booklet_lskillsresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'skillid'=> $skillid, 'idrecord'=> $idrecord));
+	                        update_record('artefact_booklet_lskillsresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'idskill'=> $idskill, 'idrecord'=> $idrecord));
         	            }
             	    }
             	}
@@ -6532,7 +6632,7 @@ v
  :: -->	'artefact_booklet_lskillsresult'
         'idobject'
         'idowner'
-        'skillid'
+        'idskill'
         'value'
         'idrecord'
 */

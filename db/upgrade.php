@@ -132,7 +132,7 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
       	$table3->addFieldInfo('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table3->addFieldInfo('idobject', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table3->addFieldInfo('idowner', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
-        $table3->addFieldInfo('skillid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+        $table3->addFieldInfo('idskill', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
         $table3->addFieldInfo('value', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
         $table3->addFieldInfo('idrecord', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
 
@@ -140,7 +140,7 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
         $table3->addKeyInfo('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table3->addKeyInfo('objectfk', XMLDB_KEY_FOREIGN, array('idobject'), 'artefact_booklet_object', array('id'));
         $table3->addKeyInfo('ownerfk', XMLDB_KEY_FOREIGN, array('idowner'), 'usr', array('id'));
-        $table3->addKeyInfo('skillfk', XMLDB_KEY_FOREIGN, array('skillid'), 'artefact_booklet_skill', array('id'));
+        $table3->addKeyInfo('skillfk', XMLDB_KEY_FOREIGN, array('idskill'), 'artefact_booklet_skill', array('id'));
 
         if (!create_table($table3)) {
             throw new SQLException($table3 . " could not be created, check log for errors.");
