@@ -3004,7 +3004,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 								$n4=0;
 								$n5=0;
 								$n6=0;
-								$rslt .= "\n<table class=\"tablerenderer objectcomposite\">";
+								$rslt .= "\n<table class=\"tablerenderer2\">";
 								if (!$vertical){
 									$rslt .= "<thead>\n<tr>";
 	            	            	foreach ($objectslist as $object) {
@@ -3084,7 +3084,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 
 								// pour chaque objet, on complete toutes les lignes
 				            	foreach ($objectslist as $object) {
-				    	            if ($object->type == 'longtext' || $object->type == 'shorttext' || $object->type == 'area' || $object->type == 'htmltext' || $object->type == 'synthesis') {
+				    	            if ($object->type == 'longtext' || $object->type == 'shorttext' || $object->type == 'area'
+										|| $object->type == 'htmltext' || $object->type == 'synthesis') {
             		    	        	$sql = "SELECT * FROM {artefact_booklet_resulttext} re
 	            	            	        JOIN {artefact_booklet_resultdisplayorder} rd
     	        	            	        ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
@@ -3098,7 +3099,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												if ($vertical){
 				           	            	        $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 												}
-												$ligne[$i].="<td class=\"toggle\">". $txt->value . "</td>";
+												$ligne[$i].="<td class=\"tablerenderer2\">". $txt->value . "</td>";
 												if ($vertical){
 													if (!$lastposition[$object->id]){
 														$ligne[$i].=$separateur;
@@ -3113,13 +3114,12 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                 					}
             	            		else if ($object->type == 'listskills') {
 										if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
-                 	        	    		if ($notframelist){
-            	        	            		$components['ls' . $object->id] = array(
-	            	    	        	          	'type' => 'html',
-    		        	        	        	    'title' => $object->title,
-        		        	        	            'value' => $list->description,
-	        	    	    	            	);
+                                            $i = 0;
+											if ($vertical){
+        	           		                    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
+                                			$ligne[$i].= "<td class=\"tablerenderer2\"><ul>\n";
+											$str_skills='';
 
             	                    		if ($res_lofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
 												foreach ($res_lofskills as $res){
@@ -3142,9 +3142,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                                                                 if ($rec){
 																	$index = $rec->value - 1;
 																	$nboptions=0;
+                                                                    $str_choice = '';
 																	if ($tab_scale = explode(",", $skill->scale)){
-																		for ($i=0; $i<count($tab_scale); $i++){
-                                		                    				$a_scale_element = trim($tab_scale[$i]);
+																		for ($j=0; $j<count($tab_scale); $j++){
+                                		                    				$a_scale_element = trim($tab_scale[$j]);
 																			if (!empty($a_scale_element)){
 																				if ($index == $nboptions){
                 																	if ($str_choice){
@@ -3175,19 +3176,25 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 																		}
 																	}
 
-				                	                                if ($notframelist){
-    	    			    	                                    	$components['rls' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
-	        	        				        	          				'type' => 'html',
-		    		                				        	    		'title' => $skill->domain.' :: '.$skill->code,
-    		    		                	    			        		'value' => $str_choice,
-																			'description' => $skill->description,
-			    	        		                				);
-																}												}
+                			           	            	    		$str_skills .= '<li>'.$skill->domain.' :: '.$skill->code.' :: '.$str_choice. '<br /><span="small">'.$skill->description.'</span></li>'."\n";
+																}
 															}
 														}
 				               						}
 												}
 											}
+                                            $ligne[$i].=$str_skills."\n</ul></td>\n";
+
+											if ($vertical){
+												if (!$lastposition[$object->id]){
+													$ligne[$i].=$separateur;
+												}
+												else{
+            	    		        	           	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+												}
+											}
+            	    		        	   	$i++ ;
+
 										}
 									}
 									else if ($object->type == 'radio') {
@@ -3206,7 +3213,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												if ($vertical){
         	           		            	        $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 												}
-			           	            	    	$ligne[$i].= "<td>".$radio->option . "</td>";
+			           	            	    	$ligne[$i].= "<td class=\"tablerenderer2\">".$radio->option . "</td>";
 												if ($vertical){
 													if (!$lastposition[$object->id]){
 														$ligne[$i].=$separateur;
@@ -3232,7 +3239,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
    	            		            	       	$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-		            	            	    $ligne[$i].= "<td>".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
+		            	            	    $ligne[$i].= "<td class=\"tablerenderer2\">".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
 											if ($vertical){
 												if (!$lastposition[$object->id]){
 													$ligne[$i].=$separateur;
@@ -3257,7 +3264,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
   	                       	            		$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-	            	            	    	$ligne[$i].= "<td>".format_date(strtotime($date->value), 'strftimedate') . "</td>";
+	            	            	    	$ligne[$i].= "<td class=\"tablerenderer2\">".format_date(strtotime($date->value), 'strftimedate') . "</td>";
 											if ($vertical){
 												if (!$lastposition[$object->id]){
 													$ligne[$i].=$separateur;
@@ -3281,7 +3288,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
             	            	    		    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-            	    		        	    $ligne[$i].= "<td><table>";
+            	    		        	    $ligne[$i].= "<td class=\"tablerenderer2\"><table>";
             	            			}
 		            	            	if (!empty($attachedfiles)){
     		        	            		foreach ($attachedfiles as $attachedfile) {
@@ -3293,9 +3300,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 		            	            	        	}
     		        	            	        	$j++;
             			            	    	}
-            	    		        	    	$ligne[$i].= "<tr><td><img src=" .
+            	    		        	    	$ligne[$i].= "<tr><td class=\"tablerenderer2\"><img src=" .
             	            			    		$f->get_icon(array('id' => $attachedfile->artefact, 'viewid' => isset($options['viewid']) ? $options['viewid'] : 0)) .
-            	            	    		    	" alt=''></td><td><a href=" .
+            	            	    		    	" alt=''></td><td class=\"tablerenderer2\"><a href=" .
             	            	        			get_config('wwwroot') . "artefact/file/download.php?file=" . $attachedfile->artefact .
 		            	            	        	">" . $f->title . "</a> (" . $f->describe_size() . ")" . $f->description . "</td></tr>";
     		        	            		}
@@ -4360,7 +4367,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 								$n5=0;
 								$n6=0;
 
-								$rslt .= "\n<table class=\"tablerenderer objectcomposite\">";
+								$rslt .= "\n<table class=\"tablerenderer2\">";
 								if (!$vertical){
 									$rslt .= "<thead>\n<tr>";
 	            	            	foreach ($objectslist as $object) {
@@ -4454,7 +4461,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												if ($vertical){
 				           	            	        $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 												}
-												$ligne[$i].="<td class=\"toggle\">". $txt->value . "</td>";
+												$ligne[$i].="<td class=\"tablerenderer2\">". $txt->value . "</td>";
 												if ($vertical){
 													if (!$lastposition[$object->id]){
 														$ligne[$i].=$separateur;
@@ -4469,13 +4476,12 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                 					}
             	            		else if ($object->type == 'listskills') {
 										if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
-                 	        	    		if ($notframelist){
-            	        	            		$components['ls' . $object->id] = array(
-	            	    	        	          	'type' => 'html',
-    		        	        	        	    'title' => $object->title,
-        		        	        	            'value' => $list->description,
-	        	    	    	            	);
+                                            $i = 0;
+											if ($vertical){
+        	           		                    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
+                                			$ligne[$i].= "<td class=\"tablerenderer2\"><ul>\n";
+											$str_skills='';
 
             	                    		if ($res_lofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
 												foreach ($res_lofskills as $res){
@@ -4498,9 +4504,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                                                                 if ($rec){
 																	$index = $rec->value - 1;
 																	$nboptions=0;
+                                                                    $str_choice = '';
 																	if ($tab_scale = explode(",", $skill->scale)){
-																		for ($i=0; $i<count($tab_scale); $i++){
-                                		                    				$a_scale_element = trim($tab_scale[$i]);
+																		for ($j=0; $j<count($tab_scale); $j++){
+                                		                    				$a_scale_element = trim($tab_scale[$j]);
 																			if (!empty($a_scale_element)){
 																				if ($index == $nboptions){
                 																	if ($str_choice){
@@ -4531,23 +4538,28 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 																		}
 																	}
 
-				                	                                if ($notframelist){
-    	    			    	                                    	$components['rls' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
-	        	        				        	          				'type' => 'html',
-		    		                				        	    		'title' => $skill->domain.' :: '.$skill->code,
-    		    		                	    			        		'value' => $str_choice,
-																			'description' => $skill->description,
-			    	        		                				);
-																}												}
+                			           	            	    		$str_skills .= '<li>'.$skill->domain.' :: '.$skill->code.' :: '.$str_choice. '<br /><span="small">'.$skill->description.'</span></li>'."\n";
+																}
 															}
 														}
 				               						}
 												}
 											}
+                                            $ligne[$i].=$str_skills."\n</ul></td>\n";
+
+											if ($vertical){
+												if (!$lastposition[$object->id]){
+													$ligne[$i].=$separateur;
+												}
+												else{
+            	    		        	           	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+												}
+											}
+            	    		        	   	$i++ ;
+
 										}
 									}
-
-                					else if ($object->type == 'radio') {
+									else if ($object->type == 'radio') {
 	                        			$sql = "SELECT * FROM {artefact_booklet_resultradio} re
 	                        	        JOIN {artefact_booklet_resultdisplayorder} rd
 	                        	        ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
@@ -4563,7 +4575,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												if ($vertical){
         	           		            	        $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 												}
-			           	            	    	$ligne[$i].= "<td>".$radio->option . "</td>";
+			           	            	    	$ligne[$i].= "<td class=\"tablerenderer2\">".$radio->option . "</td>";
 												if ($vertical){
 													if (!$lastposition[$object->id]){
 														$ligne[$i].=$separateur;
@@ -4589,7 +4601,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
    	            		            	       	$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-		            	            	    $ligne[$i].= "<td>".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
+		            	            	    $ligne[$i].= "<td class=\"tablerenderer2\">".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
 											if ($vertical){
 												if (!$lastposition[$object->id]){
 													$ligne[$i].=$separateur;
@@ -4614,7 +4626,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
   	                       	            		$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-	            	            	    	$ligne[$i].= "<td>".format_date(strtotime($date->value), 'strftimedate') . "</td>";
+	            	            	    	$ligne[$i].= "<td class=\"tablerenderer2\">".format_date(strtotime($date->value), 'strftimedate') . "</td>";
 											if ($vertical){
 												if (!$lastposition[$object->id]){
 													$ligne[$i].=$separateur;
@@ -4638,7 +4650,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($vertical){
             	            	    		    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
 											}
-            	    		        	    $ligne[$i].= "<td><table>";
+            	    		        	    $ligne[$i].= "<td class=\"tablerenderer2\"><table>";
             	            			}
 		            	            	if (!empty($attachedfiles)){
     		        	            		foreach ($attachedfiles as $attachedfile) {
@@ -4650,9 +4662,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 		            	            	        	}
     		        	            	        	$j++;
             			            	    	}
-            	    		        	    	$ligne[$i].= "<tr><td><img src=" .
+            	    		        	    	$ligne[$i].= "<tr><td class=\"tablerenderer2\"><img src=" .
             	            			    		$f->get_icon(array('id' => $attachedfile->artefact, 'viewid' => isset($options['viewid']) ? $options['viewid'] : 0)) .
-            	            	    		    	" alt=''></td><td><a href=" .
+            	            	    		    	" alt=''></td><td class=\"tablerenderer2\"><a href=" .
             	            	        			get_config('wwwroot') . "artefact/file/download.php?file=" . $attachedfile->artefact .
 		            	            	        	">" . $f->title . "</a> (" . $f->describe_size() . ")" . $f->description . "</td></tr>";
     		        	            		}
