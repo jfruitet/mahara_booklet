@@ -96,8 +96,9 @@ if (isset($idtome)) {
 
 	// construit le tableau des tabs
     define('BOOKLET_SUBPAGE', $tabs[$tab]['page']);
-	// $tabs = ArtefactTypeVisualization::submenu_items($idtome);
     // ajoute au tableau des tabs mention de celui qui est sélectionné
+	$tabs = ArtefactTypeVisualization::submenu_items($idtome);
+
 	// Modif JF :: Hide / Show
     $inlinejs = "";
 
@@ -302,9 +303,9 @@ $smarty->assign('menuspecialform', $menuspecialform);
 $smarty->assign('help', $aide);
 $smarty->assign('indexform', $indexform);
 $smarty->assign('choiceform', $choiceform);
-$smarty->assign('SUBPAGENAV', $tabs);
 $smarty->assign('INLINEJAVASCRIPT', $inlinejs);
 $smarty->assign('d', $designer);
+$smarty->assign('SUBPAGENAV', $tabs);
 $smarty->display('artefact:booklet:index.tpl');
 
 function modform_submit(Pieform $form, $values) {

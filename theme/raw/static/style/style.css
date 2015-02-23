@@ -231,6 +231,8 @@ span.small{
 .niveau_M4 {background-color: #994499; height : 8}
 
 */
+
+/****** Palette arc en ciel *******************
 .niveau_A1 {background-color: #ffaaaa; height : 8}
 .niveau_B1 {background-color: #ffff77; height : 8}
 .niveau_C1 {background-color: #aaff00; height : 8}
@@ -290,4 +292,46 @@ span.small{
 .niveau_L4 {background-color: #44bbcc; height : 8}
 .niveau_M4 {background-color: #2288cc; height : 8}
 .niveau_N4 {background-color: #aa00aa; height : 8}
+****************/
+
+
+.niveau_A1 {background-color: #33aaff; height : 8}
+.niveau_A2 {background-color: #44bbff; height : 8}
+.niveau_A3 {background-color: #55ccff; height : 8}
+.niveau_A4 {background-color: #66ddff; height : 8}
+
+.niveau_B1 {background-color: #9999bf; height : 8}
+.niveau_B2 {background-color: #aaaacf; height : 8}
+.niveau_B3 {background-color: #bbbbdf; height : 8}
+.niveau_B4 {background-color: #ccccef; height : 8}
+
+.niveau_C1 {background-color: #3377ff; height : 8}
+.niveau_C2 {background-color: #3399ff; height : 8}
+.niveau_C3 {background-color: #33aaff; height : 8}
+.niveau_C4 {background-color: #33bbff; height : 8}
+
+.niveau_D1 {background-color: #9999bf; height : 8}
+.niveau_D2 {background-color: #aaaacf; height : 8}
+.niveau_D3 {background-color: #bbbbdf; height : 8}
+.niveau_D4 {background-color: #ccccef; height : 8}
+
+.niveau_E1 {background-color: #2287dd; height : 8}
+.niveau_E2 {background-color: #2298dd; height : 8}
+.niveau_E3 {background-color: #22a9dd; height : 8}
+.niveau_E4 {background-color: #22badd; height : 8}
+
+.niveau_F1 {background-color: #9999bf; height : 8}
+.niveau_F2 {background-color: #aaaacf; height : 8}
+.niveau_F3 {background-color: #bbbbdf; height : 8}
+.niveau_F4 {background-color: #ccccef; height : 8}
+
+.niveau_G1 {background-color: #3070e0; height : 8}
+.niveau_G2 {background-color: #3080e0; height : 8}
+.niveau_G3 {background-color: #3090e0; height : 8}
+.niveau_G4 {background-color: #30a0e0; height : 8}
+
+.niveau_H1 {background-color: #9999bf; height : 8}
+.niveau_H2 {background-color: #aaaacf; height : 8}
+.niveau_H3 {background-color: #bbbbdf; height : 8}
+.niveau_H4 {background-color: #ccccef; height : 8}
 

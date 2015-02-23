@@ -39,6 +39,7 @@ class PluginArtefactbooklet extends PluginArtefact {
         );
     }
 
+
     public static function postinst($prevversion) {
         if ($prevversion == 0) {
             $sort = (get_record_sql('SELECT MAX(sort) AS maxsort FROM {blocktype_category}')->maxsort) + 1;
@@ -2559,10 +2560,6 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         return $items;
         // renvoit le tableau des tabs avec au 2nd appel mention de celui qui est selectionne
     }
-
-	// Modif JF
-
-
 
 
 	// Modif JF
@@ -5804,7 +5801,8 @@ EOF;
         $palette ='';
 		/* ************* Supprimer le commentaire pour afficher la palette complete *****
         $palette = "\n".'<table>'."\n";
-        for ($i=0; $i<14; $i++){
+        //for ($i=0; $i<14; $i++){
+        for ($i=0; $i<8; $i++){
             $palette.='<tr>';
 			for ($j=0; $j<4; $j++){
 		        $index_color = ($j  % 4) + 1;
@@ -5886,11 +5884,11 @@ EOF;
 				}
 			}
 
-
+            $cod = chr( (ord(strtoupper(substr($code,0,1))) - 64) % 8 + 64);
             $index_color = (($object->niveau - 1) % 4) + 1;
-            $color=strtoupper(substr($code,0,1)) . "$index_color";
-			//echo "<br />COLOR : niveau_$color\n";
-
+            $color="$cod$index_color";
+			//echo "<br />CODE: $code / COLOR : niveau_$color\n";
+			//exit;
             if ($object->id == $idselectedframe){
                 $hierarchy_str=$str;
 				if ($object->colspan>1){
