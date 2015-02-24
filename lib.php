@@ -1166,13 +1166,19 @@ EOF;
          return $js;
     }
 
-    public static function get_form($idobject, $domainsselected=null) {
+
+	//------------------------------------------------------------------------
+    public static function get_form($idobject, $domainsselected=0) {
         $object = get_record('artefact_booklet_object', 'id', $idobject);
 		//print_object($object);
 		//exit;
         $elements = array();
 		$tab_selected = array();
 		$idlist=0;
+
+		if (empty($domainsselected)){
+            $domainsselected='any';
+		}
 
 		// Selected skills
 		if ($skillslist = get_record('artefact_booklet_list', 'idobject', $idobject)){
@@ -1191,13 +1197,14 @@ EOF;
 		// Domains
         // Skills
         $list_of_domains_selected = array();
-        if (!empty($domainsselected)){
+
+        if (!empty($domainsselected) && ($domainsselected!='any')){
             $tab_domainsselected = explode('-', $domainsselected);
 			//print_object($tab_domainsselected);
 			//exit;
-			foreach($tab_domainsselected as $a_domainselected){
-				if (!empty($a_domainselected)){
-                    $list_of_domains_selected[] = trim($a_domainselected);
+			foreach($tab_domainsselected as $index_domainselected){
+				if (isset($index_domainselected)){
+                    $list_of_domains_selected[] = trim($index_domainselected);
 				}
 			}
 		}
@@ -1215,14 +1222,24 @@ EOF;
 		    	$domain_options = array();
 				$domain_selected = array();
 				$d=0;
-				foreach ($domains as $domain){
-                	$domain_options[$domain->domain]=$domain->domain;
-					if (array_search($domain->domain, $list_of_domains_selected)){
-    	                $domain_selected[] = $d;
+
+				if ($domainsselected=='any'){
+					foreach ($domains as $domain){
+	                	$domain_options[$d]=$domain->domain;
+   		                $domain_selected[] = $d;
+						$d++;
 					}
-					$d++;
 				}
-    	        //print_object($domain_options);
+				else{
+					foreach ($domains as $domain){
+	                	$domain_options[$d]=$domain->domain;
+						if (array_search($d, $list_of_domains_selected)){
+    		                $domain_selected[] = $d;
+						}
+						$d++;
+					}
+				}
+		        //print_object($domain_options);
 				//exit;
 
     			$elementdomains['domainselect'] = array(
@@ -1269,14 +1286,14 @@ EOF;
         if (!empty($list_of_domains_selected)){
             $where='';
 			$params = array();
-			foreach($list_of_domains_selected as $a_domain){
+			foreach($list_of_domains_selected as $d){
 				if (!empty($where)){
 					$where.=' OR domain = ? ';
 				}
 				else{
                     $where.=' domain = ? ';
 				}
-				$params[]= $a_domain;
+				$params[]= $domain_options[$d];
 			}
 			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE ".$where." ORDER BY code ASC";
 		    $skills = get_records_sql_array($sql, $params);
@@ -1530,15 +1547,11 @@ function selectdomains_submit(Pieform $form, $values) {
 	// Domain selection
     $domainsselected='';
 
-	if (!empty($values['domainselect'])){
+	if (isset($values['domainselect'])){
 		foreach($values['domainselect'] as $a_domain){
-			if (!empty($domainsselected)){
-				$domainsselected .= '-'.$a_domain;
-			}
-			else{
-                $domainsselected .= $a_domain;
-			}
+	        $domainsselected.= $a_domain.'-';
 		}
+        $domainsselected=substr($domainsselected,0,strlen($domainsselected)-1);
 		//echo "$domainsselected";
 		//exit;
 
