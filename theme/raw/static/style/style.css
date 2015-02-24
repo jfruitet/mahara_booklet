@@ -7,7 +7,7 @@
 
 table.tablerenderer2 {
     float: left;
-    margin: 4px 4px 4px 0px;
+    margin: 4px 4px 4px 4px;
 	width: 100%;
 }
 
@@ -18,8 +18,38 @@ td.tablerenderer2 {
 	border-bottom: 1px solid lightgray;
     text-align : left;
     vertical-align: top;
-	padding: 2px;
+	padding: 4px;
+    margin: 4px 4px 4px 4px;
 }
+
+.tablerenderer2 th {
+    border-left: 1px solid lightgray;
+	border-right: 1px solid lightgray;
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+    text-align : center;
+    vertical-align: top;
+	padding: 4px;
+	color:  #ffffaa;
+    background-color: #333399;
+    margin: 4px 4px 4px 4px;
+}
+
+table.tablerenderer3 {
+	width: 100%;
+    margin: 4px 4px 4px 4px;
+}
+
+td.tablerenderer3 {
+    border-left: 1px solid lightgray;
+	border-right: 1px solid lightgray;
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+    text-align : center;
+    vertical-align: top;
+    margin: 4px 4px 4px 4px;
+}
+
 
 .tablerenderer th.nom {
     width: 200px !important;
