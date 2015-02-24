@@ -5,17 +5,17 @@
  * This file is distributed under the same terms as Mahara itself
  */
 
-table.tablerenderer2 {
+.tablerenderer2 table{
     float: left;
     margin: 4px 4px 4px 4px;
 	width: 100%;
 }
 
-td.tablerenderer2 {
-    border-left: 1px solid lightgray;
-	border-right: 1px solid lightgray;
-	border-top: 0px solid lightgray;
-	border-bottom: 1px solid lightgray;
+.tablerenderer2 td {
+    border-left: 1px solid #333399;
+	border-right: 1px solid #333399;
+	border-top: 0px solid #333399;
+	border-bottom: 1px solid #333399;
     text-align : left;
     vertical-align: top;
 	padding: 4px;
@@ -25,7 +25,7 @@ td.tablerenderer2 {
 .tablerenderer2 th {
     border-left: 1px solid #333399;
 	border-right: 1px solid #333399;
-	border-top: 1px solid #333399;
+	border-top: 0px solid #333399;
 	border-bottom: 1px solid #333399;
     text-align : center;
     vertical-align: top;
@@ -35,17 +35,17 @@ td.tablerenderer2 {
     margin: 4px 4px 4px 4px;
 }
 
-table.tablerenderer3 {
+.tablerenderer3 table {
 	width: 100%;
     margin: 4px 4px 4px 4px;
 }
 
-td.tablerenderer3 {
-    border-left: 1px solid lightgray;
-	border-right: 1px solid lightgray;
-	border-top: 1px solid lightgray;
-	border-bottom: 1px solid lightgray;
-    text-align : center;
+.tablerenderer3 td {
+    border-left: 0px solid lightgray;
+	border-right: 0px solid lightgray;
+	border-top: 0px solid lightgray;
+	border-bottom: 2px solid lightgray;
+    text-align : left;
     vertical-align: top;
     margin: 4px 4px 4px 4px;
 }

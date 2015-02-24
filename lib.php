@@ -3270,7 +3270,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 																				}
 																			}
 
-                					           	            	    		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$skill->code.'&nbsp;</td><td class="tablerenderer3">&nbsp;'.strip_tags($skill->description).'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+                					           	            	    		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td><td class="tablerenderer3">&nbsp;'.strip_tags($skill->description).'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 															}
 														}
 													}
@@ -4584,7 +4584,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 																				}
 																			}
 
-                					           	            	    		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$skill->code.'&nbsp;</td><td class="tablerenderer3">&nbsp;'.strip_tags($skill->description).'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+                					           	            	    		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td><td class="tablerenderer3">&nbsp;'.strip_tags($skill->description).'&nbsp;</td><td class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 															}
 														}
 													}
