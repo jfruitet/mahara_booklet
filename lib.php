@@ -2840,46 +2840,54 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 												}
 												// la boîte de saisie
            	                               		$str_choice = '';
-												$nboptions=0;
+												$noptions=0;
 												if ($tab_scale = explode(",", $skill->scale)){
 													for ($j=0; $j<count($tab_scale); $j++){
         	                        	               	$a_scale_element = trim($tab_scale[$j]);
 														if (!empty($a_scale_element)){
-															if ($index == $nboptions){
+															if ($index == $noptions){
                 												if ($str_choice){
-																	$str_choice .= ' | <b>'.$a_scale_element.'</b>';
+																	$str_choice .= ' | <span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																}
 																else{
-        	                        	                      			$str_choice .= '<b>'.$a_scale_element.'</b>';
+        	                        	                      		$str_choice .= '<span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																}
 															}
-															else if ($skill->threshold == $nboptions){
+															else if ($skill->threshold == $noptions){
                 												if ($str_choice){
-																	$str_choice .= ' | <i>'.$a_scale_element.'</i>';
+																	$str_choice .= ' | <span class="lightback"><i>'.$a_scale_element.'</i></span>';
 																}
 																else{
-	        	                                           			$str_choice .= '<i>'.$a_scale_element.'</i>';
+	        	                                           			$str_choice .= '<span class="lightback"><i>'.$a_scale_element.'</i></span>';
 																}
 															}
 															else{
 			    	    	        							if ($str_choice){
-																	$str_choice .= ' | '.$a_scale_element;
+																	$str_choice .= ' | <span class="lightback">'.$a_scale_element.'</span>';
 																}
 																else{
-                        	    	               					$str_choice .= $a_scale_element;
+                        	    	               					$str_choice .= '<span class="lightback">'.$a_scale_element.'</span>';
 																}
 															}
-                                    		                $nboptions++;
+                                    		                $noptions++;
                                                	    	}
 													}
 												}
+											        $components['rl' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
+	        	        	        	      		'type' => 'html',
+		    		                	       		'title' => $skill->domain.' :: '.$skill->code,
+    		    		                        	'value' => $skill->description." ".$str_choice,
+													//'description' => $skill->description,
+	    	        			               		);
 
-										        $components['rls' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
+													/*
+											        $components['rls' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
 	        	        	        	      		'type' => 'html',
 		    		                	       		'title' => $skill->domain.' :: '.$skill->code,
     		    		                        	'value' => $str_choice,
 													'description' => $skill->description,
-	    	        		               		);
+	    	        			               		);
+													*/
 											}
 										}
 									}
@@ -3231,41 +3239,42 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                             			            if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                     		        	foreach ($recs as $rec){
                                         		        if ($rec){
-																			$index = $rec->value - 1;
-																			$nboptions=0;
+															$index = $rec->value - 1;   // la valeur stockee n'est pas un indice mais une position
+																			$noptions=0;
                                                     		                $str_choice = '';
 																			if ($tab_scale = explode(",", $skill->scale)){
 																				for ($j=0; $j<count($tab_scale); $j++){
                                 		                    						$a_scale_element = trim($tab_scale[$j]);
 
-																					if (!empty($a_scale_element)){
-																						if ($index == $nboptions){
+																					if (isset($a_scale_element) && (strlen($a_scale_element)>0)){
+																						if ($index == $noptions){
                 																			if ($str_choice){
-																								$str_choice .= ' | <b>'.$a_scale_element.'</b>';
+																								$str_choice .= ' | <span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																							}
 																							else{
     		    	                                                    	        			$str_choice .= '<b>'.$a_scale_element.'</b>';
 																							}
 																						}
-																						/*
-																						else if ($skill->threshold == $nboptions){
-                																			if ($str_choice){
-																								$str_choice .= ' | <i>'.$a_scale_element.'</i>';
-																							}
-																							else{
-        	                        		                            	        			$str_choice .= '<i>'.$a_scale_element.'</i>';
-																							}
-																						}
-																						else{
+
+																						else if ($skill->threshold == $noptions){
 			        	        															if ($str_choice){
-																								$str_choice .= ' | '.$a_scale_element;
+																								$str_choice .= ' | <i>'.$a_scale_element. '</i>';
 																							}
 																							else{
-                        	                    				    		                    $str_choice .= $a_scale_element;
+                        	                    				    		                    $str_choice .= '<i>'.$a_scale_element. '</i>';
 																							}
 																						}
-																						*/
-            			                        		                        		$nboptions++;
+
+																						else{
+                																			if ($str_choice){
+																								$str_choice .= ' | '.$a_scale_element.' ';
+																							}
+																							else{
+        	                        		                            	        			$str_choice .= ' '.$a_scale_element.' ';
+																							}
+																						}
+
+            			                        		                        		$noptions++;
 																					}
 																				}
 																			}
@@ -4234,48 +4243,56 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 													if ($rec){
 														$index = $rec->value - 1;
 													}
-													// la boîte de saisie
-           	                               			$str_choice = '';
-													$nboptions=0;
-													if ($tab_scale = explode(",", $skill->scale)){
-														for ($j=0; $j<count($tab_scale); $j++){
-        		                        	               	$a_scale_element = trim($tab_scale[$j]);
-															if (!empty($a_scale_element)){
-																if ($index == $nboptions){
-                													if ($str_choice){
-																		$str_choice .= ' | <b>'.$a_scale_element.'</b>';
-																	}
-																	else{
-        	                        		                      			$str_choice .= '<b>'.$a_scale_element.'</b>';
-																	}
-																}
-																else if ($skill->threshold == $nboptions){
-                													if ($str_choice){
-																		$str_choice .= ' | <i>'.$a_scale_element.'</i>';
-																	}
-																	else{
-		        	                                           			$str_choice .= '<i>'.$a_scale_element.'</i>';
-																	}
+												// la boîte de saisie
+           	                               		$str_choice = '';
+												$noptions=0;
+												if ($tab_scale = explode(",", $skill->scale)){
+													for ($j=0; $j<count($tab_scale); $j++){
+        	                        	               	$a_scale_element = trim($tab_scale[$j]);
+														if (!empty($a_scale_element)){
+															if ($index == $noptions){
+                												if ($str_choice){
+																	$str_choice .= ' | <span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																}
 																else{
-			    		    	        							if ($str_choice){
-																		$str_choice .= ' | '.$a_scale_element;
-																	}
-																	else{
-                        	    		               					$str_choice .= $a_scale_element;
-																	}
+        	                        	                      		$str_choice .= '<span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																}
-                                    		    	            $nboptions++;
-	                                               	    	}
-														}
+															}
+															else if ($skill->threshold == $noptions){
+                												if ($str_choice){
+																	$str_choice .= ' | <span class="lightback"><i>'.$a_scale_element.'</i></span>';
+																}
+																else{
+	        	                                           			$str_choice .= '<span class="lightback"><i>'.$a_scale_element.'</i></span>';
+																}
+															}
+															else{
+			    	    	        							if ($str_choice){
+																	$str_choice .= ' | <span class="lightback">'.$a_scale_element.'</span>';
+																}
+																else{
+                        	    	               					$str_choice .= '<span class="lightback">'.$a_scale_element.'</span>';
+																}
+															}
+                                    		                $noptions++;
+                                               	    	}
 													}
+												}
+											        $components['rl' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
+	        	        	        	      		'type' => 'html',
+		    		                	       		'title' => $skill->domain.' :: '.$skill->code,
+    		    		                        	'value' => $skill->description." ".$str_choice,
+													//'description' => $skill->description,
+	    	        			               		);
 
+													/*
 											        $components['rls' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
 	        	        	        	      		'type' => 'html',
 		    		                	       		'title' => $skill->domain.' :: '.$skill->code,
     		    		                        	'value' => $str_choice,
 													'description' => $skill->description,
 	    	        			               		);
+													*/
 												}
 											}
 										}
@@ -4517,6 +4534,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 	    				       	    }
                 				}
 							}
+							// ---------------------------- LISTSKILLS ---------------------------------------
             	    		else if ($object->type == 'listskills') {
 									if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
                             			$i = 0;
@@ -4545,41 +4563,42 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                             			            if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
                                     		        	foreach ($recs as $rec){
                                         		        if ($rec){
-																			$index = $rec->value - 1;
-																			$nboptions=0;
+																			$index = $rec->value - 1;   // la valeur stockee n'est pas un indice mais une position
+																			$noptions=0;
                                                     		                $str_choice = '';
 																			if ($tab_scale = explode(",", $skill->scale)){
 																				for ($j=0; $j<count($tab_scale); $j++){
                                 		                    						$a_scale_element = trim($tab_scale[$j]);
 
-																					if (!empty($a_scale_element)){
-																						if ($index == $nboptions){
+																					if (isset($a_scale_element) && (strlen($a_scale_element)>0)){
+																						if ($index == $noptions){
                 																			if ($str_choice){
-																								$str_choice .= ' | <b>'.$a_scale_element.'</b>';
+																								$str_choice .= ' | <span class="blueback"><b>'.$a_scale_element.'</b></span>';
 																							}
 																							else{
     		    	                                                    	        			$str_choice .= '<b>'.$a_scale_element.'</b>';
 																							}
 																						}
-																						/*
-																						else if ($skill->threshold == $nboptions){
-                																			if ($str_choice){
-																								$str_choice .= ' | <i>'.$a_scale_element.'</i>';
-																							}
-																							else{
-        	                        		                            	        			$str_choice .= '<i>'.$a_scale_element.'</i>';
-																							}
-																						}
-																						else{
+
+																						else if ($skill->threshold == $noptions){
 			        	        															if ($str_choice){
-																								$str_choice .= ' | '.$a_scale_element;
+																								$str_choice .= ' | <i>'.$a_scale_element. '</i>';
 																							}
 																							else{
-                        	                    				    		                    $str_choice .= $a_scale_element;
+                        	                    				    		                    $str_choice .= '<i>'.$a_scale_element. '</i>';
 																							}
 																						}
-																						*/
-            			                        		                        		$nboptions++;
+
+																						else{
+                																			if ($str_choice){
+																								$str_choice .= ' | '.$a_scale_element.' ';
+																							}
+																							else{
+        	                        		                            	        			$str_choice .= ' '.$a_scale_element.' ';
+																							}
+																						}
+
+            			                        		                        		$noptions++;
 																					}
 																				}
 																			}
@@ -4604,7 +4623,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
             	    		    	$i++ ;
 								}
 							}
-
+							//---------------------------------------- RADIO -----------------------
 							else if ($object->type == 'radio') {
 	        	                			$sql = "SELECT * FROM {artefact_booklet_resultradio} re
  JOIN {artefact_booklet_resultdisplayorder} rd

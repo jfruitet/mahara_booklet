@@ -51,6 +51,8 @@
 }
 
 
+
+
 .tablerenderer th.nom {
     width: 200px !important;
 }
@@ -202,6 +204,19 @@ span.small{
 	font-weight : normal;
 }
 
+span.blueback{
+    color:  #ffffaa;
+    background-color: #333399;
+	font-family: sans-serif;
+	font-weight : normal;
+}
+
+span.lightback{
+    color:  #000000;
+    background-color: #ccccff;
+	font-family: sans-serif;
+	font-weight : normal;
+}
 /*
 .niveau_A1 {background-color: #552200; height : 8}
 .niveau_B1 {background-color: #666600; height : 8}
