@@ -9,6 +9,11 @@ $string['incorrectbooklettab'] = "Ce livret est bogué...";
 // Included frame
 $string['addsuccessorframe'] = "Ajouter un sous-cadre";
 $string['successorframe'] = "Inclus dans le cadre %s";
+$string['included'] = "Cadre inclus";
+$string['node'] = "Cadre père";
+$string['tomove'] = "Cadre à déplacer";
+$string['root'] = "A la racine";
+$string['selectwheremove'] = "Sélectionnez la destination de '%s'";
 // Author & copyright
 $string['author'] = "Auteur";
 $string['authorform'] = "Enregistrer auteur";

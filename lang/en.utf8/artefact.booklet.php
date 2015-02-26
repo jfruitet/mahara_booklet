@@ -15,8 +15,13 @@ defined('INTERNAL') || die();
 $string['incorrectbooklettab'] = "This booklet is bugged";
 
 // Included frame
+$string['included'] = "Included frame";
+$string['node'] = "Father frame";
 $string['addsuccessorframe'] = "Add a new included frame";
 $string['successorframe'] = "Included in frame %s";
+$string['root'] = "At root level";
+$string['tomove'] = "Frame to move";
+$string['selectwheremove'] = "Select the frame destination of '%s'";
 // Author & copyright
 $string['author'] = "Author";
 $string['authorform'] = "Save author";

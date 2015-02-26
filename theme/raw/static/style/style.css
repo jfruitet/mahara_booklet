@@ -51,7 +51,14 @@
 }
 
 
-
+td.special {
+    text-align : center;
+    vertical-align: top;
+	padding: 4px;
+	color:  #ffffaa;
+    background-color: #333399;
+    margin: 4px 4px 4px 4px;
+}
 
 .tablerenderer th.nom {
     width: 200px !important;
