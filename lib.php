@@ -1171,7 +1171,7 @@ EOF;
                     'type' => 'submitcancel',
                     'value' => array(get_string('savetab', 'artefact.booklet'),
                                      get_string('cancelframe', 'artefact.booklet')),
-                    'goto' => get_config('wwwroot') . '/artefact/booklet/frame.php?id='.$tab->id,
+                    'goto' => get_config('wwwroot') . '/artefact/booklet/frames.php?id='.$tab->id,
                 );
 
         $tabname = pieform(array(

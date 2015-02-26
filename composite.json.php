@@ -51,7 +51,8 @@ if ($type == 'visualization') {
     }
     // Modif JF 2015/01/12
 	// do est un mot protege sur Postgres
-	$sql = "SELECT DISTINCT t.value, t.id FROM {artefact_booklet_resulttext} t
+	// le select doit contenir la valeur de ORDER BY
+	$sql = "SELECT DISTINCT t.value, t.id, d.displayorder FROM {artefact_booklet_resulttext} t
              JOIN {artefact_booklet_resultdisplayorder} d ON t.idrecord = d.idrecord AND t.idowner = d.idowner
              WHERE t.idobject = ?
              AND t.idowner = ?
