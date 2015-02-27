@@ -148,6 +148,13 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
 
     }
 
+    if ($oldversion < 2015022600) {
+        $table = new XMLDBTable('artefact_booklet_skill');
+        $field = new XMLDBField('type');
+        $field->setAttributes(XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null, '1', 'domain');
+        $status = $status && add_field($table, $field);
+    }
+
 
     return $status;
 }

@@ -89,10 +89,11 @@
             <FIELDS>
 				<FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
                 <FIELD NAME="domain" TYPE="char" LENGTH="255" NOTNULL="false" />
+                <FIELD NAME="type" TYPE="int" LENGTH="10" DEFAULT="1" />
                 <FIELD NAME="code" TYPE="char" LENGTH="255" NOTNULL="false" />
 				<FIELD NAME="description" TYPE="text" NOTNULL="false" />
                 <FIELD NAME="scale" TYPE="char" LENGTH="255" NOTNULL="false" />
-                <FIELD NAME="threshold" TYPE="int" LENGTH="4" />
+                <FIELD NAME="threshold" TYPE="int" LENGTH="10" />
             </FIELDS>
             <KEYS>
 				<KEY NAME="primary" TYPE="primary" FIELDS="id" />
