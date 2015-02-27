@@ -27,7 +27,7 @@ if ($idrecord) {
     log_warn("Synthese avec idrecord  : $idrecord");
 }
 
-$sql="SELECT ob.id as id, ob.type as type, ob.title as title, ob.idframe as idframe, fr.list as list
+$sql="SELECT ob.id as id, ob.type as type, ob.title as title, ob.idframe as idframe, ob.displayorder as displayorder, fr.list as list, fr.displayorder as displayorder2
        FROM {artefact_booklet_synthesis} sy
        JOIN {artefact_booklet_object} ob ON sy.idobjectlinked = ob.id
        JOIN {artefact_booklet_frame} fr ON fr.id = ob.idframe
@@ -76,6 +76,10 @@ if ($frameslinked) {
                 case 'date':
                     $n = count_records('artefact_booklet_resultdate', 'idobject', $objectsframelinked[0]->id, 'idowner', $USER->get('id'));
                     break;
+                case 'listskills':
+                    $n = count_records('artefact_booklet_lskillsresult', 'idobject', $objectsframelinked[0]->id, 'idowner', $USER->get('id'));
+                    break;
+
             }
             // construction d'un tableau des lignes : une par élément, chaque ligne contient les valeurs de tous les objets
             $ligne = array();
@@ -87,7 +91,8 @@ if ($frameslinked) {
                 if ($object->type == 'longtext' || $object->type == 'shorttext' || $object->type == 'area' || $object->type == 'htmltext' || $object->type == 'synthesis') {
 					// MODIF JF 2015/01/22
 					// do est un mot réserve pour PostGres : do -> rd
-					$sql="SELECT * FROM {artefact_booklet_resulttext} re
+					// PostGres impose que le champ d'ordonancement soit aussi dans le select
+					$sql="SELECT re.*, rd.displayorder FROM {artefact_booklet_resulttext} re
                            JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
@@ -104,7 +109,7 @@ if ($frameslinked) {
                 else if ($object->type == 'radio') {
 					// MODIF JF 2015/01/22
 					// do est un mot réserve pour PostGres : do -> rd
-                    $sql="SELECT * FROM {artefact_booklet_resultradio} re
+                    $sql="SELECT re.*, rd.displayorder FROM {artefact_booklet_resultradio} re
                            JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            JOIN {artefact_booklet_radio} ra ON (ra.id = re.idchoice)
                            WHERE re.idobject = ?
@@ -121,7 +126,7 @@ if ($frameslinked) {
                 else if ($object->type == 'checkbox') {
 					// MODIF JF 2015/01/22
 					// do est un mot réserve pour PostGres : do -> rd
-                    $sql="SELECT * FROM {artefact_booklet_resultcheckbox} re
+                    $sql="SELECT re.*, rd.displayorder FROM {artefact_booklet_resultcheckbox} re
                            JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
@@ -136,7 +141,7 @@ if ($frameslinked) {
                 else if ($object->type == 'date') {
 					// MODIF JF 2015/01/22
 					// do est un mot réserve pour PostGres :  do -> rd
-					$sql="SELECT * FROM {artefact_booklet_resultdate} re
+					$sql="SELECT re.*, rd.displayorder FROM {artefact_booklet_resultdate} re
                            JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
                            WHERE re.idobject = ?
                            AND re.idowner = ?
@@ -146,6 +151,49 @@ if ($frameslinked) {
                     foreach ($dates as $date) {
                         $ligne[$i].= $date->value . " ";
                         $i++ ;
+                    }
+                }
+				else if ($object->type == 'listskills') {
+
+					$sql="SELECT re.*, rd.displayorder FROM {artefact_booklet_lskillsresult} re
+                           JOIN {artefact_booklet_resultdisplayorder} rd ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+                           WHERE re.idobject = ?
+                           AND re.idowner = ?
+                           ORDER BY rd.displayorder";
+
+                    if ($recs = get_records_sql_array($sql, array($object->id, $USER->get('id')))){
+						$i = 0;
+                        $str_skills='';
+						foreach ($recs as $rec){
+							$index=$rec->value-1;
+
+        	    	        $header = false;
+            	    	    $hidden = false;
+							if ($skill = get_record('artefact_booklet_skill', 'id', $rec->idskill)){
+                        		switch ($skill->type){
+									case 0 : $header = true; break;
+	                                case 2 : $hidden = true; break;
+									default : break;
+								}
+
+								if (!$header){
+									$str_choice = get_skill_choice_display($skill, $index);
+           		        		    $sdescription = $skill->description;
+								}
+								else{
+   		                	    	$str_choice = '';
+        	   	            	   	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+								}
+
+								if (!$hidden){
+        	       					$str_skills .= $skill->domain.'&nbsp;<i>'.$skill->code.'</i><br />'.strip_tags($sdescription).'<br />'.$str_choice."<br />\n";
+								}
+							}
+						}
+      					if ($str_skills) {
+							$ligne[$i].= $str_skills."\n";
+							$i++;
+						}
                     }
                 }
             }
@@ -190,6 +238,48 @@ if ($frameslinked) {
                     $rslt .= $date->value ;
                     $rslt .= "</li>";
                 }
+				else if ($object->type == 'listskills') {
+					$sql="SELECT * FROM {artefact_booklet_lskillsresult} WHERE idowner = ? AND idobject = ?";
+	                if ($recs = get_records_sql_array($sql, array($USER->get('id'), $object->id))){
+
+						$str_skills='';
+						foreach ($recs as $rec){
+							$index=$rec->value-1;
+
+        	    	        $header = false;
+            	    	    $hidden = false;
+							if ($skill = get_record('artefact_booklet_skill', 'id', $rec->idskill)){
+                        		switch ($skill->type){
+									case 0 : $header = true; break;
+	                                case 2 : $hidden = true; break;
+									default : break;
+								}
+
+								if (!$header){
+									$str_choice = get_skill_choice_display($skill, $index);
+           		        		    $sdescription = $skill->description;
+								}
+								else{
+   		                	    	$str_choice = '';
+        	   	            	   	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+								}
+
+								if (!$hidden){
+        	       					$str_skills .= '<li>'.$skill->domain.'&nbsp;<i>'.$skill->code.'</i><br />'.strip_tags($sdescription).'<br />'.$str_choice.'</li>'."\n";
+								}
+							}
+						}
+						if (!empty($str_skills)){
+                            $str_skills='<ol>'.$str_skills.'</ol>'."\n";
+						}
+
+						$rslt .= "<li>";
+    	                $rslt .= $object -> title;
+        	            $rslt .= " : ";
+                        $rslt .= $str_skills;
+                        $rslt .= "</li>";
+                    }
+				}
             }
             $rslt .= "</ul>";
         }
@@ -230,7 +320,12 @@ else {
              FROM {artefact_booklet_resultdate}
              WHERE idowner = ?";
     $maxda = get_record_sql($sql4, array($USER->get('id')));
-    $max = max(array($maxcb->ir, $maxrad->ir, $maxtext->ir, $maxda->ir));
+    $sql5 = "SELECT MAX(idrecord) as ir
+             FROM {artefact_booklet_lskillsresult}
+             WHERE idowner = ?";
+    $maxls = get_record_sql($sql4, array($USER->get('id')));
+
+    $max = max(array($maxcb->ir, $maxrad->ir, $maxtext->ir, $maxda->ir, $maxls->ir));
     settype($max, 'integer');
     $idrecord = $max + 1;
     $data->idrecord = $idrecord;
