@@ -191,7 +191,7 @@ function create_object ($object, $idparent, $order, $idtab) {
     $data = new StdClass;
     $data->title = $title;
     $data->type = $type;
-    $data->name = $name.'_'.$idparent.'_'.$idtab; // eviter les doublons sur les noms d'objets
+    $data->name = $name.'_'.$idtab; // eviter les doublons sur les noms d'objets
     $data->help = $cdata->wholeText;
     $data->idframe = $idparent;
     $data->displayorder = $order;
@@ -294,7 +294,7 @@ function create_option ($object, $idparent) {
 // ne rechercher l'objet lié que parmi les objets du meme idtab
 function create_linked ($object, $idparent, $idtab) {
     global $SESSION;
-    $name = $object->nodeValue;
+    $name = $object->nodeValue.'_'.$idtab;
     $sql="SELECT ob.id as id FROM {artefact_booklet_object} ob
            JOIN {artefact_booklet_frame} fr ON fr.id = ob.idframe
            WHERE ob.name LIKE ?
@@ -315,7 +315,9 @@ function create_linked ($object, $idparent, $idtab) {
 // ne rechercher l'objet lié que parmi les objets du meme idtab
 function create_reference ($object, $idparent, $idtab) {
     global $SESSION;
-    $name = $object->nodeValue;
+    $name = $object->nodeValue.'_'.$idtab;
+	//echo "$name<br />\n";
+	//exit;
     $sql="SELECT ob.id as id FROM {artefact_booklet_object} ob
            JOIN {artefact_booklet_frame} fr ON fr.id = ob.idframe
            WHERE ob.name LIKE ?
