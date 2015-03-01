@@ -216,3 +216,13 @@ $string['deletedesigner'] = "Remove a designer: ";
 $string['delete'] = "Remove";
 $string['userdeleted'] = "Designer removed";
 
+// Reference
+$string['selectafield'] = "Select a field";
+$string['reference'] = "Field reference";
+$string['idobject'] = "Object Id: %s";
+$string['idframe'] = "Frame ID: %s";
+$string['objectlinked'] = "Object linked: ";
+$string['objecttitle'] = "Object title: %s";
+$string['objecttype'] = "Type: %s";
+$string['referencehasnovalue'] = "Reference has not any value. Please type in a new value for field ";
+$string['offrame'] = "of frame ";

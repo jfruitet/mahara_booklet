@@ -53,21 +53,25 @@ if ($type == 'tome') {
                                         delete_records('artefact_booklet_resulttext', 'id', $rslt->id);
                             		}
 								}
+				                if ($item->type == 'synthesis') {
+    	    			            delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+        	            		}
 							}
-                            else {
-								if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
-									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
-										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
-										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
-                                        delete_records('artefact_booklet_list', 'id', $list->id);
-									}
- 								}
-								else{
-                                    delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
-				                    if ($item->type == 'radio' || $item->type == 'synthesis') {
-    	    			                delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
-        	            			}
+							elseif ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
+								if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
+									delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+									delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
+                                    delete_records('artefact_booklet_list', 'id', $list->id);
 								}
+							}elseif ($typeobj == 'reference'){
+                                delete_records('artefact_booklet_refresult', 'idobject', $item->id);
+  	    			            delete_records('artefact_booklet_reference', 'idobject', $item->id);
+							}
+							else{
+                                delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
+				                if ($item->type == 'radio') {
+    	    			        	delete_records('artefact_booklet_'.$item->type, 'idobject', $item->id);
+        	            		}
 							}
                         }
                     }
@@ -126,6 +130,10 @@ else if ($type == 'tab') {
 										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
 									}
  					}
+					elseif ($typeobj == 'reference'){
+                    	delete_records('artefact_booklet_refresult', 'idobject', $item->id);
+  	    			    delete_records('artefact_booklet_reference', 'idobject', $item->id);
+ 					}
 					else{
                     	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
 	                    if ($item->type == 'radio' || $item->type == 'synthesis') {
@@ -157,6 +165,10 @@ else if ($type == 'frame') {
 										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
 									}
  			}
+			elseif ($typeobj == 'reference'){
+                	delete_records('artefact_booklet_refresult', 'idobject', $item->id);
+  	    		delete_records('artefact_booklet_reference', 'idobject', $item->id);
+ 			}
 			else{
             	delete_records('artefact_booklet_result'.$typeobj, 'idobject', $item->id);
                 if ($item->type == 'radio' || $item->type == 'synthesis') {
@@ -177,11 +189,15 @@ else if ($type == 'object') {
         	$typeobj = $object->type;
     	}
 		if ($typeobj == 'listskills'){ // cas special car le nom de table 'artefact_booklet_listkillsresult' provoquait des erreurs d'index assez mysterieuses
-									if ($list = get_record('artefact_booklet_list', 'idobject', $item->id)){
-										delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
-                                    	delete_records('artefact_booklet_list', 'id', $list->id);
-										delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
-									}
+			if ($list = get_record('artefact_booklet_list', 'idobject', $id)){
+				delete_records('artefact_booklet_listofskills', 'idlist', $list->id);
+                delete_records('artefact_booklet_list', 'id', $list->id);
+				delete_records('artefact_booklet_lskillsresult', 'idobject', $id);
+			}
+ 		}
+		elseif ($typeobj == 'reference'){
+        	delete_records('artefact_booklet_refresult', 'idobject', $id);
+  	    	delete_records('artefact_booklet_reference', 'idobject', $id);
  		}
 		else{
             delete_records('artefact_booklet_result'.$typeobj, 'idobject', $id);
@@ -204,12 +220,17 @@ else if ($type == 'listskills') {
     delete_records('artefact_booklet_listofskills', 'idlist', $id);
     delete_records('artefact_booklet_list', 'idoject', $id);
 }
-
+else if ($typeobj == 'reference'){
+	delete_records('artefact_booklet_refresult', 'idobject', $id);
+  	delete_records('artefact_booklet_reference', 'idobject', $id);
+}
 else if ($type == 'visualization') {
     $rslt = get_record('artefact_booklet_resulttext', 'id', $id);
     delete_records('artefact_booklet_resultdisplayorder', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));
     delete_records('artefact_booklet_resulttext', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));
     delete_records('artefact_booklet_resultradio', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));
     delete_records('artefact_booklet_resultcheckbox', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));
+    delete_records('artefact_booklet_lskillsresult', 'idobject', $rslt->idrecord, 'idowner', $USER->get('id'));
+	delete_records('artefact_booklet_refresult', 'idrecord', $rslt->idrecord, 'idowner', $USER->get('id'));
 }
 json_reply(null, get_string('compositedeleted', 'artefact.booklet'));

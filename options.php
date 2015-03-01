@@ -32,35 +32,32 @@ if ($idobject){
 			if ($tab = get_record('artefact_booklet_tab', 'id', $frame->idtab)){
 				if ($tome = get_record('artefact_booklet_tome', 'id', $tab->idtome)){
 					define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title.' -> '.$object->title);
-
+                    $reference = false;
+                    $listskills = false;
+                    $radio = false;
+                    $synthese = false;
+                    $inlinejs = "";
 					//Allow to show or hide table needed for listskills, radio bitton and synthese
 					if ($object->type == 'listskills' ) {
 						//print_object($object);
 						//echo "<br />options.php :: 30\n";
     					$listskills = true;
-                        $synthese = false;
-					    $radio = false;
 					    $inlinejs = ArtefactTypeListSkills::get_js($object->type, $idobject);
                         $optionsform = ArtefactTypeListSkills::get_form($idobject, $domainsselected);
 					}
-					else {
-                        $listskills = false;
-						if ($object->type == 'synthesis' ) {
-							$synthese = true;
-						    $radio = false;
-						    $inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
-						}
-						else if ($object->type == 'radio') {
-                    		$radio = true;
-						    $synthese = false;
-						    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
-						}
-						else {
-                    		$radio = false;
-					    	$synthese = false;
-					    	$inlinejs = "";
-						}
-       	                $optionsform = ArtefactTypeSynthesis::get_form($idobject);
+					else if ($object->type == 'reference' ) {
+						$reference = true;
+						$inlinejs = ArtefactTypeReference::get_js($object->type, $idobject);
+                        $optionsform = ArtefactTypeReference::get_form($idobject);
+					}
+					elseif ($object->type == 'synthesis' ) {
+						$synthese = true;
+						$inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
+                        $optionsform = ArtefactTypeSynthesis::get_form($idobject);
+					}
+					else if ($object->type == 'radio') {
+                   		$radio = true;
+					    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
 					}
 
 					//print_object($optionsform);
@@ -72,6 +69,7 @@ if ($idobject){
 					$smarty->assign('radio', $radio);
 					$smarty->assign('synthese', $synthese);
                     $smarty->assign('listskills', $listskills);
+                    $smarty->assign('reference', $reference);
 					$smarty->display('artefact:booklet:options.tpl');
 					exit;
 				}

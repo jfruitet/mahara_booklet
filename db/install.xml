@@ -125,6 +125,18 @@
                 <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
             </KEYS>
         </TABLE>
+         <TABLE NAME="artefact_booklet_reference">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idobjectlinked" TYPE="int" LENGTH="10" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+
          <TABLE NAME="artefact_booklet_synthesis">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
@@ -191,6 +203,22 @@
                 <KEY NAME="skillfk" TYPE="foreign" FIELDS="idskill" REFTABLE="artefact_booklet_skill" REFFIELDS="id" />
             </KEYS>
         </TABLE>
+        <TABLE NAME="artefact_booklet_refresult">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idreference" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="referencefk" TYPE="foreign" FIELDS="idreference" REFTABLE="artefact_booklet_reference" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+
         <TABLE NAME="artefact_booklet_resultradio">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />

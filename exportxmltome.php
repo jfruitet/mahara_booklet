@@ -148,7 +148,7 @@ function xml_object ($docframe, $idobject) {
         }
 
     	if ($object->type == 'synthesis') {
-            get_records_array('artefact_booklet_synthesis', 'idobject', $idobject);
+            $objectlinked=get_records_array('artefact_booklet_synthesis', 'idobject', $idobject);
 			if (!empty($objectlinked)){
 				foreach ($objectlinked as $objectlinked) {
 	        	    if ($obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked)){
@@ -158,6 +158,18 @@ function xml_object ($docframe, $idobject) {
 			   }
         	}
     	}
+    	if ($object->type == 'reference') {
+            $objectlinked=get_records_array('artefact_booklet_reference', 'idobject', $idobject);
+			if (!empty($objectlinked)){
+				foreach ($objectlinked as $objectlinked) {
+	        	    if ($obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked)){
+    	        		$doclinked = $doc->createElement('reference', $obj->name);
+        	    		$docobject->appendChild($doclinked);
+					}
+			   }
+        	}
+    	}
+
 	    if ($object->type == 'listskills') {
     	    if ($list = get_record('artefact_booklet_list', 'idobject', $idobject)){
             	$description = $doc->createCDATASection($list->description);

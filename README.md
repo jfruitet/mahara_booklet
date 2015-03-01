@@ -13,6 +13,11 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 ### February 2015
 
+**Version 1.2.2 - 2015-02-29**
+
+Possibilité de citer dans un cadre un champ le contenu d'un champ d'un autre cadre 
+afin d'éviter de ressaisir des données quand deux cadres portent sur des informations complémentaires.
+
 **Version 1.1.2 - 2015-02-22**
 
 Nouvelle structure de données "**liste de compétences avec barème**" - New data structure "**list of skills**"

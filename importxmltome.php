@@ -191,7 +191,7 @@ function create_object ($object, $idparent, $order, $idtab) {
     $data = new StdClass;
     $data->title = $title;
     $data->type = $type;
-    $data->name = $name;
+    $data->name = $name.'_'.$idparent.'_'.$idtab; // eviter les doublons sur les noms d'objets
     $data->help = $cdata->wholeText;
     $data->idframe = $idparent;
     $data->displayorder = $order;
@@ -229,6 +229,12 @@ function create_object ($object, $idparent, $order, $idtab) {
         for ($i = 1; $i < $options->length; ++$i) {
             $option = $options->item($i);
             create_linked($option, $idobject, $idtab);
+        }
+    }
+    if ($type == "reference") {
+        for ($i = 1; $i < $options->length; ++$i) {
+            $option = $options->item($i);
+            create_reference($option, $idobject, $idtab);
         }
     }
 }
@@ -305,6 +311,28 @@ function create_linked ($object, $idparent, $idtab) {
         $SESSION->add_error_msg(get_string('noforwardref', 'artefact.booklet'));
     }
 }
+
+// ne rechercher l'objet lié que parmi les objets du meme idtab
+function create_reference ($object, $idparent, $idtab) {
+    global $SESSION;
+    $name = $object->nodeValue;
+    $sql="SELECT ob.id as id FROM {artefact_booklet_object} ob
+           JOIN {artefact_booklet_frame} fr ON fr.id = ob.idframe
+           WHERE ob.name LIKE ?
+           AND fr.idtab = ?";
+    $objectlinked = get_record_sql($sql, array($name,$idtab));
+    if ($objectlinked) {
+        $idobjectlinked = $objectlinked->id;
+        $data = new StdClass;
+        $data->idobjectlinked = $idobjectlinked;
+        $data->idobject = $idparent;
+        insert_record('artefact_booklet_reference', $data);
+    }
+    else {
+        $SESSION->add_error_msg(get_string('noforwardref', 'artefact.booklet'));
+    }
+}
+
 
 function importtome_submit (Pieform $form, $values) {
     global $USER, $SESSION;

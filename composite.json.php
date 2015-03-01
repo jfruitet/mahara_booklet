@@ -71,6 +71,18 @@ else if ($type == 'listskills') {   // MODIF JF
     }
     $count = count_records('artefact_booklet_list', 'idobject', $id);
 }
+else if ($type == 'reference') {
+    if (!$data = get_records_array($othertable, 'idobject', $id)) {
+        $data = array();
+    }
+    else {
+        foreach ($data as $item) {
+            $temp = get_record('artefact_booklet_object', 'id', $item->idobjectlinked);
+            $item->title = $temp->title;
+        }
+    }
+    $count = count_records($othertable, 'idobject', $id);
+}
 else if ($type == 'synthesis') {
     if (!$data = get_records_array($othertable, 'idobject', $id)) {
         $data = array();
