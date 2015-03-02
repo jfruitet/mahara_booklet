@@ -11,12 +11,24 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
  
 ## Modifications by JF
 
+### March 2015
+
+#### Bug correction
+
+**Version 1.2.2 - 2015-03-02** : 
+
+* a void line corrected in the xml header du to library inclusion. 
+* twice import of the same booklet does not create twins objects.
+
+
 ### February 2015
+
+#### New functionnalities
 
 **Version 1.2.2 - 2015-02-29**
 
-Possibilité de citer dans un cadre un champ le contenu d'un champ d'un autre cadre 
-afin d'éviter de ressaisir des données quand deux cadres portent sur des informations complémentaires.
+Possibilité de citer dans une fiche le contenu d'un champ d'une autre fiche 
+afin d'éviter de ressaisir des données quand deux fiches portent sur des informations complémentaires.
 
 **Version 1.1.2 - 2015-02-22**
 
@@ -41,33 +53,33 @@ Major improvement : **hierarchical frames** (n-ary tree).
 										  |
 				   -------------------------------------------------------------------------------------------------------
 				   |                                               |                                                     |
-	niveau1		CADRE.0/1                                       CADRE.0/2                                             CADRE.0/3
+	niveau1		fiche.0/1                                       fiche.0/2                                             fiche.0/3
 				   |                                               |
 				--------------------                            --------------------------------------------------
 				|                  |                            |                  |               |             |
-	niveau2   CADRE.1/1     CADRE.1/2                       CADRE.1/3           CADRE.1/4       CADRE.1/5     CADRE.1/6
+	niveau2   fiche.1/1     fiche.1/2                       fiche.1/3           fiche.1/4       fiche.1/5     fiche.1/6
 					    		 |                            |
 					----------------------           --------...
 					|                    |           |
-	niveau3 	CADRE.2/1           CADRE.2/2      CADRE.2/3
+	niveau3 	fiche.2/1           fiche.2/2      fiche.2/3
 						|
 						-------
 							   |
-	niveau4					CADRE.3/1
+	niveau4					fiche.3/1
 
-La seule limite d'ordre pratique porte sur l'affichage qui est limitées à 52 cadres différents par niveau.
+La seule limite d'ordre pratique porte sur l'affichage qui est limitées à 52 fiches différentes par niveau.
 
 L'affichage du menu se fait selon un parcours en profondeur d'abord
 
 	PAGE1
-	CADRE01 --> CADRE11
-	        --> CADRE12 --> CADRE21 --> CADRE31
-	                    --> CADRE22
-	CADRE02 --> CADRE13 --> CADRE23
-	        --> CADRE14
-	        --> CADRE15
-            --> CADRE16
-	CADRE03
+	fiche01 --> fiche11
+	        --> fiche12 --> fiche21 --> fiche31
+	                    --> fiche22
+	fiche02 --> fiche13 --> fiche23
+	        --> fiche14
+	        --> fiche15
+            --> fiche16
+	fiche03
 
 
 
@@ -99,7 +111,7 @@ Booklet status (modification yes / no) and author information and copyright stuf
 
 #### Frame list display
 
-Quand un cadre de type liste a plus de 5 items l'affichage vertical est sélectionné, sinon c'est l'affichahe horizontal en tableau qui est  maintenu.
+Quand un fiche de type liste a plus de 5 items l'affichage vertical est sélectionné, sinon c'est l'affichahe horizontal en tableau qui est  maintenu.
 
 When a frame list contains more than 5 items, vertical display is selected; 
 

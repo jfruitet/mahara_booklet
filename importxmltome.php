@@ -92,7 +92,8 @@ function create_tome ($doc, $owner) {
     $booklets = $doc->getElementsByTagName('booklet');
     $booklet = $booklets->item(0);
     $title = $booklet->getAttribute('title');
-	// Modif JF
+    $title .= '_'.date("Y_m_d", time());
+
 	$status = $booklet->getAttribute('status');
     $help = $booklet->firstChild;
     $cdata = $help->firstChild;
