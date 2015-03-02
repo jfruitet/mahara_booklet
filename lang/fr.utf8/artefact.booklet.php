@@ -201,3 +201,20 @@ $string['usersaved'] = "Utilisateur sauvegardé !";
 $string['deletedesigner'] = "Choisir le concepteur à supprimer des concepteurs : ";
 $string['delete'] = "Supprimer";
 $string['userdeleted'] = "Concepteur supprimé";
+
+// Reference
+$string['selectafield'] = "Sélectionnez l'un des champs d'une des fiches disponibles";
+$string['reference'] = "Champ référencé";
+$string['idobject'] = "Objet Id: %s";
+$string['idframe'] = "Fiche ID: %s";
+$string['objectlinked'] = "Objet lié : ";
+$string['objecttitle'] = "Titre de l'objet : %s";
+$string['objecttype'] = "Type : %s";
+$string['referencehasnovalue'] = "La référence est vide. Saisir SVP une nouvelle valeur pour la rubrique ";
+$string['offrame'] = "de la fiche ";
+
+
+// Free skill
+$string['freeskills'] = "Compétences utilisateur";
+$string['addfreeskills'] = "Add user's skills";
+$string['saveskills'] = "Enregistrer les nouvelles compétences";

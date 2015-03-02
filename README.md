@@ -13,12 +13,23 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 ### March 2015
 
+#### New functionnalities
+
+**Version 2015030201 Release 1.2.3 - 2015-03-02**
+
+Nouvel objet "Compétences utilisateur" permettant à tout utilisateur d'ajouter une liste de compétences et de les évaluer.
+
+Cet objet complète l'objet "Liste de compétences" proposé par le concepteur d'un livret.
+
+***Attention*** : Le développement de cette fonctionnalité n'est pas tout à fait achevé...
+
+
 #### Bug correction
 
 **Version 1.2.2 - 2015-03-02** : 
 
-* a void line corrected in the xml header du to library inclusion. 
-* twice import of the same booklet does not create twins objects.
+* Une ligne vide corrigée dans les fichiers d'export XML due à une inclusion de bibliothèque. A void line corrected in the xml header due to library inclusion.
+* La réinmprtation d'un livret ne crée plus des doublons sur les objets. Twice import of the same booklet does not create twins objects.
 
 
 ### February 2015

@@ -151,6 +151,7 @@ $string['fieldlinkedname'] = "Field linked title";
 $string['addfield'] = "Add a new field to link";
 $string['addfieldsavefailed'] = "This field is already linked to this object!";
 
+
 // list of skills
 $string['addlist'] = "New list of skills";
 $string['assessment'] = "Check assessment";
@@ -226,3 +227,10 @@ $string['objecttitle'] = "Object title: %s";
 $string['objecttype'] = "Type: %s";
 $string['referencehasnovalue'] = "Reference has not any value. Please type in a new value for field ";
 $string['offrame'] = "of frame ";
+
+
+// Free skill
+$string['freeskills'] = "User's skills";
+$string['addfreeskills'] = "Add user's skills";
+$string['saveskills'] = "Save new skills";
+

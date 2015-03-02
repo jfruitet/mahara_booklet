@@ -64,6 +64,18 @@ if ($type == 'visualization') {
     $count = count($data);
 }
 // type <> visualization
+else if ($type == 'freeskills') {   // MODIF JF
+    if (!$data = get_records_array($othertable, 'idobject', $id)) {
+        $data = array();
+    }
+    else {
+        foreach ($data as $item) {
+            $temp = get_record('artefact_booklet_object', 'id', $item->idobjectlinked);
+            $item->title = $temp->title;
+        }
+    }
+    $count = count_records($othertable, 'idobject', $id);
+}
 else if ($type == 'listskills') {   // MODIF JF
     $sql = 'SELECT ar.* FROM {artefact_booklet_list} ar WHERE ar.idobject = ?';
     if (!$data = get_records_sql_array($sql, array($id))) {

@@ -94,6 +94,7 @@
 				<FIELD NAME="description" TYPE="text" NOTNULL="false" />
                 <FIELD NAME="scale" TYPE="char" LENGTH="255" NOTNULL="false" />
                 <FIELD NAME="threshold" TYPE="int" LENGTH="10" />
+                <FIELD NAME="owner" TYPE="int" LENGTH="10"  DEFAULT="0" />
             </FIELDS>
             <KEYS>
 				<KEY NAME="primary" TYPE="primary" FIELDS="id" />
@@ -187,6 +188,23 @@
                 <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
             </KEYS>
         </TABLE>
+        <TABLE NAME="artefact_booklet_frskllresult">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idobject" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idowner" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="idskill" TYPE="int" LENGTH="10" NOTNULL="true" />
+                <FIELD NAME="value" TYPE="int" NOTNULL="false" />
+                <FIELD NAME="idrecord" TYPE="int" NOTNULL="true" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                <KEY NAME="objectfk" TYPE="foreign" FIELDS="idobject" REFTABLE="artefact_booklet_object" REFFIELDS="id" />
+                <KEY NAME="ownerfk" TYPE="foreign" FIELDS="idowner" REFTABLE="usr" REFFIELDS="id" />
+                <KEY NAME="skillfk" TYPE="foreign" FIELDS="idskill" REFTABLE="artefact_booklet_skill" REFFIELDS="id" />
+            </KEYS>
+        </TABLE>
+
         <TABLE NAME="artefact_booklet_lskillsresult">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />

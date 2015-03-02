@@ -38,7 +38,7 @@ if ($idobject){
 					$radio = false;
                     $synthese = false;
                     $inlinejs = "";
-                    $optionsform = null;
+
 					//Allow to show or hide table needed for listskills, radio bitton and synthese
 					if ($object->type == 'listskills' ) {
 						//print_object($object);
@@ -47,21 +47,29 @@ if ($idobject){
 					    $inlinejs = ArtefactTypeListSkills::get_js($object->type, $idobject);
                         $optionsform = ArtefactTypeListSkills::get_form($idobject, $domainsselected);
 					}
-					else if ($object->type == 'reference' ) {
+					elseif ($object->type == 'reference' ) {
 						$reference = true;
 						$inlinejs = ArtefactTypeReference::get_js($object->type, $idobject);
                         $optionsform = ArtefactTypeReference::get_form($idobject);
 					}
-					elseif ($object->type == 'synthesis' ) {
-						$synthese = true;
-						$inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
+					elseif ($object->type == 'freeskills' ) {
+						//print_object($object);
+						//echo "<br />options.php :: 30\n";
+    					$freeskills = true;
+					    $inlinejs = ArtefactTypeFreeSkills::get_js($object->type, $idobject);
+                        $optionsform = ArtefactTypeFreeSkills::get_form($idobject);
+					}
+					else{
+						if ($object->type == 'synthesis' ) {
+							$synthese = true;
+							$inlinejs = ArtefactTypeSynthesis::get_js($object->type, $idobject);
+                        }
+						else if ($object->type == 'radio') {
+                   			$radio = true;
+					    	$inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
+						}
                         $optionsform = ArtefactTypeSynthesis::get_form($idobject);
-					}
-					else if ($object->type == 'radio') {
-                   		$radio = true;
-					    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
-                        $optionsform = ArtefactTypeRadio::get_form($idobject);
-					}
+					 }
 
 					//print_object($optionsform);
 					//exit;
@@ -72,6 +80,7 @@ if ($idobject){
 					$smarty->assign('radio', $radio);
 					$smarty->assign('synthese', $synthese);
                     $smarty->assign('listskills', $listskills);
+                    $smarty->assign('freeskills', $freeskills);
                     $smarty->assign('reference', $reference);
 					$smarty->display('artefact:booklet:options.tpl');
 					exit;

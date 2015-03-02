@@ -25,6 +25,7 @@ class PluginArtefactbooklet extends PluginArtefact {
             'synthesis',
             'visualization',
 			'reference',
+            'freeskills',
         );
     }
     public static function get_block_types() { return array(); }
@@ -1301,10 +1302,11 @@ class ArtefactTypeObject extends ArtefactTypebooklet {
                         'radio' => get_string('radio', 'artefact.booklet'),
                         'checkbox' => get_string('checkbox', 'artefact.booklet'),
                         'date' => get_string('date', 'artefact.booklet'),
+                        'reference' => get_string('reference', 'artefact.booklet'), // referencer un champs d'une autre fiche
                         'synthesis' => get_string('synthesis', 'artefact.booklet'),          // seulement pour les cadres non liste et seulement lors de la creation
                         'attachedfiles' => get_string('attachedfiles', 'artefact.booklet'),
                         'listskills' => get_string('listskills', 'artefact.booklet'),
-                        'reference' => get_string('reference', 'artefact.booklet'), // referencer un champs d'une autre fiche
+                        'freeskills' => get_string('freeskills', 'artefact.booklet'),
                     ) : array(
                         'longtext' => get_string('longtext', 'artefact.booklet'),
                         'shorttext' => get_string('shorttext', 'artefact.booklet'),
@@ -1313,9 +1315,10 @@ class ArtefactTypeObject extends ArtefactTypebooklet {
                         'radio' => get_string('radio', 'artefact.booklet'),
                         'checkbox' => get_string('checkbox', 'artefact.booklet'),
                         'date' => get_string('date', 'artefact.booklet'),
+                        'reference' => get_string('reference', 'artefact.booklet'), // referencer un champs d'une autre fiche
                         'attachedfiles' => get_string('attachedfiles', 'artefact.booklet'),
                         'listskills' => get_string('listskills', 'artefact.booklet'),
-                        'reference' => get_string('reference', 'artefact.booklet'), // referencer un champs d'une autre fiche
+						'freeskills' => get_string('freeskills', 'artefact.booklet'),
                     )),
                     'title' => get_string('typefield', 'artefact.booklet'),
                 ),
@@ -1825,7 +1828,7 @@ EOF;
 
 
             ),
-            'successcallback' => 'objectbase_submit',
+            'successcallback' => 'objectbaseskillslist_submit',
         );
         $compositeform['form'] = pieform($cform);
 
@@ -2011,7 +2014,7 @@ function selectskilllist_submit(Pieform $form, $values) {
     redirect(get_config('wwwroot') . '/artefact/booklet/index.php');
 }
 
-function objectbase_submit(Pieform $form, $values){
+function objectbaseskillslist_submit(Pieform $form, $values){
     global $_SESSION;
     if ($object = get_record('artefact_booklet_object', 'id', $values['id'])){
 		//echo "<br />lib.php :: 1733 :: OBJECT <br >\n";
@@ -2519,7 +2522,7 @@ class ArtefactTypeSynthesis extends ArtefactTypeOption {
 }
 
 class ArtefactTypeReference extends ArtefactTypeOption {
-    /* classe pour pieforms et fonctions JS propres a une synthese */
+    /* classe pour pieforms et fonctions JS propres a une reference */
     public static function is_singular() { return true; }
     public static function get_tablerenderer_js() {
         return "
@@ -2527,6 +2530,586 @@ class ArtefactTypeReference extends ArtefactTypeOption {
                 ";
     }
 }
+
+class ArtefactTypeFreeSkills extends ArtefactTypeOption {
+    /* classe pour pieforms et fonctions JS propres a une competence proposee par l'utilisateur */
+    public static function is_singular() { return true; }
+    public static function get_tablerenderer_js() {
+        return "
+                'title',
+                ";
+    }
+
+	public static function get_freeskillsform($idtab, $idobject, $idrecord=0, $domainsselected=0) {
+	global $USER;
+
+	$object = get_record('artefact_booklet_object', 'id', $idobject);
+	//print_object($object);
+	//exit;
+    $elements = array();
+	$tab_selected = array();
+
+
+	if (empty($domainsselected)){
+    	$domainsselected='any';
+	}
+
+	// Selected skills
+	$sql ="SELECT ob.*, sk.* FROM  {artefact_booklet_frskllresult} AS ob, {artefact_booklet_skill} AS sk
+ WHERE  ob.idskill = sk.id
+ AND ob.idobject = ?
+ AND ob.idowner = ?
+ ORDER BY sk.domain ASC, sk.code ASC ";
+	if ($rec_skills = get_records_sql_array($sql, array(0, $USER->get('id')))){
+		foreach ($rec_skills as $rec_skill){
+    		$tab_selected[$rec_skill->id] = $rec_skill->id;
+		}
+	}
+
+	// Domains
+    // Skills
+    $list_of_domains_selected = array();
+
+    if (!empty($domainsselected) && ($domainsselected!='any')){
+		$tab_domainsselected = explode('-', $domainsselected);
+		//print_object($tab_domainsselected);
+		//exit;
+		foreach($tab_domainsselected as $index_domainselected){
+			if (isset($index_domainselected)){
+    			$list_of_domains_selected[] = trim($index_domainselected);
+			}
+		}
+	}
+
+	//print_object($list_of_domains_selected);
+	//exit;
+	$sql = "SELECT DISTINCT domain FROM {artefact_booklet_skill} WHERE  (owner = ? OR owner = ?)  ORDER BY domain ASC";
+    $domains = get_records_sql_array($sql, array(0, $USER->get('id')));
+    //print_object($domains);
+	//exit;
+
+	if (!empty($domains)){
+        	$nbdomains = count($domains);
+			if ($nbdomains>1){
+		    	$domain_options = array();
+				$domain_selected = array();
+				$d=0;
+
+				if ($domainsselected=='any'){
+					foreach ($domains as $domain){
+	                	$domain_options[$d]=$domain->domain;
+   		                $domain_selected[] = $d;
+						$d++;
+					}
+				}
+				else{
+					foreach ($domains as $domain){
+	                	$domain_options[$d]=$domain->domain;
+						if (array_search($d, $list_of_domains_selected)){
+    		                $domain_selected[] = $d;
+						}
+						$d++;
+					}
+				}
+		        //print_object($domain_options);
+				//exit;
+
+    			$elementdomains['domainselect'] = array(
+	        		'type' => 'select',
+	    	    	'title' => '', //get_string('selectdomains','artefact.booklet'),
+		        	'multiple' => true,
+    		    	'options' => $domain_options,
+        			'defaultvalue' => $domain_selected,
+        			//'size' => count($domains),
+	                'size' => 3,
+    	            'description' => get_string('multiselect', 'artefact.booklet'),
+	    		);
+
+            	$elementdomains['submit'] = array(
+            		'type' => 'submitcancel',
+        	    	'value' => array(get_string('savedomainchoice','artefact.booklet'), get_string('cancel')),
+    	         	'goto' => get_config('wwwroot') . '/artefact/booklet/index.php?id='.$idtab,
+	        	);
+
+		        $elementdomains['idobject'] = array(
+                        'type' => 'hidden',
+                        'value' => $idobject,
+    	        );
+
+				$elementdomains['idrecord'] = array(
+                        'type' => 'hidden',
+                        'value' => $idrecord,
+    	        );
+
+				$elementdomains['compositetype'] = array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+        		);
+
+   	    		$domainchoice = array(
+            	    'name' => 'domainchoice',
+                	'plugintype' => 'artefact',
+	                'pluginname' => 'booklet',
+    	    	    // 'validatecallback' => 'validate_selectlist',
+        	    	'successcallback' => 'selectdomainsfree_submit',
+            	    'renderer' => 'table',
+                	'elements' => $elementdomains,
+	            );
+    	    	$compositeform['domainchoice'] = pieform($domainchoice);
+			}
+	}
+
+	if (!empty($list_of_domains_selected)){
+            $where='';
+			$params = array();
+			foreach($list_of_domains_selected as $d){
+				if (!empty($where)){
+					$where.=' OR domain = ? ';
+				}
+				else{
+                    $where.=' domain = ? ';
+				}
+				$params[]= $domain_options[$d];
+			}
+            $params[]= 0;
+            $params[]= $USER->get('id');
+			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE ".$where." AND (owner = ? OR owner = ?) ORDER BY code ASC";
+		    $skills = get_records_sql_array($sql, $params);
+	}
+	else{
+			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE (owner = ? OR owner = ?) ORDER BY domain ASC, code ASC";
+		    $skills = get_records_sql_array($sql, array(0, $USER->get('id')));
+	}
+
+
+	if (!empty($skills)){
+			$i=0;
+            $elementsskills = array();
+        	foreach ($skills as $skill){
+				if (!empty($tab_selected[$skill->id])){
+                    $elementsskills['select'.$i] = array(
+        		        	'type' => 'checkbox',
+                			'defaultvalue' => $tab_selected[$skill->id],
+		                	'title' => $skill->code,
+        		        	//'description' => get_string('checked', 'artefact.booklet'),
+           			);
+				}
+				else{
+                    $elementsskills['select'.$i] = array(
+        		        	'type' => 'checkbox',
+                			'defaultvalue' => 0,
+		                	'title' => $skill->code,
+        		        	//'description' => '',
+           			);
+				}
+                $elementsskills['html'.$i] = array(
+                			'type' => 'html',
+                			'value' => $skill->domain.'; '.$skill->description.'; ['.$skill->scale.'|'.$skill->threshold.']'."\n",
+           		);
+                $elementsskills['id'.$i] = array(
+		                	'type' => 'hidden',
+        		        	'value' => $skill->id,
+           		);
+                $elementsskills['type'.$i] = array(
+		                	'type' => 'hidden',
+        		        	'value' => $skill->type,
+           		);
+
+                $i++;
+			}
+
+	        $elementsskills['nbitems'] = array(
+                	'type' => 'hidden',
+                	'value' => $i,
+    	    );
+
+       		$elementsskills['submit'] = array(
+            	'type' => 'submit',
+            	'value' => get_string('savechecklist','artefact.booklet'),
+        	);
+
+			$elementsskills['delete'] = array(
+                'type' => 'checkbox',
+                'help' => false,
+                'title' => get_string('deleteskills','artefact.booklet'),
+                'defaultvalue' => 0,
+                'description' => get_string('deleteskillsdesc','artefact.booklet'),
+        	);
+
+	        $elementsskills['idobject'] = array(
+                        'type' => 'hidden',
+                        'value' => $idobject,
+            );
+	        $elementsskills['idframe'] = array(
+                        'type' => 'hidden',
+                        'value' => $object->idframe,
+            );
+
+			$elementsskills['compositetype'] = array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+        	);
+
+            $elementsskills['domainsselected'] = array(
+                    'type' => 'hidden',
+                    'value' => $domainsselected,
+            );
+
+            $elementsskills['idtab'] = array(
+        	            'type' => 'hidden',
+            	        'value' => $idtab,
+    	    );
+
+            $elementsskills['idrecord'] = array(
+                        'type' => 'hidden',
+                        'value' => $idrecord,
+    	    );
+
+            $elementsskills['idframe'] = array(
+        	            'type' => 'hidden',
+            	        'value' => $object->idframe,
+    	    );
+
+    	    $choice = array(
+                'name' => 'listchoice',
+                'plugintype' => 'artefact',
+                'pluginname' => 'booklet',
+        	    // 'validatecallback' => 'validate_selectlist',
+            	'successcallback' => 'selectskillfree_submit',
+                'renderer' => 'table',
+                'elements' => $elementsskills,
+            );
+        	$compositeform['choice'] = pieform($choice);
+	}
+
+/*
+	$cform = array(
+            'name' => 'modifform',
+            'plugintype' => 'artefact',
+            'pluginname' => 'booklet',
+            'renderer' => 'table',
+            'elements' => array(
+                'title' => array(
+                    'type' => 'hidden',
+                    'value' => ((!empty($object)) ? $object->title : NULL),
+                ),
+                'name' => array(
+                    'type' => 'hidden',
+                    'value' => ((!empty($object)) ? $object->name : NULL),
+                ),
+
+				'compositetype' => array(
+                    'type' => 'hidden',
+                    'value' => $object->type,
+                ),
+                'id' => array(
+                    'type' => 'hidden',
+                    'value' => $idobject
+                ),
+            ),
+    );
+
+	$compositeform['form'] = pieform($cform);
+*/
+
+    $sform = array(
+            	'name' => 'inputskills',
+            	'plugintype' => 'artefact',
+        	    'pluginname' => 'booklet',
+    	        'renderer' => 'table',
+	            'elements' => array(
+/*
+            		'title' => array(
+                			'type' => 'html',
+                			'value' => '<h3>'.get_string('inputnewskills', 'artefact.booklet').'</h3>',
+           			),
+*/
+            		'skillsfree' => array(
+                    	'type' => 'textarea',
+                    	'rows' => 10,
+                    	'cols' => 100,
+                    	'title' => get_string('listofskills', 'artefact.booklet'),
+                        'defaultvalue' => '',
+                        'description' => get_string('inputlistofskillsmodel', 'artefact.booklet'),
+						'help' => true
+            		),
+
+            		'domainsselected' => array(
+                	    'type' => 'hidden',
+                    	'value' => $domainsselected,
+        	    	),
+    	        	'submit' => array(
+         	           'type' => 'submitcancel',
+                        'value' => array(get_string('saveskills', 'artefact.booklet'), get_string('cancel')),
+                        'goto' => get_config('wwwroot') . '/artefact/booklet/index.php?id='.$idtab,
+                   	),
+	           		'compositetype' => array(
+	                    'type' => 'hidden',
+    	                'value' => $object->type,
+        	    	),
+            		'id' => array(
+        	            'type' => 'hidden',
+            	        'value' => $idobject,
+    	        	),
+            		'idtab' => array(
+        	            'type' => 'hidden',
+            	        'value' => $idtab,
+    	        	),
+
+					'idrecord' => array(
+                        'type' => 'hidden',
+                        'value' => $idrecord,
+    	        	),
+
+
+				),
+           		'successcallback' => 'objectfreeskills_submit',
+    );
+    $compositeform['skillsform'] = pieform($sform);
+
+	//print_object($compositeform);
+	//exit;
+    return $compositeform;
+
+}
+
+
+}
+
+// -------------------------------------
+function selectdomainsfree_submit(Pieform $form, $values) {
+    global $_SESSION;
+	global $_SERVER;
+	//print_object($values);
+	//exit;
+	// Domain selection
+    $domainsselected='';
+
+	if (isset($values['domainselect'])){
+		foreach($values['domainselect'] as $a_domain){
+	        $domainsselected.= $a_domain.'-';
+		}
+        $domainsselected=substr($domainsselected,0,strlen($domainsselected)-1);
+		//echo "$domainsselected";
+		//exit;
+		if (!empty($domainsselected)){
+            $goto = get_config('wwwroot') . '/artefact/booklet/freeskills.php?id=' . $values['idobject'] .'&idrecord='.$values['idrecord']. '&domainsselected='.$domainsselected;
+		}
+		else{
+			$goto = get_config('wwwroot') . '/artefact/booklet/freeskills.php?id=' . $values['idobject'] .'&idrecord='.$values['idrecord'] . '&domainsselected=';
+		}
+
+	}
+	else{
+        $goto = $_SERVER['HTTP_REFERER'];
+	}
+	redirect($goto);
+}
+
+// -------------------------------------
+function selectskillfree_submit(Pieform $form, $values) {
+    global $_SESSION;
+	global $USER;
+	//print_object($values);
+	//exit;
+    $displayorder = 0;
+	$t_skillsfree=array();
+	$where='';
+    $select='';
+	$params = array();
+	if (!empty($values['nbitems'])){
+ 		for ($i=0; $i<$values['nbitems']; $i++){
+			if (!empty($values['select'.$i])){
+				// Creer l'association
+				$a_freeskill = new stdclass();
+        	   	$a_freeskill->idskill = $values['id'.$i];
+            	$a_freeskill->idobject = $values['idobject'];
+	            $a_freeskill->idowner = $USER->get('id');
+    	        $a_freeskill->value = $values['idrecord'];
+        	    $a_freeskill->idrecord = null;
+
+            	$t_skillsfree[]=$a_freeskill;
+				if (empty($where)){
+					$where .= ' (idskill = ?) ';
+				}
+				else{
+        	    	$where .= ' OR (idskill = ?) ';
+				}
+				$params[] = $values['id'.$i];
+			}
+		}
+	}
+
+	if (!empty($t_skillsfree)){
+			// Remettre à vide car il peut y avoir des de-selections
+			if (!empty($where)){
+				$select .= $where . ' AND (idobject = ?) AND (idowner = ?) ';
+			}
+			else{
+                $select .= ' (idobject = ?)  AND (idowner = ?) ';
+			}
+            $params[] = $values['idobject'];
+            $params[] = $USER->get('id');
+
+            delete_records_select('artefact_booklet_frskllresult', $select, $params);
+
+			if (!$values['delete']){
+				foreach($t_skillsfree as $a_freeskill){
+    				insert_record('artefact_booklet_frskllresult', $a_freeskill);
+				}
+			}
+	}
+	$goto = get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$values['idframe'].'&tab='.$values['idtab'].'&okdisplay=1';
+
+	redirect($goto);
+
+}
+
+function objectfreeskills_submit(Pieform $form, $values){
+    global $_SESSION;
+	global $USER;
+    srand();
+    if ($object = get_record('artefact_booklet_object', 'id', $values['id'])){
+		//echo "<br />lib.php :: 1781 :: OBJECT <br >\n";
+		//print_object($object);
+		//print_object($values);
+		//exit;
+
+			if (!empty($values['skillsfree'])){
+    	    	//
+				if ($tlist=explode("\n", strip_tags($values['skillsfree']))){
+					foreach ( $tlist as $line){
+						if (!empty($line)){
+							$skill = new stdclass();
+
+							// "domain1;code1;description1;[scale_value_value11,scale_value12,scale_value13,...,scale_value1N;threshold1]
+							if ($fields = explode("[", $line)){
+		                        if (!empty($fields[0])){
+    		                       	// "domain1;type1;code1;description1;
+        		                    if ($domain_code_description = explode(";", $fields[0])){
+                                        $nbfields=count($domain_code_description);
+										if ( $nbfields<5){    // pas de type dans le donnees
+											if (isset($domain_code_description[0])){
+                		                		$skill->domain =  trim(str_replace("-","",$domain_code_description[0]));
+												$current_domain = $skill->domain;
+                    	    	       		}
+											else{
+                            	    	    	$skill->domain = $current_domain;
+											}
+			                                if (isset($domain_code_description[1])){
+    			                                $skill->code = trim($domain_code_description[1]);
+											}
+											else{
+                			                    $skill->code = strtoupper($current_domain).'_'.$object->id.'_'.rand();
+											}
+	                        		        if (isset($domain_code_description[2])){
+    	                        		        $skill->description = trim($domain_code_description[2]);
+											}
+											else{
+        	        	                    	$skill->description = get_string('unknown', 'artefact.booklet');
+											}
+               		                    	$skill->type = '1';
+										}
+										else{
+											if (isset($domain_code_description[0])){
+                		                		$skill->domain =  trim(str_replace("-","",$domain_code_description[0]));
+												$current_domain = $skill->domain;
+	                    	    	        }
+											else{
+        	                    	    	    $skill->domain = $current_domain;
+											}
+		        	                        if (isset($domain_code_description[1])){
+    		        	                        $skill->type = trim($domain_code_description[1]);
+											}
+											else{
+                		        	            $skill->type = '1';
+											}
+		                                	if (isset($domain_code_description[2])){
+    		                                	$skill->code = trim($domain_code_description[2]);
+											}
+											else{
+                		                    	$skill->code = strtoupper($current_domain).'_'.$object->id.'_'.rand();
+											}
+	                        	        	if (isset($domain_code_description[3])){
+    	                        	        	$skill->description = trim($domain_code_description[3]);
+											}
+											else{
+        		        	                    $skill->description = get_string('unknown', 'artefact.booklet');
+											}
+										}
+									}
+								}
+    	                	    if (!empty($fields[1])){
+	        	                    // scale_value_value11,scale_value12,scale_value13,...,scale_value1N|threshold1]
+    	        	                if ($scale_threshold = explode("|", $fields[1])){
+										if (!empty($scale_threshold[0])){
+            	        	                // scale_value_value11,scale_value12,scale_value13,...,scale_value1N
+                	        	        	$skill->scale = trim($scale_threshold[0]);
+                    	        	    }
+										else if (!empty($skill->type)){ // Type 1 necessite un bareme
+	                        	            //$skill->scale = $values['scale'];
+	                                        $skill->scale = get_string('generalscalemodel','artefact.booklet');
+    	                                    $skill->threshold  = '3';
+										}
+        		                        if (!empty($scale_threshold[1])){
+            		                        // threshold1]
+											// Chasser ']'
+                    		                $skill->threshold = trim(substr($scale_threshold[1],0,-1));
+										}
+									}
+								}
+							}
+							$t_skill[] = $skill;
+						}
+					}
+				}
+			}
+			// enregistrer les skills
+			if (!empty($t_skill)){
+				foreach ($t_skill as $a_skill){
+					// Creer le skill
+					if ($rec_skill = get_record('artefact_booklet_skill', 'code', $a_skill->code)){
+						$idskill = $rec_skill->id;
+	                	$a_skill->id = $rec_skill->id;
+
+		            	update_record('artefact_booklet_skill', $a_skill);
+					}
+   					else{
+                    	$a_skill->owner = $USER->get('id');
+						$idskill = insert_record('artefact_booklet_skill', $a_skill, 'id', true);
+					}
+					// Creer l'association
+					$a_listskill = new stdclass();
+                    $a_listskill->idobject = $object->id;
+		            $a_listskill->idskill = $idskill;
+                    $a_listskill->idowner = $USER->get('id');
+    		        $a_listskill->value = $a_skill->threshold;
+                    $a_listskill->idrecord = $values['idrecord'];
+
+        	    	if ($rec_skill = get_record('artefact_booklet_frskllresult', 'idobject',  $object->id, 'idskill',  $idskill, 'idowner', $USER->get('id'))){
+	        	        $a_listskill->id = $rec_skill->id;
+                        $a_listskill->value = $rec_skill->value;
+                        $a_listskill->idrecord = $rec_skill->idrecord;
+    	        	    update_record('artefact_booklet_frskllresult', $a_listskill);
+					}
+					else{
+	                	insert_record('artefact_booklet_frskllresult', $a_listskill, 'id', true);
+					}
+				}
+			}
+			//$goto = get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$object->idframe.'&tab='.$values['idtab'].'&okdisplay='.$values['okdisplay'];
+			if (!empty($values['domainsselected'])){
+    	        $goto = get_config('wwwroot') . '/artefact/booklet/freeskills.php?id=' . $object->id . '&domainsselected='.$values['domainsselected'];
+			}
+			else{
+				$goto = get_config('wwwroot') . '/artefact/booklet/freeskills.php?id=' . $object->id . '&domainsselected=';
+			}
+
+			redirect($goto);
+
+	}
+}
+
 
 /* Visualisation d'un tome en cours de modification */
 function visualizetome_submit (Pieform $form, $values) {
@@ -2644,6 +3227,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 				$n5=0;
 				$n6=0;
 				$n7=0;
+				$n8=0;
+
 				// calcul du nombre d'elements de la liste
 				switch ($objects[0]->type) {
                 case 'longtext':
@@ -2723,10 +3308,21 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
 
                     break;
+                case 'freeskills':
+                    $n7 = count_records('artefact_booklet_frskllresult', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $sql = "SELECT re.idrecord FROM {artefact_booklet_refresult} re
+                            JOIN {artefact_booklet_resultdisplayorder} rd
+                            ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+                            WHERE re.idobject = ?
+                            AND re.idowner = ?
+                            ORDER BY rd.displayorder";
+                    $listidrecords = get_records_sql_array($sql, array($objects[0]->id, $this -> author));
+
+                    break;
 
             	}
 
-				$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7);
+				$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7, $n8);
 				// DEBUG
 				echo "<br /> lib.php :: 2223 :: $n = max ($n1, $n2, $n3, $n4, $n5, $n6)\n";
 
@@ -2867,7 +3463,71 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 
 					}
 				}
-               else if ($object->type == 'reference') {
+                else if ($object->type == 'freeskills') {
+                    $i = 0;
+					if ($vertical){
+        	        	$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
+					}
+                   	$ligne[$i].= "<td class=\"tablerenderer2\"><ul>\n";
+					$str_skills='';
+
+                    $vals = array();
+                    $sql = "SELECT * FROM {artefact_booklet_frskllresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
+ ORDER BY re.idrecord, rd.displayorder";
+                    $vals = get_records_sql_array($sql,  array($object->id, $USER->get('id')));
+					if (!empty($vals)){
+                       	foreach ($vals as $val){
+	                		if ($val){
+								$index = $val->value - 1;   // la valeur stockee n'est pas un indice mais une position
+    	                        $header = false;
+								$hidden = false;
+								if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+									// donnees saisies
+                		    	    switch ($skill->type){
+										case 0 : $header = true; break;
+                        		    	case 2 : $hidden = true; break;
+										default : break;
+									}
+
+									$scale = $skill->scale;
+									$domain = $skill->domain;
+									$sdescription = $skill->description;
+    		    	                $code = $skill->code;
+									$threshold = $skill->threshold;
+            		    	        $str_skill = "$domain::$code";
+                            		if (!$header){
+										$str_choice = get_skill_choice_display($skill, $index);
+                                		$sdescription = $skill->description;
+									}
+									else{
+    		                        	$str_choice = '';
+        		                        $sdescription = '<span class="blueback">'.$skill->description.'</span>';
+									}
+
+									if (!$hidden){
+										$str_skills .= '<li>'.$skill->domain.' :: '.$skill->code.' :: '.$str_choice. '<br /><span="small">'.$skill->description.'</span></li>'."\n";
+									}
+								}
+							}
+						}
+					}
+					$ligne[$i].=$str_skills."\n</table></td>\n";
+					if ($vertical){
+						if (!$lastposition[$object->id]){
+							$ligne[$i].=$separateur;
+						}
+					else{
+        	    		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+						}
+					}
+        			$i++;
+				}
+
+               	else if ($object->type == 'reference') {
                     $sql = "SELECT * FROM {artefact_booklet_refresult} re
                             JOIN {artefact_booklet_resultdisplayorder} rd
                             ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
@@ -3072,10 +3732,36 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                         $rslt .= "</table>\n";
 					}
 				}
-               else if ($object->type == 'reference') {
+
+                else if ($object->type == 'freeskills') {
+                    $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_frskllresult} re
+                            JOIN {artefact_booklet_skill} rs
+                            ON (rs.id = re.idskill)
+                            WHERE re.idobject = ?
+                            AND re.idowner = ?";
+                    $skills = get_records_sql_array($sql, array($object->id, $this->author));
+                    $i = 0;
+					if (!empty($skills)){
+                        $rslt .= "\n<tr><th>". $object -> title . "</th><td>\n<table>\n";
+                     	foreach ($skills as $skill){
+                            $value = $skill->value;
+                            $str_evaluation = '';
+							if (!empty($value)){
+                                $value--;
+                                if ($tab_scale=explode(",", $skill->scale)){
+                                	$str_evaluation = $tab_scale[$value];
+								}
+							}
+                        	$rslt .= '<tr><td>'.$skill->domain.'</td><td><b>'.$skill->code.'</b><td><i>'. $str_evaluation.'</i></td></tr><tr><td colspan="3">'. $skill->description.'</td></tr>'."\n";
+                    	}
+                        $rslt .= "</table>\n";
+					}
+				}
+
+				else if ($object->type == 'reference') {
 					$reference = get_record('artefact_booklet_refresult', 'idowner', $this -> author, 'idobject', $object->id);
                    	if ($reference && $reference->idreference) {
-                        $val = get_record('artefact_booklet_reference', 'id', $radio->idreference);
+                        $val = get_record('artefact_booklet_reference', 'id', $reference->idreference);
                         $rslt .= "\n<tr><th>". $object -> title . "</th>";
                         $rslt .= "<td>";
                         $rslt .= display_object_linked($val->idobjectlinked, $this -> author);
@@ -3206,6 +3892,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $imageshow = $THEME->get_url('images/btn_info.png');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+        $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         if (!is_null($idmodifliste)) {
@@ -3559,6 +4247,76 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                 	                );
 								}
 					        }
+
+                        	else if ($object->type == 'freeskills') {
+                	    		$vals = array();
+                    	    	if ($notframelist) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+								}
+       							else if ($objmodifinframe) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idrecord = ? AND idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($record->idrecord, $object->id, $USER->get('id')));
+								}
+								//print_object($vals);
+								//exit;
+                            	if ($notframelist || !$objmodifotherframe) {
+	                           		$alink = '<a href="'.get_config('wwwroot').'/artefact/booklet/freeskills.php?id='.$object->id.'&domainsselected=0"><img src="'.$imageaddfreeskills.'" alt="'.$addfreeskillsstr.'" title="'.$addfreeskillsstr.'" /></a> ';
+				        	    	if ($notframelist || !$objmodifotherframe) {
+        	                			$components['frsk' . $object->id] = array(
+                            	        	'type' => 'html',
+                	                    	'title' => $object->title,
+               	                	    	'value' => $alink,
+            	    	            	);
+									}
+
+
+									if ($vals){
+										//print_object($vals);
+										//exit;
+										foreach ($vals as $val){
+	                                        $header = false;
+											$hidden = false;
+											if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+												// donnees saisies
+                	                            switch ($skill->type){
+													case 0 : $header = true; break;
+                        	                   		case 2 : $hidden = true; break;
+													default : break;
+												}
+
+												$scale = $skill->scale;
+												$domain = $skill->domain;
+												$sdescription = $skill->description;
+    	                                        $code = $skill->code;
+												$threshold = $skill->threshold;
+            	                                $str_skill = "$domain::$code";
+
+												$index = $val->value - 1;
+
+												// la boîte de saisie
+           	            	                   	if (!$header){
+													$str_choice = get_skill_choice_display($skill, $index);
+                                	                $sdescription = $skill->description;
+												}
+												else{
+                                            	    $str_choice = '';
+                                                	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+												}
+
+												if (!$hidden){
+        	           								$components['frsk' . $object->id.'_'.$skill->id] = array(
+	        		        	        	      		'type' => 'html',
+		    			                	       		'title' => $skill->domain.' :: '.$skill->code,
+    		    			                        	'value' => $sdescription."<br />".$str_choice.'<hr />',
+														//'description' => $skill->description,
+	    	        				               	);
+												}
+											}
+										}
+									}
+								}
+							}
 						} // fin de for each objects
 					} // Fin de if objects
 				}   // fin de la frame n'est pas une liste
@@ -3592,6 +4350,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 						$n5=0;
 						$n6=0;
 						$n7=0;
+						$n8=0;
 						$rslt .= "\n<table class=\"tablerenderer2\">";
 						if (!$vertical){
 							$rslt .= "<thead>\n<tr>";
@@ -3670,10 +4429,20 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 	            	            	        ORDER BY rd.displayorder";
 	            	        	    	$listidrecords = get_records_sql_array($sql, array($objectslist[0]->id, $USER->get('id')));
 	            	            		break;
+					                case 'freeskills':
+	            		            	$n8 = count_records('artefact_booklet_refresult', 'idobject', $objectslist[0]->id, 'idowner', $USER->get('id'));
+	            	    	        	$sql = "SELECT re.idrecord FROM {'artefact_booklet_frskllresult'} re
+	            	            	        JOIN {artefact_booklet_resultdisplayorder} rd
+	            	            	        ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+	            	            	        WHERE re.idobject = ?
+	            	            	        AND re.idowner = ?
+	            	            	        ORDER BY rd.displayorder";
+	            	        	    	$listidrecords = get_records_sql_array($sql, array($objectslist[0]->id, $USER->get('id')));
+	            	            		break;
 
             			} // Fin du switch
 
-						$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7);
+						$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7, $n8);
 						// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
 					    $ligne = array();
 
@@ -3753,6 +4522,82 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 									}
 								}
 	                        }
+
+                        	else if ($object->type == 'freeskills') {
+                                $vals = array();
+                            	$i = 0;
+								if ($vertical){
+        	           		       	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+								}
+                                $ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+								$str_skills='';
+                           		$sql = "SELECT * FROM {artefact_booklet_frskllresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
+ ORDER BY re.idrecord, rd.displayorder";
+                           		$vals = get_records_sql_array($sql,  array($object->id, $USER->get('id')));
+								if (!empty($vals)){
+                                	foreach ($vals as $val){
+	                                    if ($val){
+											$index = $val->value - 1;   // la valeur stockee n'est pas un indice mais une position
+/*
+	                           		$alink = '<a href="'.get_config('wwwroot').'/artefact/booklet/freeskills.php?id='.$object->id.'&domainsselected=0"><img src="'.$imageaddfreeskills.'" alt="'.$addfreeskillsstr.'" title="'.$addfreeskillsstr.'" /></a> ';
+				        	    	if ($notframelist || !$objmodifotherframe) {
+        	                			$components['frsk' . $object->id] = array(
+                            	        	'type' => 'html',
+                	                    	'title' => $object->title,
+               	                	    	'value' => $alink,
+            	    	            	);
+									}
+*/
+        	                                $header = false;
+											$hidden = false;
+											if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+												// donnees saisies
+                	    	                    switch ($skill->type){
+													case 0 : $header = true; break;
+                        	    	            	case 2 : $hidden = true; break;
+													default : break;
+												}
+
+												$scale = $skill->scale;
+												$domain = $skill->domain;
+												$sdescription = $skill->description;
+    		                                    $code = $skill->code;
+												$threshold = $skill->threshold;
+            		                            $str_skill = "$domain::$code";
+
+												$index = $val->value - 1;
+                            	                if (!$header){
+													$str_choice = get_skill_choice_display($skill, $index);
+                                		            $sdescription = $skill->description;
+												}
+												else{
+    	                                            $str_choice = '';
+        	                                      	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+												}
+
+												if (!$hidden){
+  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+												}
+											}
+										}
+									}
+								}
+								$ligne[$i].=$str_skills."\n</table></td>\n";
+
+								if ($vertical){
+									if (!$lastposition[$object->id]){
+										$ligne[$i].=$separateur;
+									}
+									else{
+            	    			   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+									}
+								}
+            	    		    $i++;
+							}
 
 							//--------------------- LISTSKILLS -----------------------------------
            	    			else if ($object->type == 'listskills') {
@@ -4047,6 +4892,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $imageshow = $THEME->get_url('images/btn_info.png');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+        $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         if (!is_null($idmodifliste)) {
@@ -4074,92 +4921,91 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $bookletform["entete"] = $tab->help;
         $drapeau=true; // on affiche le bouton permettant d'editer la page
 		if ($idframe){
-				if ($frame = get_record('artefact_booklet_frame', 'id', $idframe)){
-                	$components = array();
-                	$elements = null;
-                	$components = null;
-                	$pf = null;
-                	// Quatre conditions exclusives
-	                $notframelist = !$frame->list;
-    	            $framelistnomodif = $frame->list && !$objmodif;
-        	        $objmodifinframe = $objmodif && ($objmodif->idframe == $frame->id);
-            	    $objmodifotherframe = $objmodif && ($objmodif->idframe != $frame->id);
-
-					// afficher les boutons alternant affichage et edition
-   					if ($drapeau){  // afficher le bouton
-                	   	$elements['showedit'] = array(
+			if ($frame = get_record('artefact_booklet_frame', 'id', $idframe)){
+               	$components = array();
+               	$elements = null;
+               	$components = null;
+               	$pf = null;
+               	// Quatre conditions exclusives
+	            $notframelist = !$frame->list;
+    	        $framelistnomodif = $frame->list && !$objmodif;
+        	    $objmodifinframe = $objmodif && ($objmodif->idframe == $frame->id);
+                $objmodifotherframe = $objmodif && ($objmodif->idframe != $frame->id);
+            	// afficher les boutons alternant affichage et edition
+   				if ($drapeau){  // afficher le bouton
+                   	$elements['showedit'] = array(
 							'type' => 'html',
 							'title' => '',
 							'value' =>  '<div class="right">
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$idframe.'&tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a>
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>
 </div>',
-						);
-						$drapeau=false;
-					}
+					);
+					$drapeau=false;
+				}
 
 
-        	        $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder');
-            	    // liste des objets du frame ordonnes par displayorder
-                	if ($objects) {
-	            	    foreach ($objects as $object) {
-	            	        $help = ($object->help != null);
-	            	        if ($object->type == 'longtext') {
-								$val = null;
-	            	            if ($notframelist) {
-	            	            	// ce n'est pas une liste : rechercher le contenu du champ texte
-	            	            	$sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
-	            	            	$vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
-	            	            	$val = $vals[0];
-	            	            }
-	            	            else if ($objmodifinframe) {
-	            	            	// modification d'un element de liste
-	            	            	$val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-	            	            }
-	            	            if ($notframelist || !$objmodifotherframe) {
-	            	            	$components['lt' . $object->id] =  array(
-	            	            		'type' => 'text',
-	            	            	    'title' => $object->title,
-                                    	'size' => 50,
-                                    	'help' => $help,
-                                    	'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
-                                	);
-                            	}
-                    		}
-                        	else if ($object->type == 'area') {
-                            	$val = null;
-	                            if ($notframelist) {
-    	                            $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
-        	                        $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
-            	                    $val = $vals[0];
-                	            }
-                    	        else if ($objmodifinframe) {
-                        	        $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-                            	}
-	                            if ($notframelist || !$objmodifotherframe) {
-    	                            $components['ta' . $object->id] =  array(
-        	                            'type' => 'textarea',
-            	                        'rows' => 10,
-                	                    'cols' => 50,
-                    	                'title' => $object->title,
-                        	            'help' => $help,
-                            	        'resizable' => false,
-                                	    'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
-	                                );
-        	                    }
-    	                    }
-            	            else if ($object->type == 'htmltext') {
-                	            $val = null;
-                    	        if ($notframelist) {
+        	    $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder');
+            	// liste des objets du frame ordonnes par displayorder
+                if ($objects) {
+	                foreach ($objects as $object) {
+	                    $help = ($object->help != null);
+	                    if ($object->type == 'longtext') {
+							$val = null;
+	                        if ($notframelist) {
+	                        	// ce n'est pas une liste : rechercher le contenu du champ texte
+	                        	$sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+	                        	$vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+	                        	$val = $vals[0];
+	                        }
+	                        else if ($objmodifinframe) {
+	                        	// modification d'un element de liste
+	                        	$val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+	                        }
+	                        if ($notframelist || !$objmodifotherframe) {
+	                        	$components['lt' . $object->id] =  array(
+	                        		'type' => 'text',
+	                        	    'title' => $object->title,
+                                   	'size' => 50,
+                                   	'help' => $help,
+                                   	'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
+                               	);
+                           	}
+                   		}
+                       	else if ($object->type == 'area') {
+                           	$val = null;
+	                           if ($notframelist) {
+    	                           $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+        	                       $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+            	                   $val = $vals[0];
+                            }
+                   	        else if ($objmodifinframe) {
+                       	        $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+                           	}
+	                        if ($notframelist || !$objmodifotherframe) {
+								$components['ta' . $object->id] =  array(
+        	                    	'type' => 'textarea',
+            	                    'rows' => 10,
+                                    'cols' => 50,
+                    	            'title' => $object->title,
+                        	        'help' => $help,
+                            	    'resizable' => false,
+                                	'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
+	                            );
+        	                }
+    	                }
+            	        else if ($object->type == 'htmltext') {
+                	    	$val = null;
+                    	    if ($notframelist) {
                         	        $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
                             	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
 	                                $val = $vals[0];
-    	                        }
-        	                    else if ($objmodifinframe) {
+    	                    }
+        	                else if ($objmodifinframe) {
             	                    $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-                	            }
-                    	        if ($notframelist || !$objmodifotherframe) {
-                        	        $components['ht' . $object->id] =  array(
+                	        }
+                    	    if ($notframelist || !$objmodifotherframe) {
+                        		$components['ht' . $object->id] =  array(
                             	        'type' => 'wysiwyg',
                                 	    'rows' => 20,
                                     	'cols' => 60,
@@ -4168,59 +5014,57 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         	                            'resizable' => false,
             	                        'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
                 	                    'rules' => array('maxlength' => 65536),
-                    	           );
-                        	    }
-	                        }
-                            else if ($object->type == 'reference') {
-        	                    $val = null;
-                                $str_reference = '';
-								if ($reference = get_record('artefact_booklet_reference', 'idobject', $object->id)){
-									if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
-										if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
-											$str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
-											if (!$str_reference){
-            			                    	$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
-											}
+                    	        );
+                        	}
+	                    }
+                        else if ($object->type == 'reference') {
+        	            	$val = null;
+                            $str_reference = '';
+							if ($reference = get_record('artefact_booklet_reference', 'idobject', $object->id)){
+								if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
+									if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
+										$str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
+										if (!$str_reference){
+            			                   	$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
 										}
 									}
-                                    if ($notframelist) {
-                	                	$sql = "SELECT * FROM {artefact_booklet_refresult} WHERE idobject = ? AND idowner = ?";
-	                    	            $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
-    	                    	        $val = $vals[0];
-        	                    	}
-	        	                    else if ($objmodifinframe) {
-    	        	                    $val = get_record('artefact_booklet_refresult', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-        	        	            }
-                        	        if (empty($val)){
-										// creer la valeur
-										$rec_refresult = new stdclass();
-                                        $rec_refresult->idobject = $object->id;
-                                        $rec_refresult->idowner = $USER->get('id');
-                                        $rec_refresult->idreference = $reference->id;
-                                        if ($record) {
-											$rec_refresult->idrecord = $record->id;
-										}
-										else{
-                                            $rec_refresult->idrecord = null;
-										}
-										insert_record('artefact_booklet_refresult', $rec_refresult);
+								}
+                                if ($notframelist) {
+               	                	$sql = "SELECT * FROM {artefact_booklet_refresult} WHERE idobject = ? AND idowner = ?";
+                    	            $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+   	                    	        $val = $vals[0];
+       	                    	}
+        	                    else if ($objmodifinframe) {
+   	        	                    $val = get_record('artefact_booklet_refresult', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+       	        	            }
+                       	        if (empty($val)){
+									// creer la valeur
+									$rec_refresult = new stdclass();
+                                    $rec_refresult->idobject = $object->id;
+                                    $rec_refresult->idowner = $USER->get('id');
+                                    $rec_refresult->idreference = $reference->id;
+                                    if ($record) {
+										$rec_refresult->idrecord = $record->id;
 									}
-
-	            	                $rec = false;
-    	            	            if (!is_null($record)) {
-        	            	            $rec = true;
-            	            	    }
-                	            	if ($notframelist || !$objmodifotherframe) {
-	                	                $components['ref' . $object->id] =  array(
-    	                	                'type' => 'html',
-                	        	            'title' => $object->title,
-                            		        'value' => $str_reference,
-                                		);
+									else{
+                                        $rec_refresult->idrecord = null;
 									}
-                    	        }
-	                        }
-
-    	                    else if ($object->type == 'synthesis') {
+									insert_record('artefact_booklet_refresult', $rec_refresult);
+								}
+	           	                $rec = false;
+                	            if (!is_null($record)) {
+       	            	            $rec = true;
+           	            	    }
+               	            	if ($notframelist || !$objmodifotherframe) {
+	               	                $components['ref' . $object->id] =  array(
+                    	                'type' => 'html',
+               	        	            'title' => $object->title,
+                           		        'value' => $str_reference,
+                               		);
+								}
+                   	        }
+						}
+        	            else if ($object->type == 'synthesis') {
         	                    $val = null;
             	                if ($notframelist) {
                 	                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
@@ -4279,29 +5123,29 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 					);
 ******************/
 
-                    	        }
-	                        }
-    	                    else if ($object->type == 'shorttext') {
-        	                    $val = null;
-            	                if ($notframelist) {
-                	                $sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
-                    	            $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
-                        	        $val = $vals[0];
-                            	}
-	                            else if ($objmodifinframe) {
-    	                            $val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-        	                    }
-            	                if ($notframelist || !$objmodifotherframe) {
-                	                $components['st' . $object->id] =  array(
+                    		}
+	                    }
+    	                else if ($object->type == 'shorttext') {
+        	            	$val = null;
+            	            if ($notframelist) {
+								$sql = "SELECT * FROM {artefact_booklet_resulttext} WHERE idobject = ? AND idowner = ?";
+                    	        $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+                        	    $val = $vals[0];
+                            }
+	                        else if ($objmodifinframe) {
+    	                    	$val = get_record('artefact_booklet_resulttext', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
+        	                }
+            	            if ($notframelist || !$objmodifotherframe) {
+                	        	$components['st' . $object->id] =  array(
                     	                'type' => 'text',
                         	            'title' => $object->title,
                             	        'help' => $help,
                                 	    'size' => 16,
 	                                    'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
     	                            );
-        	                    }
-            	            }
-            	            else if ($object->type == 'listskills') {
+        	            	}
+            	        }
+            	        else if ($object->type == 'listskills') {
 								// DEBUG
 								//echo "<br />lib.php :: 2783<br />\n";
 								//print_object($object);
@@ -4386,10 +5230,10 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 										}
 									}
 								}
-							}
-                	        else if ($object->type == 'radio') {
-                    	        $val = null;
-                        	    if (count_records('artefact_booklet_radio', 'idobject', $object->id) != 0) {
+						}
+                	    else if ($object->type == 'radio') {
+                    		$val = null;
+                        	if (count_records('artefact_booklet_radio', 'idobject', $object->id) != 0) {
                             	    $res = get_records_array('artefact_booklet_radio', 'idobject', $object->id);
                                 	if ($notframelist) {
 	                                    $sql = "SELECT * FROM {artefact_booklet_resultradio} WHERE idobject = ? AND idowner = ?";
@@ -4412,28 +5256,28 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                                 	        'defaultvalue' => ((!empty($val)) ? $val->idchoice : NULL),
                                     	);
 	                                }
-    	                        }
-        	                }
-            	            else if ($object->type == 'checkbox') {
-                	            $val = null;
-                    	        if ($notframelist) {
+    	                	}
+        	            }
+            	        else if ($object->type == 'checkbox') {
+                	        $val = null;
+                    	    if ($notframelist) {
                         	        $sql = "SELECT * FROM {artefact_booklet_resultcheckbox} WHERE idobject = ? AND idowner = ?";
                             	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
                                 	$val = $vals[0];
-	                            }
-    	                        else if ($objmodifinframe) {
+	                        }
+    	                    else if ($objmodifinframe) {
         	                        $val = get_record('artefact_booklet_resultcheckbox', 'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-            	                }
-                	            if ($notframelist || !$objmodifotherframe) {
+            	            }
+                	        if ($notframelist || !$objmodifotherframe) {
                     	            $components['cb' . $object->id] = array(
                         	            'type' => 'checkbox',
                             	        'help' => $help,
                                 	    'title' => $object->title,
                                     	'defaultvalue' => ((!empty($val)) ? $val->value : NULL),
 	                                );
-    	                        }
-        	                }
-            	            else if ($object->type == 'date') {
+    	                    }
+        	            }
+            	        else if ($object->type == 'date') {
                 	            $val = null;
                     	        if ($notframelist) {
                         	        $sql = "SELECT * FROM {artefact_booklet_resultdate} WHERE idobject = ? AND idowner = ?";
@@ -4455,17 +5299,17 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     	                'description' => get_string('dateofbirthformatguide'),
                         	        );
                             	}
+	                    }
+    	                else if ($object->type == 'attachedfiles') {
+        	                $vals = array();
+            	            if ($notframelist) {
+                	        	$vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idobject', $object->id, 'idowner', $USER->get('id'));
+                    	    }
+                        	else if ($objmodifinframe) {
+                            	$vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
 	                        }
-    	                    else if ($object->type == 'attachedfiles') {
-        	                    $vals = array();
-            	                if ($notframelist) {
-                	                $vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idobject', $object->id, 'idowner', $USER->get('id'));
-                    	        }
-                        	    else if ($objmodifinframe) {
-                            	    $vals = get_column('artefact_booklet_resultattachedfiles', 'artefact',  'idrecord', $record->idrecord, 'idobject', $object->id, 'idowner', $USER->get('id'));
-	                            }
-    	                        if ($notframelist || !$objmodifotherframe) {
-        	                        $components['af' . $object->id] =  array(
+    	                    if ($notframelist || !$objmodifotherframe) {
+        	                	$components['af' . $object->id] =  array(
             	                        'type' => 'filebrowser',
                 	                    'title' => $object->title,
                     	                'help' => $help,
@@ -4487,14 +5331,100 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         	                            'selectlistcallback' => 'artefact_get_records_by_id',
             	                        // 'selectcallback' => 'add_attachment',
                 	                    // 'unselectcallback' => 'delete_attachment',
-                    	            );
-                        	    }
-	                        }
-    	                } // fin de foreach objects
-        	        }
+                    	        );
+                        	}
+	                    }
+                        else if ($object->type == 'freeskills') {
+                	    	$vals = array();
+                    	    if ($notframelist) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+							}
+       						else if ($objmodifinframe) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idrecord = ? AND idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($record->idrecord, $object->id, $USER->get('id')));
+							}
+							//print_object($vals);
+							//exit;
+                            if ($notframelist || !$objmodifotherframe) {
+			                    $alink = '<a href="'.get_config('wwwroot').'/artefact/booklet/freeskills.php?id='.$object->id.'&domainsselected=0"><img src="'.$imageaddfreeskills.'" alt="'.$addfreeskillsstr.'" title="'.$addfreeskillsstr.'" /></a> ';
+        	                	$components['frsk' . $object->id] = array(
+                            	        	'type' => 'html',
+                	                    	'title' => $object->title,
+               	                	    	'value' => $alink,
+            	    	        );
+
+								if (!empty($vals)){
+									//print_object($vals);
+									//exit;
+									foreach ($vals as $val){
+		                                $header = false;
+										$hidden = false;
+                                        $tab_scale = array();
+
+										if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+                                        	switch ($skill->type){
+													case 0 : $header = true; break;
+        		                                    case 2 : $hidden = true; break;
+													default : break;
+											}
+
+                                            $options = array();
+											$scale = $skill->scale;
+											$domain = $skill->domain;
+											$sdescription = $skill->description;
+                                            $code = $skill->code;
+											$threshold = $skill->threshold;
+                                            $str_skill = "$domain::$code";
+
+											// donnees saisies
+            								$index = $val->value - 1;
 
 
-					if (count($components) != 0 && $notframelist) {
+											// la boîte de saisie
+                                            $defaultvalue = 0;
+											$nboptions=0;
+											if ($tab_scale = explode(",", $scale)){
+													for ($i=0; $i<count($tab_scale); $i++){
+                                                    	$a_scale_element = trim($tab_scale[$i]);
+														if (!empty($a_scale_element)){
+															if ($index == $nboptions){
+																//$defaultvalue = $tab_scale[$i];
+                                                                $defaultvalue = $nboptions;
+															}
+															$options[$nboptions] = $a_scale_element;
+                                                            $nboptions++;
+														}
+													}
+											}
+
+       										if (!$header){
+		    	                        			$components['frsk' . $object->id.'_'.$skill->id] = array(
+                                            			'type' => 'radio',
+            			        	                    'options' => $options,
+                        				                //'help' => $help,
+                            	    			        'title' => $str_skill,
+                                	        			'defaultvalue' => $defaultvalue,
+                                                        'rowsize' => $nboptions,
+                                                        'description' => $sdescription,
+                                    				);
+			    							}
+											else if (!$hidden) {
+		    	                        			$components['frsk' . $object->id.'_'.$skill->id] = array(
+                                            			'type' => 'html',
+                               	    			        'title' => $str_skill,
+                                	        			'value' => '<b>'.$sdescription.'</b>',
+                                    				);
+											}
+										}
+									}
+								}
+							}
+    	                }
+        	        } // fin de foreach objects
+				}  // fin du if objects
+
+				if (count($components) != 0 && $notframelist) {
                 	    $elements['idtab'] = array(
 	                        'type' => 'hidden',
      	                   'value' => $idtab
@@ -4517,9 +5447,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     	    'help' => ($frame->help != null),
                         	'elements' => $components
 	                    );
-    	            }
+    	        }
 
-        	        if (count($components) != 0 && $frame->list) {
+        	    if (count($components) != 0 && $frame->list) {
             	        if ($objmodif) {
                 	         $components['idrecord'] = array(
                     	        'type' => 'hidden',
@@ -4551,9 +5481,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
     	                    );
         	            }
             	        $elements = $components;
-                	}
+                }
 
-                	$pf = pieform(array(
+                $pf = pieform(array(
 	                    'name'        => 'pieform'.$frame->id,
     	                'plugintype'  => 'artefact',
         	            'pluginname'  => 'booklet',
@@ -4563,8 +5493,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 	                    'successcallback' => 'visualization_submit',
     	                'elements'    => $elements,
                     	'autofocus'   => false,
-               	 	));
-        	        if ($frame->list) {
+               	));
+        	    if ($frame->list) {
             	        if ($framelistnomodif) {
                 	        $pf = "<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>" .
                               "<button id='addpieform".$frame->id."button' class='cancel' onclick='toggleCompositeForm(&quot;pieform".$frame->id."&quot;);'>".get_string('add','artefact.booklet')."</button>" ;
@@ -4624,14 +5554,15 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                            </table>
                            ' . $pf . '
                            </fieldset>';
-        	        }
-            	    $bookletform[$frame->title] = $pf;
-            	} // fin de frame
-
-		}
+        	    }
+            	$bookletform[$frame->title] = $pf;
+            } // fin de frame
+		} // Fin de idframe
         return $bookletform;
-    }
-    // fin de get_aframeform
+	}
+
+
+// fin de get_aframeform
 
 	/********************************************************************************
 	 *
@@ -4650,6 +5581,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $imageshow = $THEME->get_url('images/btn_info.png');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+        $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
+
 
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         if (!is_null($idmodifliste)) {
@@ -5017,6 +5951,72 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                 	        	        );
 									}
 						        }
+                        		else if ($object->type == 'freeskills') {
+	                	    		$vals = array();
+    	                	    	if ($notframelist) {
+        	                	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idobject = ? AND idowner = ?";
+            	                	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+									}
+       								else if ($objmodifinframe) {
+                        		        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idrecord = ? AND idobject = ? AND idowner = ?";
+                            		    $vals = get_records_sql_array($sql, array($record->idrecord, $object->id, $USER->get('id')));
+									}
+									//print_object($vals);
+									//exit;
+        	                    	if ($notframelist || !$objmodifotherframe) {
+	        	                   		$alink = '<a href="'.get_config('wwwroot').'/artefact/booklet/freeskills.php?id='.$object->id.'&domainsselected=0"><img src="'.$imageaddfreeskills.'" alt="'.$addfreeskillsstr.'" title="'.$addfreeskillsstr.'" /></a> ';
+       	        	        			$components['frsk' . $object->id] = array(
+                       	    	        	'type' => 'html',
+               	        	            	'title' => $object->title,
+           	                		    	'value' =>$alink,
+           	    	            		);
+
+										if ($vals){
+											//print_object($vals);
+											//exit;
+											foreach ($vals as $val){
+	                	                        $header = false;
+												$hidden = false;
+												if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+													// donnees saisies
+                	                	            switch ($skill->type){
+														case 0 : $header = true; break;
+                        	                	   		case 2 : $hidden = true; break;
+														default : break;
+													}
+
+													$scale = $skill->scale;
+													$domain = $skill->domain;
+													$sdescription = $skill->description;
+    	        	                                $code = $skill->code;
+													$threshold = $skill->threshold;
+            	        	                        $str_skill = "$domain::$code";
+
+													$index = $val->value - 1;
+
+													// la boîte de saisie
+           	            	        	           	if (!$header){
+														$str_choice = get_skill_choice_display($skill, $index);
+                                	        	        $sdescription = $skill->description;
+													}
+													else{
+            	                                	    $str_choice = '';
+    	                                            	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+													}
+
+													if (!$hidden){
+        	        	   								$components['frsk' . $object->id.'_'.$skill->id] = array(
+	        		    	    	        	      		'type' => 'html',
+		    			    	            	       		'title' => $skill->domain.' :: '.$skill->code,
+    		    			    	                    	'value' => $sdescription."<br />".$str_choice.'<hr />',
+															//'description' => $skill->description,
+	    	        				    	           	);
+													}
+												}
+											}
+										}
+									}
+								}
 							} // fin de for each objects
 						} // Fin de if objects
 					}   // fin de la frame n'est pas une liste
@@ -5050,6 +6050,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 							$n5=0;
 							$n6=0;
                             $n7=0;
+							$n8=0;
+
 							$rslt .= "\n<table class=\"tablerenderer2\">";
 							if (!$vertical){
 								$rslt .= "<thead>\n<tr>";
@@ -5133,9 +6135,20 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 	            	            	        ORDER BY rd.displayorder";
 	            	        	    	$listidrecords = get_records_sql_array($sql, array($objectslist[0]->id, $USER->get('id')));
 	            	            		break;
+					                case 'freeskills':
+	            		            	$n8 = count_records('artefact_booklet_refresult', 'idobject', $objectslist[0]->id, 'idowner', $USER->get('id'));
+	            	    	        	$sql = "SELECT re.idrecord FROM {'artefact_booklet_frskllresult'} re
+	            	            	        JOIN {artefact_booklet_resultdisplayorder} rd
+	            	            	        ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+	            	            	        WHERE re.idobject = ?
+	            	            	        AND re.idowner = ?
+	            	            	        ORDER BY rd.displayorder";
+	            	        	    	$listidrecords = get_records_sql_array($sql, array($objectslist[0]->id, $USER->get('id')));
+	            	            		break;
+
             			} // Fin du switch
 
-						$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7);
+						$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7, $n8);
 						// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
 					    $ligne = array();
 
@@ -5215,7 +6228,71 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 									}
 								}
 	                        }
+                        	else if ($object->type == 'freeskills') {
 
+                            	$i = 0;
+								if ($vertical){
+        	           		       	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+								}
+                                $ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+								$str_skills='';
+                           		$sql = "SELECT * FROM {artefact_booklet_frskllresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
+ AND re.idskill = ?
+ ORDER BY re.idrecord, rd.displayorder";
+                           		if ($vals = get_records_sql_array($sql,  array($object->id, $USER->get('id')))){
+                                	foreach ($vals as $val){
+	                                    if ($val){
+											$index = $val->value - 1;   // la valeur stockee n'est pas un indice mais une position
+        	                                $header = false;
+											$hidden = false;
+											if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+												// donnees saisies
+                	    	                    switch ($skill->type){
+													case 0 : $header = true; break;
+                        	    	            	case 2 : $hidden = true; break;
+													default : break;
+												}
+
+												$scale = $skill->scale;
+												$domain = $skill->domain;
+												$sdescription = $skill->description;
+    		                                    $code = $skill->code;
+												$threshold = $skill->threshold;
+            		                            $str_skill = "$domain::$code";
+
+												$index = $val->value - 1;
+                            	                if (!$header){
+													$str_choice = get_skill_choice_display($skill, $index);
+                                		            $sdescription = $skill->description;
+												}
+												else{
+    	                                            $str_choice = '';
+        	                                      	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+												}
+
+												if (!$hidden){
+  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+												}
+											}
+										}
+									}
+								}
+								$ligne[$i].=$str_skills."\n</table></td>\n";
+
+								if ($vertical){
+									if (!$lastposition[$object->id]){
+										$ligne[$i].=$separateur;
+									}
+									else{
+            	    			   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+									}
+								}
+            	    		    $i++;
+							}
 							// ---------------------------- LISTSKILLS ---------------------------------------
             	    		else if ($object->type == 'listskills') {
 								if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
@@ -5514,8 +6591,9 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         $imageshow = $THEME->get_url('images/btn_info.png');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+        $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
-		// Modif JF
 		// Astuce pour forcer l'affichage
 		if ($idmodifliste==-1){
             $idmodifliste=null;
@@ -5963,6 +7041,99 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     	            );
                         	    }
 	                        }
+
+                        	else if ($object->type == 'freeskills') {
+                                $vals = array();
+                    	    	if ($notframelist) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($object->id, $USER->get('id')));
+								}
+       							else if ($objmodifinframe) {
+                        	        $sql = "SELECT * FROM {artefact_booklet_frskllresult} WHERE idrecord = ? AND idobject = ? AND idowner = ?";
+                            	    $vals = get_records_sql_array($sql, array($record->idrecord, $object->id, $USER->get('id')));
+								}
+								//print_object($vals);
+								//exit;
+                            	if ($notframelist || !$objmodifotherframe) {
+		                           	$alink = '<a href="'.get_config('wwwroot').'/artefact/booklet/freeskills.php?id='.$object->id.'&idrecord='.$idmodifliste.'&domainsselected=0"><img src="'.$imageaddfreeskills.'" alt="'.$addfreeskillsstr.'" title="'.$addfreeskillsstr.'" /></a> ';
+        	                		$components['frsk' . $object->id] = array(
+                            	        'type' => 'html',
+                	                    'title' => $object->title,
+               	                	    'value' =>$alink,
+            	    	            );
+
+
+									if ($vals){
+										//print_object($vals);
+										//exit;
+										foreach ($vals as $val){
+		        	                        $header = false;
+											$hidden = false;
+                        	                $tab_scale = array();
+	                                  		//echo "<br />ISDSKILL : ".$val->idskill;
+											//exit;
+											$skill = get_record('artefact_booklet_skill', 'id', $val->idskill);
+											//print_object($skill);
+
+											if ($skill){
+                                        		switch ($skill->type){
+													case 0 : $header = true; break;
+        		                                    case 2 : $hidden = true; break;
+													default : break;
+												}
+
+    	                                        $options = array();
+												$scale = $skill->scale;
+												$domain = $skill->domain;
+												$sdescription = $skill->description;
+                    	                        $code = $skill->code;
+												$threshold = $skill->threshold;
+                            	                $str_skill = "$domain::$code";
+
+												// donnees saisies
+            									$index = $val->value - 1;
+
+
+												// la boîte de saisie
+                                            	$defaultvalue = 0;
+												$nboptions=0;
+												if ($tab_scale = explode(",", $scale)){
+													for ($i=0; $i<count($tab_scale); $i++){
+                                                    	$a_scale_element = trim($tab_scale[$i]);
+														if (!empty($a_scale_element)){
+															if ($index == $nboptions){
+																//$defaultvalue = $tab_scale[$i];
+                                                                $defaultvalue = $nboptions;
+															}
+															$options[$nboptions] = $a_scale_element;
+                                                            $nboptions++;
+														}
+													}
+												}
+
+       											if (!$header){
+		    	                        			$components['frsk' . $object->id.'_'.$skill->id] = array(
+                                            			'type' => 'radio',
+            			        	                    'options' => $options,
+                        				                //'help' => $help,
+                            	    			        'title' => $str_skill,
+                                	        			'defaultvalue' => $defaultvalue,
+                                                        'rowsize' => $nboptions,
+                                                        'description' => $sdescription,
+                                    				);
+			    								}
+												else if (!$hidden) {
+		    	                        			$components['frsk' . $object->id.'_'.$skill->id] = array(
+                                            			'type' => 'html',
+                               	    			        'title' => $str_skill,
+                                	        			'value' => '<b>'.$sdescription.'</b>',
+                                    				);
+												}
+											}
+										}
+									}
+								}
+							}
 
     	                } // fin de foreach objects
         	        }
@@ -6843,8 +8014,14 @@ function visualization_submit(Pieform $form, $values) {
 
 			$is_radio_type = false;
             $is_listskills_type = false;
+            $is_freeskills_type = false;
 			foreach ($temp as $object) {
-                if ('rlc' . $object->id == (substr($element['name'], 0, strpos($element['name'], '_')))) {
+                if ('frsk' . $object->id == (substr($element['name'], 0, strpos($element['name'], '_')))) {
+                    $idobject = $object->id;
+                    $is_freeskills_type = true;
+					continue;
+                }
+                elseif ('rlc' . $object->id == (substr($element['name'], 0, strpos($element['name'], '_')))) {
                     $idobject = $object->id;
                     $is_listskills_type = true;
 					continue;
@@ -6903,6 +8080,66 @@ function visualization_submit(Pieform $form, $values) {
             	    $aff = $e;
             	}
         	}
+			else if ($is_freeskills_type){
+			   	// DEBUG
+				//echo "<br />lib.php :: 7579<br />\n";
+				//print_object($element);
+				//echo "<br />VALUES<br />\n";
+                //print_object($values);
+	            // idobject est l'id dans artefact_booklet_object du champ $element
+				// astuce pour stocker l'id du skill dans l'id du radio bouton
+                $idskill = trim(substr($element['name'], strrpos($element['name'] , '_') + 1 ));
+                //echo "<br />SKILL ID: $idskill\n";
+				//exit;
+    	        $data = new StdClass;
+        	    $data->idobject = $idobject;
+            	$data->idowner = $USER->get('id');
+	            $data->idskill = $idskill;
+                $data->value = $values[$element['name']] + 1; // on incremente l'index pour l'enregistrer
+    	        if ($idrecord) {
+        	        $data->idrecord = $idrecord;
+            	}
+				//print_object($data);
+				//exit;
+
+                if (!$modifelementlist) {
+    	            $count = count_records('artefact_booklet_frskllresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill);
+        	    }
+            	else {
+                	$count = count_records('artefact_booklet_frskllresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill, 'idrecord', $idrecord);
+	            }
+
+
+	            try {
+    	            if ($count == 0 || ($list && !$modifelementlist)) {
+        	            // pas encore de valeur enregistree ou ajout d'une valeur de liste
+            	        if (is_null($idrecord)) {
+                	        $data->idrecord = $max;
+							$idrecord=$max;
+                    	}
+	                    insert_record('artefact_booklet_frskllresult', $data);
+    	            }
+        	        else {
+            	        if (!$list) {
+                	        // n'est pas dans une liste
+                    	    if (!$idrecord) {
+                        	    $obj = get_record('artefact_booklet_frskllresult', 'idowner', $USER->get('id'), 'idobject', $idobject, 'idskill', $idskill);
+                            	$idrecord = $obj->idrecord;
+	                            $newidrecord = 0;
+    	                    }
+        	                update_record('artefact_booklet_frskllresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'idskill'=> $idskill));
+                	    }
+                    	else {
+                        	// est dans une liste
+	                        update_record('artefact_booklet_frskllresult', $data, array('idobject'=> $idobject, 'idowner'=> $USER->get('id'), 'idskill'=> $idskill, 'idrecord'=> $idrecord));
+        	            }
+            	    }
+            	}
+            	catch(Exception $e) {
+                	$errors['test'] = true;
+	                $aff = $e;
+            	}
+			}
 			else if ($is_listskills_type){
 			   	// DEBUG
 				//echo "<br />lib.php :: 5959<br />\n";
