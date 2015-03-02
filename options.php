@@ -34,9 +34,11 @@ if ($idobject){
 					define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title.' -> '.$object->title);
                     $reference = false;
                     $listskills = false;
-                    $radio = false;
+                    $freeskills = false;
+					$radio = false;
                     $synthese = false;
                     $inlinejs = "";
+                    $optionsform = null;
 					//Allow to show or hide table needed for listskills, radio bitton and synthese
 					if ($object->type == 'listskills' ) {
 						//print_object($object);
@@ -58,6 +60,7 @@ if ($idobject){
 					else if ($object->type == 'radio') {
                    		$radio = true;
 					    $inlinejs = ArtefactTypeRadio::get_js($object->type, $idobject);
+                        $optionsform = ArtefactTypeRadio::get_form($idobject);
 					}
 
 					//print_object($optionsform);
