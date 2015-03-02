@@ -3312,7 +3312,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 								if ($reference = get_record('artefact_booklet_reference', 'idobject', $object->id)){
 									if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
 										if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
-                                            $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
+                                            $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=1"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
 											if(!$str_reference){
                                         		$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
 											}
@@ -3729,7 +3729,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($reference = get_record('artefact_booklet_reference', 'id', $val->idreference)){
 												if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
 													if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
-                                                        $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
+                                                        $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=1"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
 														if(!$str_reference){
             			                            		$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
 														}
@@ -4770,7 +4770,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 								if ($reference = get_record('artefact_booklet_reference', 'idobject', $object->id)){
 									if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
 										if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
-                                            $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
+                                            $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=1"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
 											if (!$str_reference){
             			                    	$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
 											}
@@ -5191,7 +5191,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 											if ($reference = get_record('artefact_booklet_reference', 'id', $val->idreference)){
 												if ($objectlinked = get_record('artefact_booklet_object', 'id', $reference->idobjectlinked)){
 													if ($referenceframe = get_record('artefact_booklet_frame', 'id', $objectlinked->idframe)){
-                                                        $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=0"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
+                                                        $str_reference = display_object_linked($reference->idobjectlinked, $USER->get('id')).' <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$referenceframe->id.'&tab='.$referenceframe->idtab.'&okdisplay=1"><img src="'.$imagelinked.'" alt="'.$objectlinkedstr.'" title="'.$objectlinkedstr.'" /></a>';
 														if(!$str_reference){
             			                            		$str_reference = get_string('referencehasnovalue','artefact.booklet'). ' <b>'. $objectlinked->title .'</b> '.get_string('offrame','artefact.booklet'). ' <i>'.$referenceframe->title.'</i>';
 														}
@@ -7284,7 +7284,7 @@ function get_frames($idtab, $onlyids=false, $parentid=0){
        	        $tabaff_codes[$recframe->id] = $code;
            	    $tabaff_ids[$recframe->id] = $recframe->id;
                	$tabaff_parentids[$recframe->id] = $recframe->idparentframe;
-	               $tabaff_displayorders[$recframe->id] = $recframe->displayorder;
+	            $tabaff_displayorders[$recframe->id] = $recframe->displayorder;
                 $ordre_courant++;
 			}
 		}

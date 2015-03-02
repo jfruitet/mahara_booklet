@@ -2,23 +2,18 @@
 /**
  *
  * @package    mahara
- * @subpackage artefact-booklet
- * @author     Christophe DECLERCQ - christophe.declercq@univ-nantes.fr
- * @author     Jean FRUITET - jean.fruitet@univ-nantes.fr
+ * @subpackage artefact-resume
+ * @author     Catalyst IT Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
  * @copyright  For copyright information on Mahara, please see the README file distributed with this software.
  *
  */
 
 define('INTERNAL', true);
-define('MENUITEM', 'content/booklet');
-define('SECTION_PLUGINTYPE', 'artefact');
-define('SECTION_PLUGINNAME', 'booklet');
-define('SECTION_PAGE', 'tabs');
 defined('INTERNAL') || die();
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
-require_once('pieforms/pieform.php');
-safe_require('artefact', 'booklet');
+//safe_require('artefact', 'booklet');  // ATTENTION l'inclusion de la librairie provoque une erreur XML
+
 
 $idtome = param_integer('id', null);
 $tome = get_record('artefact_booklet_tome', 'id', $idtome);
@@ -77,6 +72,7 @@ function xml_tome ($idtome) {
 
 }
 
+
 function xml_tab ($doctome, $idtab) {
     global $doc;
     $tab = get_record('artefact_booklet_tab', 'id', $idtab);
@@ -93,13 +89,14 @@ function xml_tab ($doctome, $idtab) {
 	if (!empty($frames)){
     	foreach ($frames as $frame) {
 			if (!empty($frame)){
-        		xml_frame($doctab, $frame->id);
+        		xml_frame($doctab, $frame->id, $idtab);
 			}
 		}
     }
 }
 
-function xml_frame ($doctab, $idframe) {
+
+function xml_frame ($doctab, $idframe, $idtab) {
     global $doc;
     $frame = get_record('artefact_booklet_frame', 'id', $idframe);
     $docframe = $doc->createElement('frame');
@@ -116,13 +113,14 @@ function xml_frame ($doctab, $idframe) {
 	if (!empty($objects)){
 		foreach($objects as $object) {
         	if (!empty($object)){
-				xml_object($docframe, $object->id);
+				xml_object($docframe, $object->id, $idtab);
 			}
     	}
 	}
 }
 
-function xml_object ($docframe, $idobject) {
+
+function xml_object ($docframe, $idobject, $idtab) {
     global $doc;
     $object = get_record('artefact_booklet_object', 'id', $idobject);
 	if (!empty($object)){
@@ -152,7 +150,18 @@ function xml_object ($docframe, $idobject) {
 			if (!empty($objectlinked)){
 				foreach ($objectlinked as $objectlinked) {
 	        	    if ($obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked)){
-    	        		$doclinked = $doc->createElement('linked', $obj->name);
+						// Purger l'id de la tab pour l'export
+                        $pos = strrpos($obj->name, $idtab);
+						if (!empty($pos)){
+							$substrname = substr($obj->name, 0, $pos-1);
+							// DEBUG
+							//echo "<br />export :: 171 :: $substrname\n";
+							//exit;
+						}
+						else{
+                            $substrname = $obj->name;
+						}
+    	        		$doclinked = $doc->createElement('reference', $substrname);
         	    		$docobject->appendChild($doclinked);
 					}
 			   }
@@ -163,7 +172,18 @@ function xml_object ($docframe, $idobject) {
 			if (!empty($objectlinked)){
 				foreach ($objectlinked as $objectlinked) {
 	        	    if ($obj = get_record('artefact_booklet_object', 'id', $objectlinked->idobjectlinked)){
-    	        		$doclinked = $doc->createElement('reference', $obj->name);
+						// Purger l'id de la tab pour l'export
+                        $pos = strrpos($obj->name, $idtab);
+						if (!empty($pos)){
+							$substrname = substr($obj->name, 0, $pos-1);
+							// DEBUG
+							//echo "<br />export :: 171 :: $substrname\n";
+							//exit;
+						}
+						else{
+                            $substrname = $obj->name;
+						}
+    	        		$doclinked = $doc->createElement('reference', $substrname);
         	    		$docobject->appendChild($doclinked);
 					}
 			   }
@@ -198,11 +218,86 @@ function xml_object ($docframe, $idobject) {
 	}
 }
 
+/**
+ * Genere une liste de frames en profondeur d'abord
+ * @input : $idtab
+ * @output : frame lsit
+ *
+ */
+// version locale  car l(inclusion de la librairie booklet provoque une erreur sous forme d'une ligne vide en tete de fichier XML.
+// Super penible … deboguer
+function get_frames($idtab){
+    $result = array();
+
+    $tabaff_parentids = array();
+    $tabaff_codes = array();
+
+	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
+	$recframes = get_records_sql_array('SELECT ar.* FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
+	// REORDONNER sous forme d'arbre parcours en profondeur d'abord
+	// 52 branches possibles a chaque niveau de l'arbre, cela devrait suffire ...
+	$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+
+    $tabaff_ids = array();
+    $tabaff_niveau = array();
+	// Initialisation
+    foreach ($recframes as $recframe) {
+        if ($recframe){
+            $tabaff_niveau[$recframe->id] = 0;
+		}
+	}
+	// Initialisation
+	$n=0;
+	foreach ($recframes as $recframe) {
+       	if ($recframe){
+           	$tabaff_codes[$recframe->id] =$tcodes[$n];
+			$n++;
+		}
+	}
+
+	$niveau_courant = 0;
+    $ordre_courant = 0;
+    $parent_courant = 0;
+
+	// Reordonner
+    if ($recframes) {
+		foreach ($recframes as $recframe) {
+			if ($recframe){
+				if ($recframe->idparentframe == 0){
+                    $niveau_courant = 0;
+				}
+				else if ($recframe->idparentframe != $parent_courant){
+					// changement de niveau
+					$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
+                    $ordre_courant = 0;
+				}
+				$tabaff_niveau[$recframe->id] = $niveau_courant;
+				$parent_courant = $recframe->idparentframe;
+
+                $code='';
+				if ($niveau_courant>0){
+					$code =  $tabaff_codes[$recframe->idparentframe];
+				}
+                $code.=$tcodes[$ordre_courant];
+       	        $tabaff_codes[$recframe->id] = $code;
+           	    $tabaff_ids[$recframe->id] = $recframe->id;
+               	$tabaff_parentids[$recframe->id] = $recframe->idparentframe;
+	            $tabaff_displayorders[$recframe->id] = $recframe->displayorder;
+                $ordre_courant++;
+			}
+		}
+	}
+	asort($tabaff_codes);
+   	foreach ($tabaff_codes as $key => $val){
+		$result[] = get_record('artefact_booklet_frame', 'id', $key);
+	}
+	return $result;
+}
+
 
 $doc = new DOMDocument();
 $doc->version = '1.0';
 $doc->encoding = 'UTF-8';
-
 xml_tome($idtome);
 $xml = $doc->saveXML();
 print($xml);
