@@ -3309,7 +3309,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 
                     break;
                 case 'freeskills':
-                    $n7 = count_records('artefact_booklet_frskllresult', 'idobject', $objects[0]->id, 'idowner', $this -> author);
+                    $n8 = count_records('artefact_booklet_frskllresult', 'idobject', $objects[0]->id, 'idowner', $this -> author);
                     $sql = "SELECT re.idrecord FROM {artefact_booklet_refresult} re
                             JOIN {artefact_booklet_resultdisplayorder} rd
                             ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
@@ -3323,9 +3323,6 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
             	}
 
 				$n = max($n1, $n2, $n3, $n4, $n5, $n6, $n7, $n8);
-				// DEBUG
-				echo "<br /> lib.php :: 2223 :: $n = max ($n1, $n2, $n3, $n4, $n5, $n6)\n";
-
 				// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
             	$ligne = array();
             	for ($i = 0; $i < $n; $i++) {
@@ -3708,66 +3705,6 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                         $rslt .= $val -> value;
                     }
                 }
-                else if ($object->type == 'listskills') {
-                    $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_lskillsresult} re
-                            JOIN {artefact_booklet_skill} rs
-                            ON (rs.id = re.idskill)
-                            WHERE re.idobject = ?
-                            AND re.idowner = ?";
-                    $skills = get_records_sql_array($sql, array($object->id, $this->author));
-                    $i = 0;
-					if (!empty($skills)){
-                        $rslt .= "\n<tr><th>". $object -> title . "</th><td>\n<table>\n";
-                     	foreach ($skills as $skill){
-                            $value = $skill->value;
-                            $str_evaluation = '';
-							if (!empty($value)){
-                                $value--;
-                                if ($tab_scale=explode(",", $skill->scale)){
-                                	$str_evaluation = $tab_scale[$value];
-								}
-							}
-                        	$rslt .= '<tr><td>'.$skill->domain.'</td><td><b>'.$skill->code.'</b><td><i>'. $str_evaluation.'</i></td></tr><tr><td colspan="3">'. $skill->description.'</td></tr>'."\n";
-                    	}
-                        $rslt .= "</table>\n";
-					}
-				}
-
-                else if ($object->type == 'freeskills') {
-                    $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_frskllresult} re
-                            JOIN {artefact_booklet_skill} rs
-                            ON (rs.id = re.idskill)
-                            WHERE re.idobject = ?
-                            AND re.idowner = ?";
-                    $skills = get_records_sql_array($sql, array($object->id, $this->author));
-                    $i = 0;
-					if (!empty($skills)){
-                        $rslt .= "\n<tr><th>". $object -> title . "</th><td>\n<table>\n";
-                     	foreach ($skills as $skill){
-                            $value = $skill->value;
-                            $str_evaluation = '';
-							if (!empty($value)){
-                                $value--;
-                                if ($tab_scale=explode(",", $skill->scale)){
-                                	$str_evaluation = $tab_scale[$value];
-								}
-							}
-                        	$rslt .= '<tr><td>'.$skill->domain.'</td><td><b>'.$skill->code.'</b><td><i>'. $str_evaluation.'</i></td></tr><tr><td colspan="3">'. $skill->description.'</td></tr>'."\n";
-                    	}
-                        $rslt .= "</table>\n";
-					}
-				}
-
-				else if ($object->type == 'reference') {
-					$reference = get_record('artefact_booklet_refresult', 'idowner', $this -> author, 'idobject', $object->id);
-                   	if ($reference && $reference->idreference) {
-                        $val = get_record('artefact_booklet_reference', 'id', $reference->idreference);
-                        $rslt .= "\n<tr><th>". $object -> title . "</th>";
-                        $rslt .= "<td>";
-                        $rslt .= display_object_linked($val->idobjectlinked, $this -> author);
-                    }
-                }
-
                 else if ($object->type == 'radio') {
                     $radio = get_record('artefact_booklet_resultradio', 'idowner', $this -> author, 'idobject', $object->id);
                     if ($radio && $radio->idchoice) {
@@ -3811,6 +3748,67 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                     $rslt .= "</table>";
 
 			    }
+                else if ($object->type == 'listskills') {
+                    $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_lskillsresult} re
+                            JOIN {artefact_booklet_skill} rs
+                            ON (rs.id = re.idskill)
+                            WHERE re.idobject = ?
+                            AND re.idowner = ?";
+                    $skills = get_records_sql_array($sql, array($object->id, $this->author));
+
+					if (!empty($skills)){
+                        $rslt .= "\n<tr><th>". $object -> title . "</th><td>\n<table>\n";
+                     	foreach ($skills as $skill){
+                            $value = $skill->value;
+                            $str_evaluation = '';
+							if (!empty($value)){
+                                $value--;
+                                if ($tab_scale=explode(",", $skill->scale)){
+                                	$str_evaluation = $tab_scale[$value];
+								}
+							}
+                        	$rslt .= '<tr><td>'.$skill->domain.'</td><td><b>'.$skill->code.'</b><td><i>'. $str_evaluation.'</i></td></tr><tr><td colspan="3">'. $skill->description.'</td></tr>'."\n";
+                    	}
+                        $rslt .= "</table>\n";
+					}
+				}
+
+                else if ($object->type == 'freeskills') {
+                    $sql = "SELECT re.*, rs.*  FROM {artefact_booklet_frskllresult} re
+                            JOIN {artefact_booklet_skill} rs
+                            ON (rs.id = re.idskill)
+                            WHERE re.idobject = ?
+                            AND re.idowner = ?";
+                    $skills = get_records_sql_array($sql, array($object->id, $this->author));
+
+					if (!empty($skills)){
+                        $rslt .= "\n<tr><th>". $object -> title . "</th><td>\n<table>\n";
+                     	foreach ($skills as $skill){
+                            $value = $skill->value;
+                            $str_evaluation = '';
+							if (!empty($value)){
+                                $value--;
+                                if ($tab_scale=explode(",", $skill->scale)){
+                                	$str_evaluation = $tab_scale[$value];
+								}
+							}
+                        	$rslt .= '<tr><td>'.$skill->domain.'</td><td><b>'.$skill->code.'</b><td><i>'. $str_evaluation.'</i></td></tr><tr><td colspan="3">'. $skill->description.'</td></tr>'."\n";
+                    	}
+                        $rslt .= "</table>\n";
+					}
+				}
+
+				else if ($object->type == 'reference') {
+					$reference = get_record('artefact_booklet_refresult', 'idowner', $this -> author, 'idobject', $object->id);
+                   	if ($reference && $reference->idreference) {
+                        $val = get_record('artefact_booklet_reference', 'id', $reference->idreference);
+                        $rslt .= "\n<tr><th>". $object -> title . "</th>";
+                        $rslt .= "<td>";
+                        $rslt .= display_object_linked($val->idobjectlinked, $this -> author);
+                    }
+                }
+
+
                 $rslt .= "</td></tr>";
             }
 
@@ -3821,7 +3819,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 		//
 		}
         // return array('html' => clean_html($rslt));
-        if (isset($rslt)){
+        if (!empty($rslt)){
 			return array('html' => $rslt);
 		}
     }
