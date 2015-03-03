@@ -111,12 +111,21 @@ if (isset($idtome)) {
     // tableau pour listes id -> id
 	if ($frames) {
     	foreach ($frames as $frame) {
+            //echo "<br / FRAME\n";
+         	//print_object($frame);
             if ($frame->list) {
            	    $ids[$frame->id] = $frame->id;
 	    	}
 	    }
     	// pour generer le tableau des fonctions js pour chaque frame
-        $inlinejs = ArtefactTypeVisualization::get_js('visualization', $ids, $tab);
+        //echo "<br / TAB\n";
+		//print_object($tab);
+		//echo "<br / IDS\n";
+        //print_object($ids);
+
+		$inlinejs = ArtefactTypeVisualization::get_js('visualization', $ids, $tab);
+		//print_object($inlinejs);
+		//exit;
     }
 
 	// Menu
