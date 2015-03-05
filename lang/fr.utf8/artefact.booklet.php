@@ -153,7 +153,7 @@ $string['domain'] = "Domaine";
 $string['descriptionlist'] = "Description";
 $string['descriptionlistdesc'] = "Descrivez le contexte dans lequel on peut acquérir ces savoir-faire, compétences, habiletés.";
 $string['descriptionlistmodel'] = "Cochez les compétences acquises";
-$string['generalscale'] = "Barème de validation de compétences";
+$string['generalscale'] = "Barème de validation de la compétence";
 $string['generalscalemodel'] = "Non acquis,Notion,Application,Maîtrise,Expertise";
 $string['generalscaledesc'] = "Une liste de valeurs destinées à l'évaluation de compétences";
 $string['listofskills'] = "Saisir les compétences";
@@ -172,9 +172,11 @@ $string['selectskills'] = "Sélectionnez des compétences";
 $string['skill'] = "Compétence";
 $string['skills'] = "Compétences";
 $string['skilltype'] = "Type (0: entête, 1: item, 2: masqué)";
+$string['skilldescriptionmodel'] = "Par exemple : <i>'Evaluer la pertinence de l'information trouvée, l'ordonner, la hiérarchiser, la synthétiser'</i>.";
+$string['skilldescriptiondesc'] = "	Listez les savoirs faires et habiletés dont cette compétences témoigne... ";
+
 $string['threshold'] = "Seuil";
 $string['thresholdscale'] = "Seuil";
-$string['thresholdscalemodel'] = "Index de la valeur 'Objectif atteint' pour le barème utilisé";
 $string['thresholdscaledesc'] = "Si le barème est ''<i>Non acquis,Notion,<b>Application</b>,Maîtrise,Expertise</i>''  alors le seuil est de 2";
 $string['thresholdscalemodel'] = "2";
 $string['unknown'] = "Inconnu";
@@ -215,6 +217,9 @@ $string['offrame'] = "de la fiche ";
 
 
 // Free skill
+$string['addnewskill'] = "Créer une compétence utilisateur";
 $string['freeskills'] = "Compétences utilisateur";
-$string['addfreeskills'] = "Add user's skills";
-$string['saveskills'] = "Enregistrer les nouvelles compétences";
+$string['addfreeskills'] = "Saisir un lot de nouvelles compétences";
+$string['saveskill'] = "Enregistrer la compétence";
+$string['saveskills'] = "Enregistrer les compétences";
+

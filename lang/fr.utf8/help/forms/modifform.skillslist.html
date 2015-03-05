@@ -1,11 +1,18 @@
 <!-- @license http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later -->
 <!-- @copyright For copyright information on Mahara, please see the README file distributed with this software. -->
-<h3>Liste de compétences</h3>
-Pour chaque compétence saisir une ligne de valeurs respectant le motif suivant : <br />
+<h3>Liste de comp&eacute;tences</h3>
+Pour chaque comp&eacute;tence saisir une ligne de valeurs respectant le motif suivant : <br />
 <br /><pre>
-code1;description1;[valeur_bareme11,valeur_bareme12,valeur_bareme13,...,valeur_bareme1N|seuil1]
-code2;description2;[valeur_bareme21,valeur_bareme22,valeur_bareme23,...,valeur_bareme2N|seuil2]
+code1;type1;description1;[valeur_bareme11,valeur_bareme12,valeur_bareme13,...,valeur_bareme1N|seuil1]
+code2;type2;description2;[valeur_bareme21,valeur_bareme22,valeur_bareme23,...,valeur_bareme2N|seuil2]
 ...
 </pre>
-ATTENTION:<br /><b>code</b> doit être une clé pour tout le serveur ; si le barème n'est pas renseigné c'est la valeur 
- par défaut [Non acquis,Notion,Application,Maîtrise,Expertise|3] qui est assignée à la compétence.
+ATTENTION:<br />
+<ul><li><b>Domaine</b>: Une d&eacute;signation identique pour toutes les comp&eacute;tences d'un m&ecirc;me domaine.
+</li><li><b>Code</b> : doit &ecirc;tre une cl&eacute; pour tout le serveur ; 
+</li><li><b>Type</b>: 0: Ent&ecirc;te (pas de bar&egrave;me appliqu&eacute;), 1: Item; 2: masqu&eacute;.
+</li><li><b>Bar&egrave;me</b> : <i>[valeur_bareme11,valeur_bareme12,valeur_bareme13,...,valeur_bareme1N|seuil1]</i>
+<br />Si le bar&egrave;me n'est pas renseign&eacute; c'est la valeur 
+ par d&eacute;faut <i>[Non acquis,Notion,Application,Ma&icirc;trise,Expertise|3]</i> qui est assign&eacute;e &agrave; la comp&eacute;tence.
+</li><li><b>Seuil</b> Position du bar&egrave;mes qui permet de valider la comp&eacute;tence ; par exemple pour le bar&egrave;me ci-dessus il faut indiquer '3' qui correspond &agrave; "</i>Application</i>". 
+</li></ul>

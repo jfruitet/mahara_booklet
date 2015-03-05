@@ -185,12 +185,16 @@ $string['selectdomains'] = "Selectionner some domains";
 $string['selectskills'] = "Select skills";
 $string['skill'] = "Skill";
 $string['skills'] = "Skills";
+$string['sktype'] = "Display type";
 $string['skilltype'] = "Type (0: header, 1: item, 2: hidden)";
+$string['skilldescriptionmodel'] = "For exemple : <i>Assess the relevance of the found information, class her, rank her and synthesize her</i>.";
+$string['skilldescriptiondesc'] = "Display the know-hows and the expertises linked to this skill... ";
+$string['skillsavefailed'] = "Fail to save the Skill. Some data missing...";
+
 $string['threshold'] = "Threshold";
 $string['thresholdscale'] = "Threshold";
-$string['thresholdscalemodel'] = "Index of the 'passed' value for the used scale";
-$string['thresholdscaledesc'] = "Il the list of scale values is ''<i>Needs more work,<b>Meets the mark</b>,Going beyond,Super!</i>''  then the threshold is 2";
 $string['thresholdscalemodel'] = "2";
+$string['thresholdscaledesc'] = "If the list of scale values is ''<i>Needs more work,<b>Meets the mark</b>,Going beyond,Super!</i>''  then the threshold is 2";
 
 $string['unknown'] = "Unknown";
 $string['unknowncode'] = "CODE";
@@ -230,7 +234,10 @@ $string['offrame'] = "of frame ";
 
 
 // Free skill
-$string['freeskills'] = "User's skills";
 $string['addfreeskills'] = "Add user's skills";
-$string['saveskills'] = "Save new skills";
+$string['freeskills'] = "User's skills";
+$string['saveskill'] = "Save this new skill";
+$string['saveskills'] = "Save these new skills";
+$string['addnewskill'] = "Type in an user's skill";
+
 

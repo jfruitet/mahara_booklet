@@ -38,15 +38,16 @@
 
 {if $listskills}
 	{if $optionsform.skillsform}
-		<fieldset><legend>{str tag='inputnewskills' section='artefact.booklet'}</legend>
+		<br />
 			{$optionsform.skillsform|safe}
-		</fieldset>
 	{/if}	
 	{if $optionsform.domainchoice}
+		<br />
 		<fieldset><legend>{str tag='selectdomains' section='artefact.booklet'}</legend>
 			{$optionsform.domainchoice|safe}
 		</fieldset>
-	{/if}		
+	{/if}	
+	<br />	
 	<fieldset><legend>{str tag='selectskills' section='artefact.booklet'}</legend>
 		{$optionsform.choice|safe}
 	</fieldset>

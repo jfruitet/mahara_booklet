@@ -17,11 +17,11 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 **Version 2015030201 Release 1.2.3 - 2015-03-02**
 
-Nouvel objet "Compétences utilisateur" permettant à tout utilisateur d'ajouter une liste de compétences et de les évaluer.
+Nouvel objet "Compétences utilisateur" : tout utilisateur peut créer ses propres listes de compétences et les ajouter à son dossier puis les évaluer selon un barème de son choix.
 
-Cet objet complète l'objet "Liste de compétences" proposé par le concepteur d'un livret.
+Cet objet complète l'objet "Liste de compétences" qui lui est à l'initiative du concepteur d'un livret.
 
-***Attention*** : Le développement de cette fonctionnalité n'est pas tout à fait achevé...
+
 
 
 #### Bug correction
@@ -29,7 +29,7 @@ Cet objet complète l'objet "Liste de compétences" proposé par le concepteur d
 **Version 1.2.2 - 2015-03-02** : 
 
 * Une ligne vide corrigée dans les fichiers d'export XML due à une inclusion de bibliothèque. A void line corrected in the xml header due to library inclusion.
-* La réinmprtation d'un livret ne crée plus des doublons sur les objets. Twice import of the same booklet does not create twins objects.
+* L'importation répétée d'un même livret ne crée plus de doublons sur les objets. Twice import of the same booklet does not create twins objects.
 
 
 ### February 2015
@@ -43,9 +43,9 @@ afin d'éviter de ressaisir des données quand deux fiches portent sur des infor
 
 **Version 1.1.2 - 2015-02-22**
 
-Nouvelle structure de données "**liste de compétences avec barème**" - New data structure "**list of skills**"
+Nouvel objet  "**liste de compétences avec barème**" - New data structure "**list of skills**"
 
-Le concepteur peut importer des listes de compétences ; l'utilisateur peut évaluer sa progression.
+Le concepteur peut importer des listes de compétences ; l'utilisateur peut évaluer sa progression. L'objet "Liste de compétences" n'autorise pas l'utilisateur à ajouter / modifier les compétences proposées.
 
 Designer may import list of skills with scale ; user may check achievement
 

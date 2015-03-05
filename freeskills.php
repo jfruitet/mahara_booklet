@@ -36,11 +36,9 @@ if ($idobject){
 			if ($tab = get_record('artefact_booklet_tab', 'id', $frame->idtab)){
 				if ($tome = get_record('artefact_booklet_tome', 'id', $tab->idtome)){
 					define('TITLE', $tome->title.' -> '.$tab->title.' -> '.$frame->title.' -> '.$object->title);
-                    $inlinejs = "";
+
 					$inlinejs = ArtefactTypeFreeSkills::get_js($object->type, $object->id);
                     $optionsform = ArtefactTypeFreeSkills::get_freeskillsform($tab->id, $object->id, $idrecord, $domainsselected);
-
-
 					//print_object($optionsform);
 					//exit;
 					$smarty = smarty(array('tablerenderer','jquery'));
@@ -48,7 +46,7 @@ if ($idobject){
 					$smarty->assign('INLINEJAVASCRIPT', $inlinejs);
 					$smarty->assign('optionsform', $optionsform);
 					$smarty->display('artefact:booklet:freeskills.tpl');
-					exit;
+					die;
 				}
 			}
 		}
