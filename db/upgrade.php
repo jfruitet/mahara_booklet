@@ -210,6 +210,11 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
             throw new SQLException($table1 . " could not be created, check log for errors.");
         }
 	}
+
+    if ($oldversion < 2015030202) {
+
+	}
+
     return $status;
 }
 

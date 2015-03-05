@@ -17,6 +17,7 @@ define('SECTION_PAGE', 'index');
 defined('INTERNAL') || die();
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
+
 require_once('pieforms/pieform.php');
 require_once('license.php');
 safe_require('artefact', 'booklet');
