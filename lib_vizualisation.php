@@ -1756,7 +1756,8 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 											$hidden = false;
 											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
 												// donnees saisies
-                                                switch ($skill->type){
+                                                $sdescription = strip_tags($skill->description);
+												switch ($skill->type){
 													case 0 : $header = true; break;
                                             		case 2 : $hidden = true; break;
 													default : break;
@@ -1773,11 +1774,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												// la boîte de saisie
            	                               		if (!$header){
 													$str_choice = get_skill_choice_display($skill, $index);
-                                                    $sdescription = $skill->description;
 												}
 												else{
                                                     $str_choice = '';
-                                                    $sdescription = '<span class="blueback">'.$skill->description.'</span>';
+                                                    $sdescription = '<span class="blueback">'.$sdescription.'</span>';
 												}
 
 												if (!$hidden){
@@ -1923,7 +1923,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
 												$scale = $skill->scale;
 												$domain = $skill->domain;
-												$sdescription = $skill->description;
+												$sdescription = strip_tags($skill->description);
     	                                        $code = $skill->code;
 												$threshold = $skill->threshold;
             	                                $str_skill = "$domain::$code";
@@ -1933,11 +1933,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												// la boîte de saisie
            	            	                   	if (!$header){
 													$str_choice = get_skill_choice_display($skill, $index);
-                                	                $sdescription = $skill->description;
 												}
 												else{
                                             	    $str_choice = '';
-                                                	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+                                                	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 												}
 
 												if (!$hidden){
@@ -2241,7 +2240,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
 												$scale = $skill->scale;
 												$domain = $skill->domain;
-												$sdescription = $skill->description;
+												$sdescription = strip_tags($skill->description);
     		                                    $code = $skill->code;
 												$threshold = $skill->threshold;
             		                            $str_skill = "$domain::$code";
@@ -2249,15 +2248,14 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												$index = $val->value - 1;
                             	                if (!$header){
 													$str_choice = get_skill_choice_display($skill, $index);
-                                		            $sdescription = $skill->description;
 												}
 												else{
     	                                            $str_choice = '';
-        	                                      	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+        	                                      	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 												}
 
 												if (!$hidden){
-  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 												}
 											}
 										}
@@ -2295,7 +2293,8 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
                                         	$header = false;
 											$hidden = false;
 											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
-                                            	switch ($skill->type){
+                                                $sdescription = strip_tags($skill->description);
+												switch ($skill->type){
 													case 0 : $header = true; break;
 		                                            case 2 : $hidden = true; break;
 													default : break;
@@ -2320,14 +2319,13 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 															// la boîte de saisie
    			       	                        	    		if (!$header){
 																$str_choice = get_skill_choice_display($skill, $index);
-           	        		                        	    	$sdescription = $skill->description;
 															}
 															else{
    	                    	                    				$str_choice = '';
-           	                	                        		$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+           	                	                        		$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 															}
 															if (!$hidden){
-               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
                            	                            	}
 														}
 				           							}
@@ -2843,7 +2841,8 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												$hidden = false;
 												if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
 													// donnees saisies
-                                       				switch ($skill->type){
+            	                                	$sdescription = strip_tags($skill->description);
+													switch ($skill->type){
 														case 0 : $header = true; break;
                                             			case 2 : $hidden = true; break;
 														default : break;
@@ -2861,11 +2860,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 													// la boîte de saisie
     	       	                               		if (!$header){
 														$str_choice = get_skill_choice_display($skill, $index);
-            	                                        $sdescription = $skill->description;
 													}
 													else{
                         	                            $str_choice = '';
-                            	                        $sdescription = '<span class="blueback">'.$skill->description.'</span>';
+                            	                        $sdescription = '<span class="blueback">'.$sdescription.'</span>';
 													}
 													if (!$hidden){
 												        $components['rl' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
@@ -2999,8 +2997,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 	                	                        $header = false;
 												$hidden = false;
 												if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
-													// donnees saisies
-                	                	            switch ($skill->type){
+													switch ($skill->type){
 														case 0 : $header = true; break;
                         	                	   		case 2 : $hidden = true; break;
 														default : break;
@@ -3008,7 +3005,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
 													$scale = $skill->scale;
 													$domain = $skill->domain;
-													$sdescription = $skill->description;
+													$sdescription = strip_tags($skill->description);
     	        	                                $code = $skill->code;
 													$threshold = $skill->threshold;
             	        	                        $str_skill = "$domain::$code";
@@ -3018,11 +3015,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 													// la boîte de saisie
            	            	        	           	if (!$header){
 														$str_choice = get_skill_choice_display($skill, $index);
-                                	        	        $sdescription = $skill->description;
 													}
 													else{
             	                                	    $str_choice = '';
-    	                                            	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+    	                                            	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 													}
 
 													if (!$hidden){
@@ -3337,11 +3333,11 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												}
 												else{
     	                                            $str_choice = '';
-        	                                      	$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+        	                                      	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 												}
 
 												if (!$hidden){
-  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 												}
 											}
 										}
@@ -3379,7 +3375,8 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
                                         	$header = false;
 											$hidden = false;
 											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
-                                            	switch ($skill->type){
+                                                $sdescription = strip_tags($skill->description);
+												switch ($skill->type){
 													case 0 : $header = true; break;
 		                                            case 2 : $hidden = true; break;
 													default : break;
@@ -3404,14 +3401,13 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 															// la boîte de saisie
    			       	                        	    		if (!$header){
 																$str_choice = get_skill_choice_display($skill, $index);
-           	        		                        	    	$sdescription = $skill->description;
 															}
 															else{
    	                    	                    				$str_choice = '';
-           	                	                        		$sdescription = '<span class="blueback">'.$skill->description.'</span>';
+           	                	                        		$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 															}
 															if (!$hidden){
-               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.strip_tags($sdescription).'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
                            	                            	}
 														}
 				           							}
