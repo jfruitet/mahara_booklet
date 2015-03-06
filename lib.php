@@ -3138,8 +3138,11 @@ function objectafreeskill_submit(Pieform $form, $values){
 			if ( preg_match("/\,/", $scale)){
             	$tscale=explode(",", $scale);
 				foreach ($tscale as $avalue){
-					if (!empty(trim($avalue))){
-                    	$scale_str.=trim($avalue).',';
+					if (isset($avalue)){
+                        $avalue = trim($avalue);
+						if (!empty($avalue)){
+                    		$scale_str .= $avalue . ',';
+						}
 					}
 				}
                 $scale_str=substr($scale_str,0,strlen($scale_str)-1);
@@ -3149,7 +3152,7 @@ function objectafreeskill_submit(Pieform $form, $values){
 			}
 
 			if (!empty($scale_str)){
-                $skill->scale =$scale_str;
+                $skill->scale = $scale_str;
 			}
 			else{
                 $ok=false;
