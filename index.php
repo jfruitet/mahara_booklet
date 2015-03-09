@@ -30,6 +30,9 @@ $idframe  = param_integer('idframe', 0);
 $okdisplay = param_integer('okdisplay', 0);
 
 $idmodifliste = param_integer('idmodifliste', null);
+
+$menuspecialform =  NULL; // menu des fiches / frames
+
 // pour recuperer idmodiflist passé dans l'url
 $designer = get_record('artefact_booklet_designer', 'id', $USER->get('id'));
 // renvoit les designers d'id = user pour savoir si user est designer
@@ -309,7 +312,9 @@ $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHELPNAME', true);
 $smarty->assign('PAGEHELPICON', $aide);
 $smarty->assign('PAGEHEADING', TITLE);
-$smarty->assign('menuspecialform', $menuspecialform);
+if (!empty($menuspecialform)){
+	$smarty->assign('menuspecialform', $menuspecialform);
+}
 $smarty->assign('help', $aide);
 $smarty->assign('indexform', $indexform);
 $smarty->assign('choiceform', $choiceform);
