@@ -4654,6 +4654,8 @@ EOF;
     public static function get_menu_frames($idtome, $idtab, $idselectedframe = null, $idmodifliste = null, $browse = null, $okdisplay = null) {
         // idmodifliste est l'index dans artefact_booklet_resulttext
         global $USER, $THEME;
+        $menuform = array();
+
         $link_part1 = get_config('wwwroot').'/artefact/booklet/index.php?tab=';
         $link_part2 = '&amp;idframe=';
         $link_part3 ='';
@@ -4693,353 +4695,349 @@ EOF;
 
         // Liste des frames du tab
 		// Ordonner les frames selon leur frame parent et leur ordre d'affichage
-	    $recframes = get_records_sql_array('SELECT ar.id,  ar.title, ar.displayorder, ar.idparentframe FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($tab->id));
-		// DEBUG
-        //echo "<br />DEBUG :: lib.php :: 1976 <br />\n";
-		//echo "<br />DEBUG :: FRAMES<br /> \n";
-		//print_object($recframes);
-        //echo "<br />\n";
-		//exit;
-		// 52 branches possibles a chaque noeud, รงa devrait suffire ...
-		$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+	    if ($recframes = get_records_sql_array('SELECT ar.id,  ar.title, ar.displayorder, ar.idparentframe FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($tab->id))){
+			// DEBUG
+    	    //echo "<br />DEBUG :: lib.php :: 1976 <br />\n";
+			//echo "<br />DEBUG :: FRAMES<br /> \n";
+			//print_object($recframes);
+    	    //echo "<br />\n";
+			//exit;
+			// 52 branches possibles a chaque noeud, รงa devrait suffire ...
+			$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
 
-		// REORDONNER sous forme d'arbre parcours en profondeur d'abord
-        $tabaff_niveau = array();
-		// Initialisation
-    	foreach ($recframes as $recframe) {
-        	if ($recframe){
-            	$tabaff_niveau[$recframe->id] = 0;
-			}
-		}
-
-        $tabaff_codes = array();  // liste des cadres dns l'ordre parcours transverse
-		// Initialisation
-		$n=0;
-		foreach ($recframes as $recframe) {
-        	if ($recframe){
-            	$tabaff_codes[$recframe->id] =$tcodes[$n];
-				$n++;
-			}
-		}
-
-        $tabaff_codes_ordonnes = array();  // liste des cadres dans l'ordre parcours transverse
-        $tabaff_codes_largeur = array();
-
-        $niveau_courant = 0;
-        $ordre_courant = 0;
-        $parent_courant = 0;
-        $tab_ordre_par_position = array();
-        $tab_ordre_par_niveau = array();
-        $tab_ordre_par_niveau[0]=-1;
-		// Reordonner
-        if ($recframes) {
-			foreach ($recframes as $recframe) {
-            if ($recframe){
-
-				if ($recframe->idparentframe == 0){
-                    $niveau_courant = 0;
-                    $ordre_courant = $tab_ordre_par_niveau[$niveau_courant]+1;
-
+			// REORDONNER sous forme d'arbre parcours en profondeur d'abord
+	        $tabaff_niveau = array();
+			// Initialisation
+    		foreach ($recframes as $recframe) {
+        		if ($recframe){
+	            	$tabaff_niveau[$recframe->id] = 0;
 				}
-				else if ($recframe->idparentframe != $parent_courant){
-					// changement de niveau
-     				$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
-                    if (isset($tab_ordre_par_niveau[$niveau_courant])){
-                    	$ordre_courant = $tab_ordre_par_niveau[$niveau_courant] + 1;
+			}
+
+	        $tabaff_codes = array();  // liste des cadres dns l'ordre parcours transverse
+			// Initialisation
+			$n=0;
+			foreach ($recframes as $recframe) {
+        		if ($recframe){
+	            	$tabaff_codes[$recframe->id] =$tcodes[$n];
+					$n++;
+				}
+			}
+
+	        $tabaff_codes_ordonnes = array();  // liste des cadres dans l'ordre parcours transverse
+    	    $tabaff_codes_largeur = array();
+
+        	$niveau_courant = 0;
+	        $ordre_courant = 0;
+    	    $parent_courant = 0;
+        	$tab_ordre_par_position = array();
+        	$tab_ordre_par_niveau = array();
+        	$tab_ordre_par_niveau[0]=-1;
+			// Reordonner
+    	    if ($recframes) {
+				foreach ($recframes as $recframe) {
+            		if ($recframe){
+						if ($recframe->idparentframe == 0){
+    	    	            $niveau_courant = 0;
+                		    $ordre_courant = $tab_ordre_par_niveau[$niveau_courant]+1;
+						}
+						else if ($recframe->idparentframe != $parent_courant){
+							// changement de niveau
+		     				$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
+        		            if (isset($tab_ordre_par_niveau[$niveau_courant])){
+                		    	$ordre_courant = $tab_ordre_par_niveau[$niveau_courant] + 1;
+							}
+							else{
+                		        $ordre_courant = 0;
+								$tab_ordre_par_niveau[$niveau_courant] = 0;
+							};
+						}
+                		$tab_ordre_par_niveau[$niveau_courant] = $ordre_courant;
+						$tabaff_niveau[$recframe->id] = $niveau_courant;
+						$parent_courant = $recframe->idparentframe;
+
+                		$code='';
+						if ($niveau_courant>0){
+							$code =  $tabaff_codes[$recframe->idparentframe];
+						}
+		                $code.=$tcodes[$ordre_courant];
+        		        $tabaff_codes[$recframe->id] = $code;
+
+                		$position = $niveau_courant * 52 + $ordre_courant;
+						$tab_ordre_par_position[$recframe->id] = $position;
+
+						$a = new stdclass;
+                		$a->id = $recframe->id;
+		                $a->title = $recframe->title;
+        		        $a->idparentframe = $recframe->idparentframe;
+                		$a->code = $code;
+		                $a->niveau = strlen($code);
+        		        $a->rang = $ordre_courant;
+                		$a->position = $position;
+						// A completer dans une seconde passe
+        		        $a->nodelist = array();
+                		$a->nodenumber = 0;
+		                $a->nbfeuilles=0;
+        		        // A completer dans une troisieme passe
+                		$a->colspan = 0;
+		                $a->col = 0;
+        		        $tabaff_codes_ordonnes[$recframe->id] = $a;
+
+                		$ordre_courant++;
+					}
+				}
+			}
+
+	        asort($tab_ordre_par_position);
+
+			// Reorganisation
+        	foreach ($tab_ordre_par_position as $key => $val){
+	            $tabaff_codes_largeur[$key] = $tabaff_codes[$key];
+			}
+
+        	$tabaff_codes_profondeur = $tabaff_codes;
+	        asort($tabaff_codes_profondeur);
+
+    	    // CREATION du tableau a afficher
+			// Pour chaque cadre dans le parcours en profondeur completer
+			// liste des noeuds (nodelist) et nombre de noeuds (nodenumber)
+			// Nombre_feuille(code) = longeur_code(fils le plus profond) - longeur_code(code)
+			// fils_le_plus_profond(code) = liste_des_fils[DERNIER]
+			//
+
+			foreach ($tabaff_codes_profondeur as $key => $val){
+				$object = $tabaff_codes_ordonnes[$key];
+				$code_courant = $object->code;
+				// rechercher les fils
+    	        $i=0;
+				$ok=true;
+   				foreach ($tabaff_codes_profondeur as $idframe => $code){
+	    			$pos = strpos($code, $code_courant, 0);
+					// echo "<br />ID FRAME : $idframe, CODE CHERCHE : $code_courant, CODE : $code,  POS : $pos\n";
+					// exit;
+					// Notez notre utilisation de !==.  != ne fonctionnerait pas comme attendu
+					// car la position de 'a' est la 0-ieme (premier) caractere.
+					if ($pos !== false) {
+					    //La chaine '$code_courant' a ete trouvee dans la chaine '$code' et debute a la position $pos<br />\n";
+						if ($pos===0){
+							// C'est un fils
+                	        $object->nodelist[]=$idframe;
+                    	    $object->nodenumber++;
+						}
+					}
+				}
+			}
+
+
+	        // CREATION du tableau a afficher (Suite)
+			// Pour chaque cadre dans le parcours en profondeur completer
+			// nombre de feuilles et nombre de cases (colspan)
+
+			foreach ($tabaff_codes_profondeur as $key => $val){
+				$object = $tabaff_codes_ordonnes[$key];
+				$code_courant = $object->code;
+				// rechercher les fils
+	            $i=0;
+				$ok=true;
+   				foreach ($object->nodelist as $idnode){
+    				if ($tabaff_codes_ordonnes[$idnode]->nodenumber == 1){    // Les noeuds feuilles ont un nodelist reduite เ eux-memes
+                	    $object->nbfeuilles++;
+					}
+				}
+        	    $object->colspan = $object->nbfeuilles;
+			}
+
+    	    // CREATION du tableau a afficher (Fin)
+			// Pour chaque cadre dans le parcours en LARGEUR completer col
+			// Si changement de niveau col = col du pere
+			// Sinon col = colspan occupees + cospan du precedant
+			$niveau_courant=0;
+	        $col_precedant=0;
+    	    $nb_col=0;
+			$max_lig=0;
+			// Parcours en largeur
+			foreach ($tabaff_codes_largeur as $idframe => $code){
+				$object = $tabaff_codes_ordonnes[$idframe];
+				$niveau = $object->niveau;
+	            //echo "<br />CODE : ".$object->code.", NIVEAU : ".$object->niveau.", NIVEAU_COURANT : $niveau_courant \n";
+    	        if ($niveau == 1){
+        	        $nb_col+=$object->colspan;
+				}
+				if ($niveau != $niveau_courant){
+					// Changement de niveau
+        	        //echo "<br />CHANGEMENT NIVEAU \n";
+            	    $max_lig++;
+                	if (!empty($object->idparentframe)){
+	                    if ($object_pere = $tabaff_codes_ordonnes[$object->idparentframe]){
+    	                    $object->col = $object_pere->col;
+						}
 					}
 					else{
-                        $ordre_courant = 0;
-						$tab_ordre_par_niveau[$niveau_courant] = 0;
-					};
-				}
-                $tab_ordre_par_niveau[$niveau_courant] = $ordre_courant;
-
-				$tabaff_niveau[$recframe->id] = $niveau_courant;
-				$parent_courant = $recframe->idparentframe;
-
-                $code='';
-				if ($niveau_courant>0){
-					$code =  $tabaff_codes[$recframe->idparentframe];
-				}
-                $code.=$tcodes[$ordre_courant];
-                $tabaff_codes[$recframe->id] = $code;
-
-                $position = $niveau_courant * 52 + $ordre_courant;
-				$tab_ordre_par_position[$recframe->id] = $position;
-
-				$a = new stdclass;
-                $a->id = $recframe->id;
-                $a->title = $recframe->title;
-                $a->idparentframe = $recframe->idparentframe;
-                $a->code = $code;
-                $a->niveau = strlen($code);
-                $a->rang = $ordre_courant;
-                $a->position = $position;
-				// A completer dans une seconde passe
-                $a->nodelist = array();
-                $a->nodenumber = 0;
-                $a->nbfeuilles=0;
-                // A completer dans une troisieme passe
-                $a->colspan = 0;
-                $a->col = 0;
-                $tabaff_codes_ordonnes[$recframe->id] = $a;
-
-                $ordre_courant++;
-			}
-			}
-		}
-
-        asort($tab_ordre_par_position);
-
-		// Reorganisation
-        foreach ($tab_ordre_par_position as $key => $val){
-            $tabaff_codes_largeur[$key] = $tabaff_codes[$key];
-		}
-
-        $tabaff_codes_profondeur = $tabaff_codes;
-        asort($tabaff_codes_profondeur);
-
-        // CREATION du tableau a afficher
-		// Pour chaque cadre dans le parcours en profondeur completer
-		// liste des noeuds (nodelist) et nombre de noeuds (nodenumber)
-		// Nombre_feuille(code) = longeur_code(fils le plus profond) - longeur_code(code)
-		// fils_le_plus_profond(code) = liste_des_fils[DERNIER]
-		//
-
-		foreach ($tabaff_codes_profondeur as $key => $val){
-			$object = $tabaff_codes_ordonnes[$key];
-			$code_courant = $object->code;
-			// rechercher les fils
-            $i=0;
-			$ok=true;
-   			foreach ($tabaff_codes_profondeur as $idframe => $code){
-    			$pos = strpos($code, $code_courant, 0);
-				// echo "<br />ID FRAME : $idframe, CODE CHERCHE : $code_courant, CODE : $code,  POS : $pos\n";
-				// exit;
-				// Notez notre utilisation de !==.  != ne fonctionnerait pas comme attendu
-				// car la position de 'a' est la 0-ieme (premier) caractere.
-				if ($pos !== false) {
-				    //La chaine '$code_courant' a ete trouvee dans la chaine '$code' et debute a la position $pos<br />\n";
-					if ($pos===0){
-						// C'est un fils
-                        $object->nodelist[]=$idframe;
-                        $object->nodenumber++;
+	                    $object->col = $col_precedant;
 					}
-				}
-			}
-		}
-
-
-        // CREATION du tableau a afficher (Suite)
-		// Pour chaque cadre dans le parcours en profondeur completer
-		// nombre de feuilles et nombre de cases (colspan)
-
-		foreach ($tabaff_codes_profondeur as $key => $val){
-			$object = $tabaff_codes_ordonnes[$key];
-			$code_courant = $object->code;
-			// rechercher les fils
-            $i=0;
-			$ok=true;
-   			foreach ($object->nodelist as $idnode){
-    			if ($tabaff_codes_ordonnes[$idnode]->nodenumber == 1){    // Les noeuds feuilles ont un nodelist reduite เ eux-memes
-                    $object->nbfeuilles++;
-				}
-			}
-            $object->colspan = $object->nbfeuilles;
-		}
-
-        // CREATION du tableau a afficher (Fin)
-		// Pour chaque cadre dans le parcours en LARGEUR completer col
-		// Si changement de niveau col = col du pere
-		// Sinon col = colspan occupees + cospan du precedant
-		$niveau_courant=0;
-        $col_precedant=0;
-        $nb_col=0;
-		$max_lig=0;
-		// Parcours en largeur
-		foreach ($tabaff_codes_largeur as $idframe => $code){
-			$object = $tabaff_codes_ordonnes[$idframe];
-			$niveau = $object->niveau;
-            //echo "<br />CODE : ".$object->code.", NIVEAU : ".$object->niveau.", NIVEAU_COURANT : $niveau_courant \n";
-            if ($niveau == 1){
-                $nb_col+=$object->colspan;
-			}
-			if ($niveau != $niveau_courant){
-				// Changement de niveau
-                //echo "<br />CHANGEMENT NIVEAU \n";
-                $max_lig++;
-                if (!empty($object->idparentframe)){
-                    if ($object_pere = $tabaff_codes_ordonnes[$object->idparentframe]){
-                        $object->col = $object_pere->col;
-					}
+        	        $niveau_courant = $niveau;
 				}
 				else{
-                    $object->col = $col_precedant;
+    	            //echo "<br />MEME NIVEAU \n";
+					$object->col = $object->colspan + $col_precedant;
 				}
-                $niveau_courant = $niveau;
+	            $col_precedant = $object->col;
+    	        //echo "<br />COLSPAN : ".$object->col ."\n";
 			}
-			else{
-                //echo "<br />MEME NIVEAU \n";
-				$object->col = $object->colspan + $col_precedant;
-			}
-            $col_precedant = $object->col;
-            //echo "<br />COLSPAN : ".$object->col ."\n";
-		}
 
-		// palette de couleurs
-        $palette ='';
-		/* ************* Supprimer le commentaire pour afficher la palette complete *****
-        $palette = "\n".'<table>'."\n";
-        //for ($i=0; $i<14; $i++){
-        for ($i=0; $i<8; $i++){
-            $palette.='<tr>';
-			for ($j=0; $j<4; $j++){
-		        $index_color = ($j  % 4) + 1;
-            	$color=chr(65+$i) . "$index_color";
-				//echo "<br />COLOR : niveau_$color\n";
-                $palette.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">niveau_'.$color.' '.$i.' '.$j.'</td>';
-			}
-            $palette.='</tr>'."\n";
-		}
-        $palette .= "\n".'</table>'."\n";
-		*********************************************************************************/
-
-		// RECOPIER LES DONNEES
-		// Table en profondeur d'abord
-
-        $return_str='';
-		$table_affichee = "\n".'<table>'."\n";
-		//."\n".'<tbody><tr><th colspan="'.$nb_lig.'">'.$tab->title.' <i>'.get_string('selectframe','artefact.booklet').'</i></th></tr></tbody>'."\n";
-        $nouvelleligne=true;
-		$niveau_courant=0;
-        $col_courante=0;
-        $hierarchy_str='';
-
-        foreach ($tabaff_codes_profondeur as $idframe => $code){
-			$object = $tabaff_codes_ordonnes[$idframe];
-			// print_object($object);
-
-			$linkselect='<a class="select" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'"><b>'.$object->title.'</b></a>';
-			$linkunselect='<a class="menu1" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'">'.$object->title.'</a>';
-
-            $parentid = $object->idparentframe;
-            $colposition = 0;
-            $str=' &gt;'.$linkselect;
-			if (!empty($parentid)){
-     			while (!empty($parentid)){
-        	    	$colposition += $tabaff_codes_ordonnes[$parentid]->colspan;
-                    $str=' &gt;'.'<a class="menu" href="'.$link_part1.$idtab.$link_part2.$tabaff_codes_ordonnes[$parentid]->id.$link_part3.'">'.				           $tabaff_codes_ordonnes[$parentid]->title.'</a> '.$str;
-            	    $parentid =  $tabaff_codes_ordonnes[$parentid]->idparentframe;
+			// palette de couleurs
+    	    $palette ='';
+			/* ************* Supprimer le commentaire pour afficher la palette complete *****
+	        $palette = "\n".'<table>'."\n";
+    	    //for ($i=0; $i<14; $i++){
+        	for ($i=0; $i<8; $i++){
+				$palette.='<tr>';
+				for ($j=0; $j<4; $j++){
+		        	$index_color = ($j  % 4) + 1;
+		            $color=chr(65+$i) . "$index_color";
+					//echo "<br />COLOR : niveau_$color\n";
+               		$palette.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">niveau_'.$color.' '.$i.' '.$j.'</td>';
 				}
+       		    $palette.='</tr>'."\n";
 			}
-            $str='<a class="menu" href="'.$link_part1.$idtab.'">'.$tab->title.'</a>'.$str;
+	        $palette .= "\n".'</table>'."\n";
+			*********************************************************************************/
+
+			// RECOPIER LES DONNEES
+			// Table en profondeur d'abord
+
+        	$return_str='';
+			$table_affichee = "\n".'<table>'."\n";
+			//."\n".'<tbody><tr><th colspan="'.$nb_lig.'">'.$tab->title.' <i>'.get_string('selectframe','artefact.booklet').'</i></th></tr></tbody>'."\n";
+	        $nouvelleligne=true;
+			$niveau_courant=0;
+        	$col_courante=0;
+	        $hierarchy_str='';
+
+    	    foreach ($tabaff_codes_profondeur as $idframe => $code){
+				$object = $tabaff_codes_ordonnes[$idframe];
+				// print_object($object);
+
+				$linkselect='<a class="select" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'"><b>'.$object->title.'</b></a>';
+				$linkunselect='<a class="menu1" href="'.$link_part1.$idtab.$link_part2.$object->id.$link_part3.'">'.$object->title.'</a>';
+
+        	    $parentid = $object->idparentframe;
+            	$colposition = 0;
+	            $str=' &gt;'.$linkselect;
+				if (!empty($parentid)){
+     				while (!empty($parentid)){
+        		    	$colposition += $tabaff_codes_ordonnes[$parentid]->colspan;
+                	    $str=' &gt;'.'<a class="menu" href="'.$link_part1.$idtab.$link_part2.$tabaff_codes_ordonnes[$parentid]->id.$link_part3.'">'.				           $tabaff_codes_ordonnes[$parentid]->title.'</a> '.$str;
+            	    	$parentid =  $tabaff_codes_ordonnes[$parentid]->idparentframe;
+					}
+				}
+        	    $str='<a class="menu" href="'.$link_part1.$idtab.'">'.$tab->title.'</a>'.$str;
 /*
-            if (!empty($object->nodelist) && ($object->nodenumber>1)){
-                $node=1;
-                if (isset($object->nodelist[$node])){
-					$filsid=$object->nodelist[$node];
-					while (!empty($filsid)){
-                    	$str.=' &gt;'.'<a class="menu" href="'.$link_part1.$tabaff_codes_ordonnes[$filsid]->id.$link_part2.'&amp;tab='.$idtab.'">'.$tabaff_codes_ordonnes[$filsid]->title.'</a> ';
-						$node++;
-						if (isset($object->nodelist[$node])){
-                        	$filsid=$object->nodelist[$node];
-						}
-						else{
-                            $filsid=0;
+            	if (!empty($object->nodelist) && ($object->nodenumber>1)){
+                	$node=1;
+	                if (isset($object->nodelist[$node])){
+						$filsid=$object->nodelist[$node];
+						while (!empty($filsid)){
+            	        	$str.=' &gt;'.'<a class="menu" href="'.$link_part1.$tabaff_codes_ordonnes[$filsid]->id.$link_part2.'&amp;tab='.$idtab.'">'.$tabaff_codes_ordonnes[$filsid]->title.'</a> ';
+							$node++;
+							if (isset($object->nodelist[$node])){
+                        		$filsid=$object->nodelist[$node];
+							}
+							else{
+        	                    $filsid=0;
+							}
 						}
 					}
 				}
-			}
 */
-			if ($nouvelleligne){
-                //$table_affichee.='<tr class="niveau_'.$object->niveau.'">';
-                $table_affichee.='<tr>';
-                $nouvelleligne=false;
-                //$col_courante = $colposition;
-                $col_courante = 0;
-			}
-
-			if (!empty($colposition)){
-                $colposition--;
-			}
-
-			//echo "<br />$object->code ::  COL_COURANTE : $col_courante -&gt; COLPOSITION : $colposition\n";
-
-			if ($col_courante < $colposition){
-                //echo "<br />AVANT : $object->code ALLER DE $col_courante A $colposition\n";
-				for ($i=0; $i < $colposition; $i++){
-            		// $table_affichee.='<td class="blank">&nbsp;</td>';
-					$col_courante++;
+				if ($nouvelleligne){
+            	    //$table_affichee.='<tr class="niveau_'.$object->niveau.'">';
+                	$table_affichee.='<tr>';
+	                $nouvelleligne=false;
+    	            //$col_courante = $colposition;
+        	        $col_courante = 0;
 				}
-			}
 
-            $cod = chr( (ord(strtoupper(substr($code,0,1))) - 64) % 8 + 64);
-            $index_color = (($object->niveau - 1) % 4) + 1;
-            $color="$cod$index_color";
-			//echo "<br />CODE: $code / COLOR : niveau_$color\n";
-			//exit;
-            if ($object->id == $idselectedframe){
-                $hierarchy_str=$str;
-				if ($object->colspan>1){
-					$table_affichee.='<td class="select" rowspan="'.$object->colspan.'">'.$linkselect.'</td>';
+				if (!empty($colposition)){
+    	            $colposition--;
 				}
-				else{
-					$table_affichee.='<td class="select">'.$linkselect.'</td>';
+
+				//echo "<br />$object->code ::  COL_COURANTE : $col_courante -&gt; COLPOSITION : $colposition\n";
+
+				if ($col_courante < $colposition){
+                	//echo "<br />AVANT : $object->code ALLER DE $col_courante A $colposition\n";
+					for ($i=0; $i < $colposition; $i++){
+    	        		// $table_affichee.='<td class="blank">&nbsp;</td>';
+						$col_courante++;
+					}
 				}
-			}
-			else{
-				if ($object->colspan>1){
-					$table_affichee.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">'.$linkunselect.'</td>';
+
+	            $cod = chr( (ord(strtoupper(substr($code,0,1))) - 64) % 8 + 64);
+    	        $index_color = (($object->niveau - 1) % 4) + 1;
+        	    $color="$cod$index_color";
+				//echo "<br />CODE: $code / COLOR : niveau_$color\n";
+				//exit;
+    	        if ($object->id == $idselectedframe){
+        	        $hierarchy_str=$str;
+					if ($object->colspan>1){
+						$table_affichee.='<td class="select" rowspan="'.$object->colspan.'">'.$linkselect.'</td>';
+					}
+					else{
+						$table_affichee.='<td class="select">'.$linkselect.'</td>';
+					}
 				}
 				else{
-					$table_affichee.='<td class="niveau_'.$color.'">'.$linkunselect.'</td>';
+					if ($object->colspan>1){
+						$table_affichee.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">'.$linkunselect.'</td>';
+					}
+					else{
+						$table_affichee.='<td class="niveau_'.$color.'">'.$linkunselect.'</td>';
+					}
 				}
-			}
 
-   // DEBUG
+			   // DEBUG
  /*
-            if ($object->id == $idselectedframe){
-				$table_affichee.='<td class="gold" rowspan="'.$object->colspan.'">'.
+            	if ($object->id == $idselectedframe){
+					$table_affichee.='<td class="gold" rowspan="'.$object->colspan.'">'.
 					'<b>'.$object->code.'</b></td>';
-			}
-			else{
-				$table_affichee.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">'.
-					$object->code.'</td>';
-			}
-*/
-            $col_courante++;
-
-			// Nouvelle ligne ?
-			if ($object->nodenumber == 1){
-	            //echo "<br /> APRES :  $object->code ALLER DE $col_courante A $max_lig\n";
-				/*
-				if ($col_courante<$max_lig){
-					for ($i=$col_courante; $i<$max_lig; $i++){
-       	    	       	$table_affichee.='<td class="blank">&nbsp;</td>';
-					}
 				}
-				*/
-                $table_affichee.='</tr>'."\n";
-                $nouvelleligne=true;
+				else{
+					$table_affichee.='<td class="niveau_'.$color.'" rowspan="'.$object->colspan.'">'.
+					$object->code.'</td>';
+				}
+*/
+            	$col_courante++;
+
+				// Nouvelle ligne ?
+				if ($object->nodenumber == 1){
+		            //echo "<br /> APRES :  $object->code ALLER DE $col_courante A $max_lig\n";
+					/*
+					if ($col_courante<$max_lig){
+						for ($i=$col_courante; $i<$max_lig; $i++){
+       	    		       	$table_affichee.='<td class="blank">&nbsp;</td>';
+						}
+					}
+					*/
+        	        $table_affichee.='</tr>'."\n";
+            	    $nouvelleligne=true;
+				}
 			}
+
+
+        	$table_affichee.='</table>'."\n";
+
+	        if (!empty($hierarchy_str)){
+				$return_str='<div><span class="menu">'.$hierarchy_str.'</span></div>';
+			}
+        	$return_str.=$palette.$table_affichee;
+
+			//echo "<br />DEBUG :: lib.php :: 2269 :: TABLE AFFICHEE <br />$table_affichee\n";
+			//exit;
+
+        	$menuform["menu"] = $return_str;
+        	return $menuform;
 		}
-
-
-        $table_affichee.='</table>'."\n";
-
-        if (!empty($hierarchy_str)){
-			$return_str='<div><span class="menu">'.$hierarchy_str.'</span></div>';
-		}
-        $return_str.=$palette.$table_affichee;
-
-		//echo "<br />DEBUG :: lib.php :: 2269 :: TABLE AFFICHEE <br />$table_affichee\n";
-		//exit;
-        $menuform = array();
-        $menuform["menu"] = $return_str;
-        return $menuform;
 	}
 
-
 }
-
 // fin de la classe : ArtefactTypeVisualization

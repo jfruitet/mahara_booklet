@@ -124,7 +124,8 @@ else if ($type == 'object') {
     }
     $count = count_records($othertable, 'idframe', $id);
 }
-else if ($type == 'frame') {
+else if (($type == 'frame') && !empty($id)){
+
 	$data=get_frames($id);
     if ($data){
 			foreach ($data as $item) {

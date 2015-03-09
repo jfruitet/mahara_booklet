@@ -3993,38 +3993,36 @@ function get_frames_codes_ordered($idtab){
 	global $tabaff_parendids;
 
 	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
-	$recframes = get_records_sql_array('SELECT ar.id, ar.displayorder, ar.idparentframe FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
-	// REORDONNER sous forme d'arbre parcours en profondeur d'abord
-    $tabaff_ids = array();
-	$tabaff_displayorders = array();
-    $tabaff_parendids = array();
-	$tabaff_niveau = array();
-	$tabaff_codes = array();
-	// Initialisation
-    foreach ($recframes as $recframe) {
-        if ($recframe){
-            $tabaff_niveau[$recframe->id] = 0;
+	if ($recframes = get_records_sql_array('SELECT ar.id, ar.displayorder, ar.idparentframe FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab))){
+		// REORDONNER sous forme d'arbre parcours en profondeur d'abord
+	    $tabaff_ids = array();
+		$tabaff_displayorders = array();
+	    $tabaff_parendids = array();
+		$tabaff_niveau = array();
+		$tabaff_codes = array();
+		// Initialisation
+    	foreach ($recframes as $recframe) {
+        	if ($recframe){
+            	$tabaff_niveau[$recframe->id] = 0;
+			}
 		}
-	}
 
 
-	// 52 branches possibles a chaque niveau dee l'arbre, cela devrait suffire ...
-	$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
-    $niveau_courant = 0;
-    $ordre_courant = 0;
-    $parent_courant = 0;
+		// 52 branches possibles a chaque niveau dee l'arbre, cela devrait suffire ...
+		$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+	    $niveau_courant = 0;
+    	$ordre_courant = 0;
+	    $parent_courant = 0;
 
-	// Initialisation
-	$n=0;
-   	foreach ($recframes as $recframe) {
-       	if ($recframe){
-           	$tabaff_codes[$recframe->id] = $tcodes[$n];
-			$n++;
+		// Initialisation
+		$n=0;
+   		foreach ($recframes as $recframe) {
+       		if ($recframe){
+           		$tabaff_codes[$recframe->id] = $tcodes[$n];
+				$n++;
+			}
 		}
-	}
 
-	// Reordonner
-    if ($recframes) {
 		foreach ($recframes as $recframe) {
 			if ($recframe){
 				if ($recframe->idparentframe == 0){
@@ -4052,9 +4050,9 @@ function get_frames_codes_ordered($idtab){
 	            $ordre_courant++;
 			}
 		}
+	    asort($tabaff_codes);
+		return ($tabaff_codes);
 	}
-    asort($tabaff_codes);
-	return ($tabaff_codes);
 }
 
 /****************************************** Lists stuff *****************************************************/
