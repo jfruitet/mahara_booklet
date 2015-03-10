@@ -4,6 +4,17 @@
  * Copyright (C) 2006-2009 Catalyst IT
  * This file is distributed under the same terms as Mahara itself
  */
+.tablerenderer0 table{
+    float: left;
+    margin: 4px 4px 4px 4px;
+	width: 100%;
+}
+
+ .tablerenderer1 table{
+    float: left;
+    margin: 4px 4px 4px 4px;
+	width: 100%;
+}
 
 .tablerenderer2 table{
     float: left;
@@ -11,10 +22,21 @@
 	width: 100%;
 }
 
-.tablerenderer2 td {
+.tablerenderer1 td {
+    border-left: 1px solid #339933;
+	border-right: 1px solid #339933;
+	border-top: 1px solid #339933;
+	border-bottom: 1px solid #339933;
+    text-align : left;
+    vertical-align: top;
+	padding: 4px;
+    margin: 4px 4px 4px 4px;
+}
+
+.tablerenderer0 td {
     border-left: 1px solid #333399;
 	border-right: 1px solid #333399;
-	border-top: 0px solid #333399;
+	border-top: 1px solid #333399;
 	border-bottom: 1px solid #333399;
     text-align : left;
     vertical-align: top;
@@ -22,10 +44,47 @@
     margin: 4px 4px 4px 4px;
 }
 
+.tablerenderer2 td {
+    border-left: 1px solid #333399;
+	border-right: 1px solid #333399;
+	border-top: 1px solid #333399;
+	border-bottom: 1px solid #333399;
+    text-align : left;
+    vertical-align: top;
+	padding: 4px;
+    margin: 4px 4px 4px 4px;
+}
+
+.tablerenderer1 th {
+    border-left: 1px solid #339933;
+	border-right: 1px solid #339933;
+	border-top: 1px solid ##339933;
+	border-bottom: 1px solid #339933;
+    text-align : center;
+    vertical-align: top;
+	padding: 4px;
+	color:  #ffaaff;
+    background-color: #339933;
+    margin: 4px 4px 4px 4px;
+}
+
+.tablerenderer0 th {
+    border-left: 1px solid #333399;
+	border-right: 1px solid #333399;
+	border-top: 1px solid #333399;
+	border-bottom: 1px solid #333399;
+    text-align : center;
+    vertical-align: top;
+	padding: 4px;
+	color:  #ffffaa;
+    background-color: #333399;
+    margin: 4px 4px 4px 4px;
+}
+
 .tablerenderer2 th {
     border-left: 1px solid #333399;
 	border-right: 1px solid #333399;
-	border-top: 0px solid #333399;
+	border-top: 1px solid #333399;
 	border-bottom: 1px solid #333399;
     text-align : center;
     vertical-align: top;
@@ -43,7 +102,7 @@
 .tablerenderer3 td {
     border-left: 0px solid lightgray;
 	border-right: 0px solid lightgray;
-	border-top: 0px solid lightgray;
+	border-top: 1px solid lightgray;
 	border-bottom: 2px solid lightgray;
     text-align : left;
     vertical-align: top;
@@ -224,6 +283,7 @@ span.lightback{
 	font-family: sans-serif;
 	font-weight : normal;
 }
+
 /*
 .niveau_A1 {background-color: #552200; height : 8}
 .niveau_B1 {background-color: #666600; height : 8}

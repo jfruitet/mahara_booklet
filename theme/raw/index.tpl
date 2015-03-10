@@ -56,14 +56,8 @@
 </div>
 
 <div id="bookletwrap">
-{if $d}
     {foreach from=$indexform item=itemform}
         {$itemform|safe}
     {/foreach}
-{else}
-    {foreach from=$indexform item=itemform}
-        {$itemform|safe}
-    {/foreach}
-{/if}
 </div>
 {include file="footer.tpl"}

@@ -390,21 +390,20 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 
 										$scale = $skill->scale;
 										$domain = $skill->domain;
-										$sdescription = $skill->description;
+										$sdescription = strip_tags($skill->description);
     		                            $code = $skill->code;
 										$threshold = $skill->threshold;
 
                             	        if (!$header){
 											$str_choice = get_skill_choice_display($skill, $index);
-                                		    $sdescription = $skill->description;
 										}
 										else{
     	                                	$str_choice = '';
-        	                                $sdescription = '<b>'.strip_tags($skill->description).'</b>';
+        	                                $sdescription = '<b>'.strip_tags($sdescription).'</b>';
 										}
 
 										if (!$hidden){
-  							           		$str_skills .= '<li>'.$skill->domain.'<i>&nbsp;'.$skill->code.'</i>&nbsp;'.$str_choice.'<br />'.$sdescription.'</li>'."\n";
+  							           		$str_skills .= '<li>'.$domain.'<i>&nbsp;'.$code.'</i>&nbsp;'.$str_choice.'<br />'.$sdescription.'</li>'."\n";
 										}
 									}
 								}
@@ -781,6 +780,8 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         global $USER;
 		// Modif JF
 		global $THEME;
+        $addstr = get_string('add','artefact.booklet');
+        $imageadd = $THEME->get_url('images/btn_add.png');
         $editstr = get_string('edit','artefact.booklet');
         $editallstr = get_string('editall','artefact.booklet');
         $imageedit = $THEME->get_url('images/btn_edit.png');
@@ -1416,12 +1417,16 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
         	        if ($frame->list) {
             	        if ($framelistnomodif) {
                 	        $pf = "<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>" .
-                              "<button id='addpieform".$frame->id."button' class='cancel' onclick='toggleCompositeForm(&quot;pieform".$frame->id."&quot;);'>".get_string('add','artefact.booklet')."</button>" ;
+                              "\n<button id='addpieform".$frame->id."button' class='cancel' onclick='toggleCompositeForm(&quot;pieform".$frame->id."&quot;);'>".get_string('add','artefact.booklet')."</button>\n" ;
                     	}
                     	if ($objmodifinframe) {
-                        	$pf = $pf . "<button id='addpieform".$frame->id."button' onclick='javascript:history.back()' class='cancel'>". get_string('cancel','artefact.booklet')."</button>";
-	                    }
-
+                        	$pf = $pf . "\n<br /><button id='addpieform".$frame->id."button' onclick='javascript:history.back()' class='cancel'>". get_string('cancel','artefact.booklet')."</button>\n";
+						}
+            	        /*
+						if (!$framelistnomodif) {
+                	        $pf .="<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>\n<button id='addpieform".$frame->id."button' class='cancel' onclick='toggleCompositeForm(&quot;pieform".$frame->id."&quot;);'>".get_string('add','artefact.booklet')."</button>\n" ;
+                    	}
+						*/
     	                $objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id);
 
 						$titlelink = array();
@@ -1452,6 +1457,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
                                                     )";
                         	$item = get_record_sql($sql, array($frame->id, $frame->id));
 	                    }
+						/*
 						if ($item){
 							//print_object($item);
 							//exit;
@@ -1470,12 +1476,7 @@ class ArtefactTypeVisualization extends ArtefactTypebooklet {
 								}
 							}
 						}
-
-                        					// afficher les boutons alternant affichage et edition
-$alink1 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$idframe.'&tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a>';
-$alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>';
-
-
+						*/
 
     	                if ($frame->help != null) {
         	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
@@ -1484,28 +1485,32 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
                     	    $aide = null;
 	                    }
 
-                        $str_tab='';
-
-						for($j=0; $j<count($showlink); $j++){
-                        	$str_tab .= '<tr bgcolor="'.((($j % 2) == 0) ? '#ddeeff' : '#ccddff').'">
-	<th width="100%">'.$titlelink[$j].'</td>
-	<th align="right">'.$showlink[$j].' '.$editlink[$j].'</td>
-</tr>';
-						}
+// afficher les boutons alternant affichage et edition
+$alink1 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$idframe.'&tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a>';
+$alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>';
+$alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$idframe.'&tab='.$idtab.'&okdisplay=0"><img src="'.$imageadd.'" alt="'.$addstr.'" title="'.$addstr.'" /></a>';
 
 						 $pf = '<fieldset class="pieform-fieldset"><legend>' . $frame->title . ' ' . $aide . '</legend>
                            <table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
-                               <thead>
+                              <thead>
                                    <tr>
-                                       <th width="100%">' . (($item) ? $item->title : "") . '</th>
-									   <th align="right">'.$alink1.' '.$alink2.'</th>
+                                       <th class="visualizationcontrols"></th>
+                                       <th class="nom">' . (($item) ? $item->title : "") . '</th>
+                                       <th class="visualizationcontrols">'.$alink1.' '.$alink2.' '. $alink3.'</th>
                                    </tr>
                                </thead>
-                               <tbody>  '.$str_tab.'
+                               <tbody>
+                                   <tr>
+                                       <td class="buttonscell"></td>
+                                       <td class="toggle"></td>
+                                       <td class="buttonscell"></td>
+                                   </tr>
                                </tbody>
                            </table>
-                           ' . $pf . '
-                           </fieldset>';
+						   <br />
+                           '."\n".$pf."\n</fielset>\n";
+
+
         	        }
             	    $bookletform[$frame->title] = $pf;
             	} // fin de frame
@@ -1756,7 +1761,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 											$hidden = false;
 											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
 												// donnees saisies
-                                                $sdescription = strip_tags($skill->description);
+                                                $sdescription = $skill->description;
 												switch ($skill->type){
 													case 0 : $header = true; break;
                                             		case 2 : $hidden = true; break;
@@ -1958,7 +1963,9 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
 
 				else {  // La frame est une liste
-
+				// ********************************************************************************************************
+				//                               LISTE
+				// ********************************************************************************************************
 
 					$vertical=false;
 					$separateur='';
@@ -1969,6 +1976,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
                     $edit_link=array();
 					$edit_link1 = '<th><a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$frame->id.'&tab='.$idtab.'&idmodifliste=';
 					$edit_link2 = '&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a></th>'."\n";
+                    $color=array();
 
            			if ($objectslist = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder')){
 						// headers
@@ -1984,7 +1992,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 				    	$vertical = ($nbrubriques>5) ? true : false;
    	            		$separateur=($vertical)? '</tr><tr>' : '';
 						$n=0;
-						$rslt .= "\n<table class=\"tablerenderer2\">";
+						$rslt .= "\n<table class=\"tablerenderer3\">";
 						if (!$vertical){
 							$rslt .= "<thead>\n<tr>";
         	    	       	foreach ($objectslist as $object) {
@@ -2082,19 +2090,25 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
             			} // Fin du switch
 
-                        //echo "<br /> DEBUG :: 4458\n";
+                        //echo "<br /> DEBUG :: 2088\n";
 						//print_object($listidrecords);
 
 						// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
 					    $ligne = array();
-
 						for ($i = 0; $i <= $n; $i++) {
             	   			$ligne[$i] = "";
                             $edit_link[] = 10000000000000000000;
+                            $color[$i] = $i % 2;
 					    }
+                        //echo "<br /> DEBUG :: 2098 :: N : $n<br />\n";
+
+						//print_object($color);
+						//exit;
 
 						// pour chaque objet, on complete toutes les lignes
 				        foreach ($objectslist as $object) {
+
+
 				    	    if ($object->type == 'longtext' || $object->type == 'shorttext' || $object->type == 'area'
 												|| $object->type == 'htmltext' || $object->type == 'synthesis') {
             		    	    $sql = "SELECT re.*, rd.displayorder FROM {artefact_booklet_resulttext} re
@@ -2115,16 +2129,17 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												$edit_link[$i]=$txt->id; // recuperer la valeur courante de $idmodifliste a savoir l'id de artefact_booklet_resulttext
 											}
 
-														if ($vertical){
-						           	            	        $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
-														}
-														$ligne[$i].="<td class=\"tablerenderer2\">". $txt->value . "</td>";
+											if ($vertical){
+												
+						           	        	$ligne[$i].= "<th class=\"tablerenderer".$color[$i]."\">".$intitules[$object->id]. "</th>";
+											}
+														$ligne[$i].="<td class=\"tablerenderer3\">". $txt->value . "</td>";
 														if ($vertical){
 															if (!$lastposition[$object->id]){
 																$ligne[$i].=$separateur;
 															}
 															else{
-	                        		        	    			$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+	                        		        	    			$ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 															}
 														}
 														else if ($lastposition[$object->id]){
@@ -2159,16 +2174,16 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 														}
 													}
 												}
-                                            	if ($vertical){
-        		    	       		        		$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+												if ($vertical){
+												    $ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
 												}
-			        	   		            	$ligne[$i].= "<td class=\"tablerenderer2\">".$str_reference. "</td>";
+			        	   		            	$ligne[$i].= "<td class=\"tablerenderer3\">".$str_reference. "</td>";
 												if ($vertical){
 													if (!$lastposition[$object->id]){
 														$ligne[$i].=$separateur;
 													}
 													else{
-            	    		        	    			$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+            	    		        	    			$ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 													}
 												}
 												else if ($lastposition[$object->id]){
@@ -2186,9 +2201,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
                                 $vals = array();
                             	$i = 0;
 								if ($vertical){
-        	           		       	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+									$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
 								}
-                                $ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+
+                                $ligne[$i].= "<td class=\"tablerenderer3\">\n<table class=\"tablerenderer3\">\n";
 								// ATTENTION : Il y a un regroupement par idrecord
 								$str_skills='';
                            		$sql = "SELECT * FROM {artefact_booklet_frskllresult} re
@@ -2209,7 +2225,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 														$ligne[$i].=$separateur;
 													}
 													else{
-				            	    			   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+				            	    			   		$ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 													}
 												}
 												else if ($lastposition[$object->id]){
@@ -2217,10 +2233,12 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												}
 
 												$i++;
-												if ($vertical){
-        	           		       					$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
-												}
-                                				$ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+											if ($vertical){
+
+						           	        	$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
+											}
+
+                                				$ligne[$i].= "<td class=\"tablerenderer3\">\n<table class=\"tablerenderer3\">\n";
 
 												$str_skills='';
                                                 $seriecourante=$val->idrecord;
@@ -2255,10 +2273,10 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												}
 
 												if (!$hidden){
-  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+  							           	        	$str_skills .= '<tr><td class="tablerenderer'.$color[$i].'">&nbsp;'.$domain.'&nbsp;</td><td class="tablerenderer'.$color[$i].'">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer'.$color[$i].'">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer'.$color[$i].'">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 												}
 											}
-										}
+          								}
 									}
 								}
 								$ligne[$i].=$str_skills."\n</table></td>\n";
@@ -2268,7 +2286,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 										$ligne[$i].=$separateur;
 									}
 									else{
-            	    			   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+            	    			   		$ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 									}
 								}
 								else if ($lastposition[$object->id]){
@@ -2281,73 +2299,102 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 							//--------------------- LISTSKILLS -----------------------------------
            	    			else if ($object->type == 'listskills') {
 								if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
-                            		$i = 0;
-									if ($vertical){
-        	           		        	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
-									}
-                                	$ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
-									$str_skills='';
-
-	    	        	            if ($res_lofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
-										foreach ($res_lofskills as $res){
-                                        	$header = false;
-											$hidden = false;
-											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
-                                                $sdescription = strip_tags($skill->description);
-												switch ($skill->type){
-													case 0 : $header = true; break;
-		                                            case 2 : $hidden = true; break;
-													default : break;
-												}
-
-												$index = 0;
-												// donnees saisies
-       		        		                    $rec=null;
-                           		                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} re
- JOIN {artefact_booklet_resultdisplayorder} rd
- ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+                                    $sql = "SELECT * FROM {artefact_booklet_listofskills} ls
+ WHERE ls.idlist = ?
+ ORDER BY ls.displayorder";
+	    	        	            if ($res_lofskills = get_records_sql_array($sql,array($list->id))){
+										//print_object($res_lofskills);
+										//exit;
+//										foreach ($res_lofskills as $res){
+/*
+                           		            $sql = "SELECT re.id AS idval, re.idobject AS idobject, re.idowner AS idowner, re.value AS value, re.idrecord AS idrecord,
+											   rs.id AS idskill, rs.domain AS domain, rs.type AS type, rs.code AS code, rs.description AS description, rs.scale AS scale , rs.threshold AS threshold
+											   FROM {artefact_booklet_lskillsresult} re
  JOIN {artefact_booklet_skill} rs
- ON (rs.id = re.idskill)
+ ON (re.idskill = rs.id)
  WHERE re.idobject = ?
  AND re.idowner = ?
- AND re.idskill = ?
+ ORDER BY re.idrecord ";
+*/
+                           					$sql = "SELECT re.* FROM {artefact_booklet_lskillsresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
  ORDER BY re.idrecord, rd.displayorder";
-                           			            if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
-                                   		        	foreach ($recs as $rec){
-                                       		        	if ($rec){
-															$index = $rec->value - 1;   // la valeur stockee n'est pas un indice mais une position
-															// la boîte de saisie
-   			       	                        	    		if (!$header){
-																$str_choice = get_skill_choice_display($skill, $index);
+
+                           			    	//$vals = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $res->idskill));
+                                            $vals = get_records_sql_array($sql,  array($object->id, $USER->get('id')));
+
+											// DEBUG
+											//echo "<br />lib_vizualisation.php :: 3442 :: VALS<br />\n";
+											//print_object($vals);
+											//exit;
+                                            if (!empty($vals)){
+				                            	$i = 0;
+
+												foreach ( $listidrecords as $a_record){
+   													$seriecourante=$a_record->idrecord;
+                                                    $str_skills='';
+													if ($vertical){
+    	    	           		    				   	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+													}
+            	    				                $ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+
+                                					foreach ($vals as $val){
+				                    	                if ($val && ($val->idrecord == $seriecourante)){ // ne garder que les bon enregistrements
+															$index = $val->value - 1;   // la valeur stockee n'est pas un indice mais une position
+				        	                                $header = false;
+															$hidden = false;
+															if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+																// donnees saisies
+				                	    	                    switch ($skill->type){
+																	case 0 : $header = true; break;
+                        	    					            	case 2 : $hidden = true; break;
+																	default : break;
+																}
+
+																$scale = $skill->scale;
+																$domain = $skill->domain;
+																$sdescription = $skill->description;
+				    		                                    $code = $skill->code;
+																$threshold = $skill->threshold;
+            		            				                $str_skill = "$domain::$code";
+
+							                	                if (!$header){
+																	$str_choice = get_skill_choice_display($skill, $index);
+                                		    				        $sdescription = $skill->description;
+																}
+																else{
+    	                        				                    $str_choice = '';
+        	                                    				  	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
+																}
+
+																if (!$hidden){
+  							    				       	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+																}
 															}
-															else{
-   	                    	                    				$str_choice = '';
-           	                	                        		$sdescription = '<span class="blueback">'.$sdescription.'</span>';
-															}
-															if (!$hidden){
-               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
-                           	                            	}
 														}
-				           							}
+													}
+													$ligne[$i].=$str_skills."\n</table></td>\n";
+													if ($vertical){
+														if (!$lastposition[$object->id]){
+															$ligne[$i].=$separateur;
+														}
+														else{
+            	    								   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+														}
+													}
+													else if ($lastposition[$object->id]){
+														$ligne[$i].=$edit_link1.$edit_link[$i].$edit_link2;
+													}
+
+													$i++;
+
 												}
 											}
-										}
+										//}
 									}
-									$ligne[$i].=$str_skills."\n</table></td>\n";
-
-									if ($vertical){
-										if (!$lastposition[$object->id]){
-											$ligne[$i].=$separateur;
-										}
-										else{
-            	    				   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
-										}
-									}
-									else if ($lastposition[$object->id]){
-                                     	$ligne[$i].=$edit_link1.$edit_link[$i].$edit_link2;
-									}
-
-            	    		    	$i++;
 								}
 							}
 							else if ($object->type == 'radio') {
@@ -2364,15 +2411,17 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 									if (!empty($radios)){
 			    	                   	foreach ($radios as $radio){
 											if ($vertical){
-    	    		    	   		       	    $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
+												
+						           	        	$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
 											}
-				        		            $ligne[$i].= "<td class=\"tablerenderer2\">".$radio->option . "</td>";
+
+				        		            $ligne[$i].= "<td class=\"tablerenderer3\">".$radio->option . "</td>";
 											if ($vertical){
 												if (!$lastposition[$object->id]){
 													$ligne[$i].=$separateur;
 												}
 												else{
-            	    		       		        	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+            	    		       		        	$ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 												}
 											}
 											else if ($lastposition[$object->id]){
@@ -2395,16 +2444,18 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 	            	            if ($checkboxes = get_records_sql_array($sql, array($object->id, $USER->get('id')))){
 		            	        	$i = 0;
 	    		        	    	foreach ($checkboxes as $checkbox) {
-										if ($vertical){
-   	       		            	    	   	$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
-										}
-	       	    	            	    $ligne[$i].= "<td class=\"tablerenderer2\">".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
+											if ($vertical){
+												
+						           	        	$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
+											}
+
+	       	    	            	    $ligne[$i].= "<td class=\"tablerenderer3\">".($checkbox->value ? get_string('true', 'artefact.booklet')  : get_string('false', 'artefact.booklet') ) . "</td>";
 										if ($vertical){
 											if (!$lastposition[$object->id]){
 												$ligne[$i].=$separateur;
 											}
 											else{
-                		        		    	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+                		        		    	$ligne[$i].="</tr><tr><th class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 											}
 										}
 										else if ($lastposition[$object->id]){
@@ -2425,16 +2476,18 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
         	    	    	        		if ($dates = get_records_sql_array($sql, array($object->id, $USER->get('id')))){
 	            			            		$i = 0;
 		            	    		        	foreach ($dates as $date) {
-													if ($vertical){
-  	    		                   	            		$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
-													}
-	            			            	    	$ligne[$i].= "<td class=\"tablerenderer2\">".format_date(strtotime($date->value), 'strftimedate') . "</td>";
+											if ($vertical){
+												
+						           	        	$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
+											}
+
+	            			            	    	$ligne[$i].= "<td class=\"tablerenderer3\">".format_date(strtotime($date->value), 'strftimedate') . "</td>";
 													if ($vertical){
 														if (!$lastposition[$object->id]){
 															$ligne[$i].=$separateur;
 														}
 														else{
-            			            			           	$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+            			            			           	$ligne[$i].="</tr><tr><th class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 														}
 													}
 													else if ($lastposition[$object->id]){
@@ -2454,9 +2507,11 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 			            	        if ($attachedfiles = get_records_sql_array($sql, array($object->id, $USER->get('id')))){
     			        	        	for ($i = 0; $i < $n; $i++) {
 											if ($vertical){
-    	    	    	               		    $ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+												
+						           	        	$ligne[$i].= "<th class=\"tablerenderer3\">".$intitules[$object->id]. "</th>";
 											}
-            			    		   	    $ligne[$i].= "<td class=\"tablerenderer2\"><table>";
+
+            			    		   	    $ligne[$i].= "<td class=\"tablerenderer3\"><table>";
             		    	        	}
 		            			       	if (!empty($attachedfiles)){
     		        		    	   		foreach ($attachedfiles as $attachedfile) {
@@ -2468,11 +2523,11 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 			            	            	        		}
 	    			        	            	        	$j++;
     	        				            	    	}
-        	    		    		        	    	$ligne[$i].= "<tr><td class=\"tablerenderer2\"><img src=" .
+        	    		    		        	    	$ligne[$i].= '<tr><td class="tablerenderer'.$color[$i].'"><img src="' .
             		    	        			    		$f->get_icon(array('id' => $attachedfile->artefact, 'viewid' => isset($options['viewid']) ? $options['viewid'] : 0)) .
- " alt=''></td><td class=\"tablerenderer2\"><a href=" .
+ '" alt=""></td><td class="tablerenderer'.$color[$i].'"><a href="' .
  get_config('wwwroot') . "artefact/file/download.php?file=" . $attachedfile->artefact .
- ">" . $f->title . "</a> (" . $f->describe_size() . ")" . $f->description . "</td></tr>";
+ '">' . $f->title . '</a> (' . $f->describe_size() . ')' . $f->description . '</td></tr>'."\n";
 			   		       	            }
 									}
 	        	    	   		    for ($i = 0; $i < $n; $i++) {
@@ -2482,7 +2537,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												$ligne[$i].=$separateur;
 											}
 											else{
-            	    	       		            $ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+            	    	       		            $ligne[$i].="</tr><tr><th  class=\"tablerenderer3\" colspan=\"2\"><hr></th>";
 											}
 										}
 										else if ($lastposition[$object->id]){
@@ -3164,7 +3219,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
             			} // Fin du switch
 
-                        //echo "<br /> DEBUG :: 4458\n";
+                        //echo "<br /> DEBUG :: 3226 :: N : $n\n";
 						//print_object($listidrecords);
 
 						// construction d'un tableau des lignes : une par element, chaque ligne contient les valeurs de tous les objets
@@ -3174,6 +3229,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
             	   			$ligne[$i] = "";
                             $edit_link[] = 10000000000000000000;
 					    }
+                        //exit;
 
 						// pour chaque objet, on complete toutes les lignes
 				        foreach ($objectslist as $object) {
@@ -3321,7 +3377,7 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 
 												$scale = $skill->scale;
 												$domain = $skill->domain;
-												$sdescription = $skill->description;
+												$sdescription = strip_tags($skill->description);
     		                                    $code = $skill->code;
 												$threshold = $skill->threshold;
             		                            $str_skill = "$domain::$code";
@@ -3329,15 +3385,14 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 												$index = $val->value - 1;
                             	                if (!$header){
 													$str_choice = get_skill_choice_display($skill, $index);
-                                		            $sdescription = $skill->description;
-												}
+  												}
 												else{
     	                                            $str_choice = '';
         	                                      	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
 												}
 
 												if (!$hidden){
-  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+  							           	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
 												}
 											}
 										}
@@ -3363,73 +3418,101 @@ $alink2 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$
 							//--------------------- LISTSKILLS -----------------------------------
            	    			else if ($object->type == 'listskills') {
 								if ($list = get_record('artefact_booklet_list', 'idobject', $object->id)){
-                            		$i = 0;
-									if ($vertical){
-        	           		        	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
-									}
-                                	$ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
-									$str_skills='';
-
-	    	        	            if ($res_lofskills = get_records_array('artefact_booklet_listofskills', 'idlist', $list->id)){
-										foreach ($res_lofskills as $res){
-                                        	$header = false;
-											$hidden = false;
-											if ($skill = get_record('artefact_booklet_skill', 'id', $res->idskill)){
-                                                $sdescription = strip_tags($skill->description);
-												switch ($skill->type){
-													case 0 : $header = true; break;
-		                                            case 2 : $hidden = true; break;
-													default : break;
-												}
-
-												$index = 0;
-												// donnees saisies
-       		        		                    $rec=null;
-                           		                $sql = "SELECT * FROM {artefact_booklet_lskillsresult} re
- JOIN {artefact_booklet_resultdisplayorder} rd
- ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+                                    $sql = "SELECT * FROM {artefact_booklet_listofskills} ls
+ WHERE ls.idlist = ?
+ ORDER BY ls.displayorder";
+	    	        	            if ($res_lofskills = get_records_sql_array($sql,array($list->id))){
+										//print_object($res_lofskills);
+										//exit;
+//										foreach ($res_lofskills as $res){
+/*
+                           		            $sql = "SELECT re.id AS idval, re.idobject AS idobject, re.idowner AS idowner, re.value AS value, re.idrecord AS idrecord,
+											   rs.id AS idskill, rs.domain AS domain, rs.type AS type, rs.code AS code, rs.description AS description, rs.scale AS scale , rs.threshold AS threshold
+											   FROM {artefact_booklet_lskillsresult} re
  JOIN {artefact_booklet_skill} rs
- ON (rs.id = re.idskill)
+ ON (re.idskill = rs.id)
  WHERE re.idobject = ?
  AND re.idowner = ?
- AND re.idskill = ?
+ ORDER BY re.idrecord ";
+*/
+                           					$sql = "SELECT re.* FROM {artefact_booklet_lskillsresult} re
+ JOIN {artefact_booklet_resultdisplayorder} rd
+ ON (re.idrecord = rd.idrecord AND re.idowner = rd.idowner)
+ WHERE re.idobject = ?
+ AND re.idowner = ?
  ORDER BY re.idrecord, rd.displayorder";
-                           			            if ($recs = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $skill->id))){
-                                   		        	foreach ($recs as $rec){
-                                       		        	if ($rec){
-															$index = $rec->value - 1;   // la valeur stockee n'est pas un indice mais une position
-															// la boîte de saisie
-   			       	                        	    		if (!$header){
-																$str_choice = get_skill_choice_display($skill, $index);
+
+                           			    	//$vals = get_records_sql_array($sql,  array($object->id, $USER->get('id'), $res->idskill));
+                                            $vals = get_records_sql_array($sql,  array($object->id, $USER->get('id')));
+
+											// DEBUG
+											//echo "<br />lib_vizualisation.php :: 3442 :: VALS<br />\n";
+											//print_object($vals);
+											//exit;
+                                            if (!empty($vals)){
+				                            	$i = 0;
+
+												foreach ( $listidrecords as $a_record){
+   													$seriecourante=$a_record->idrecord;
+                                                    $str_skills='';
+													if ($vertical){
+    	    	           		    				   	$ligne[$i].= "<th class=\"tablerenderer2\">".$intitules[$object->id]. "</th>";
+													}
+            	    				                $ligne[$i].= "<td class=\"tablerenderer2\">\n<table class=\"tablerenderer3\">\n";
+
+                                					foreach ($vals as $val){
+				                    	                if ($val && ($val->idrecord == $seriecourante)){ // ne garder que les bon enregistrements
+															$index = $val->value - 1;   // la valeur stockee n'est pas un indice mais une position
+				        	                                $header = false;
+															$hidden = false;
+															if ($skill = get_record('artefact_booklet_skill', 'id', $val->idskill)){
+																// donnees saisies
+				                	    	                    switch ($skill->type){
+																	case 0 : $header = true; break;
+                        	    					            	case 2 : $hidden = true; break;
+																	default : break;
+																}
+
+																$scale = $skill->scale;
+																$domain = $skill->domain;
+																$sdescription = strip_tags($skill->description);
+				    		                                    $code = $skill->code;
+																$threshold = $skill->threshold;
+            		            				                $str_skill = "$domain::$code";
+
+							                	                if (!$header){
+																	$str_choice = get_skill_choice_display($skill, $index);
+																}
+																else{
+    	                        				                    $str_choice = '';
+        	                                    				  	$sdescription = '<span class="blueback">'.$sdescription.'</span>';
+																}
+
+																if (!$hidden){
+  							    				       	        	$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
+																}
 															}
-															else{
-   	                    	                    				$str_choice = '';
-           	                	                        		$sdescription = '<span class="blueback">'.$sdescription.'</span>';
-															}
-															if (!$hidden){
-               						           	        		$str_skills .= '<tr><td class="tablerenderer3">&nbsp;'.$skill->domain.'&nbsp;</td><td class="tablerenderer3">&nbsp;<i>'.$skill->code.'</i>&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$sdescription.'&nbsp;</td></tr><tr><td colspan="2" class="tablerenderer3">&nbsp;'.$str_choice.'&nbsp;</td></tr>'."\n";
-                           	                            	}
 														}
-				           							}
+													}
+													$ligne[$i].=$str_skills."\n</table></td>\n";
+													if ($vertical){
+														if (!$lastposition[$object->id]){
+															$ligne[$i].=$separateur;
+														}
+														else{
+            	    								   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
+														}
+													}
+													else if ($lastposition[$object->id]){
+														$ligne[$i].=$edit_link1.$edit_link[$i].$edit_link2;
+													}
+
+													$i++;
+
 												}
 											}
-										}
+										//}
 									}
-									$ligne[$i].=$str_skills."\n</table></td>\n";
-
-									if ($vertical){
-										if (!$lastposition[$object->id]){
-											$ligne[$i].=$separateur;
-										}
-										else{
-            	    				   		$ligne[$i].="</tr><tr><th colspan=\"2\"><hr></th>";
-										}
-									}
-									else if ($lastposition[$object->id]){
-                                     	$ligne[$i].=$edit_link1.$edit_link[$i].$edit_link2;
-									}
-
-            	    		    	$i++;
 								}
 							}
 							else if ($object->type == 'radio') {
@@ -5035,8 +5118,9 @@ EOF;
 			//exit;
 
         	$menuform["menu"] = $return_str;
-        	return $menuform;
+
 		}
+        return $menuform;
 	}
 
 }
