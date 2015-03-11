@@ -270,6 +270,7 @@ function deleteComposite(type, id) {
     }
     return false;
 }
+
 function moveComposite(type, id, artefact, direction) {
     sendjsonrequest('compositemove.json.php',
         {'id': id, 'type': type, 'direction':direction},

@@ -63,11 +63,12 @@ if ($type == 'tome') {
 									delete_records('artefact_booklet_lskillsresult', 'idobject', $item->id);
                                     delete_records('artefact_booklet_list', 'id', $list->id);
 								}
-							}elseif ($typeobj == 'reference'){
+							}
+							elseif ($typeobj == 'reference'){
                                 delete_records('artefact_booklet_refresult', 'idobject', $item->id);
   	    			            delete_records('artefact_booklet_reference', 'idobject', $item->id);
 							}
-							}elseif ($typeobj == 'freeskills'){
+							elseif ($typeobj == 'freeskills'){
                                 delete_records('artefact_booklet_frskllresult', 'idobject', $item->id);
 							}
 							else{
