@@ -182,7 +182,7 @@ $string['savedomainchoice'] = "Save selected domains";
 $string['scale'] = "Scale";
 
 $string['selectdomain'] = "Select a domain";
-$string['selectdomains'] = "Selectionner some domains";
+$string['selectdomains'] = "Select some domains";
 $string['selectskills'] = "Select skills";
 $string['skill'] = "Skill";
 $string['skills'] = "Skills";

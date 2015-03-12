@@ -233,11 +233,11 @@ else if ($type == 'listskills') {
     delete_records('artefact_booklet_listofskills', 'idlist', $id);
     delete_records('artefact_booklet_list', 'idoject', $id);
 }
-else if ($typeobj == 'freeskills'){
+else if ($type == 'freeskills'){
 	delete_records('artefact_booklet_frskllresult', 'idobject', $id);
 }
 
-else if ($typeobj == 'reference'){
+else if ($type == 'reference'){
 	delete_records('artefact_booklet_refresult', 'idobject', $id);
   	delete_records('artefact_booklet_reference', 'idobject', $id);
 }
