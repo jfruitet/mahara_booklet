@@ -2,7 +2,7 @@
 /**
  *
  * @package    mahara
- * @subpackage artefact-resume
+ * @subpackage artefact-booklet
  * @author     Catalyst IT Ltd
  * @author     Christophe DECLERCQ - christophe.declercq@univ-nantes.fr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL version 3 or later
@@ -2695,11 +2695,17 @@ class ArtefactTypeFreeSkills extends ArtefactTypeOption {
 			$i=0;
             $elementsskills = array();
         	foreach ($skills as $skill){
-				if (!empty($tab_selected[$skill->id])){
+                $str_scale =  get_skill_choice_display($skill, $skill->threshold);
+                $elementsskills['html'.$i] = array(
+                			'type' => 'html',
+                			'value' => $skill->description.' ['.$str_scale.']'."\n",
+           		);
+
+				if (!empty($tab_skills_selected[$skill->id])){
                     $elementsskills['select'.$i] = array(
         		        	'type' => 'checkbox',
-                			'defaultvalue' => $tab_selected[$skill->id],
-		                	'title' => $skill->code,
+                			'defaultvalue' => $tab_skills_selected[$skill->id],
+		                	'title' =>  $skill->domain.' :: '.$skill->code,
         		        	//'description' => get_string('checked', 'artefact.booklet'),
            			);
 				}
@@ -2707,14 +2713,10 @@ class ArtefactTypeFreeSkills extends ArtefactTypeOption {
                     $elementsskills['select'.$i] = array(
         		        	'type' => 'checkbox',
                 			'defaultvalue' => 0,
-		                	'title' => $skill->code,
+		                	'title' =>  $skill->domain.' :: '.$skill->code,
         		        	//'description' => '',
            			);
 				}
-                $elementsskills['html'.$i] = array(
-                			'type' => 'html',
-                			'value' => $skill->domain.'; '.$skill->description.'; ['.$skill->scale.'|'.$skill->threshold.']'."\n",
-           		);
                 $elementsskills['id'.$i] = array(
 		                	'type' => 'hidden',
         		        	'value' => $skill->id,
@@ -2813,7 +2815,7 @@ class ArtefactTypeFreeSkills extends ArtefactTypeOption {
 			        	'title' => array(
     	    		    	'type' => 'html',
         	        		'title' => get_string('titleobject','artefact.booklet'),
-		    	            'value' => ((!empty($object)) ? $object->title : NULL),
+		    	            'value' => ((!empty($object)) ? $object->title : get_string('addnewskill','artefact.booklet')),
         			    ),
 
 	                	'skilldomain' => array(
@@ -3055,7 +3057,7 @@ function selectskillfree_submit(Pieform $form, $values) {
 		//exit;
 		foreach($t_skillsfree as $a_freeskill){
 			$sql = "SELECT * FROM {artefact_booklet_frskllresult}
- WHERE idobject = ? AND idowner = ? AND idskill AND idrecord = ? ";
+ WHERE idobject = ? AND idowner = ? AND idskill = ? AND idrecord = ? ";
             if ($rec_frsk = get_record_sql($sql, array($a_freeskill->idobject, $USER->get('id'), $a_freeskill->idskill, $a_freeskill->idrecord))){
    				//print_object($rec_frsk);
                 $a_freeskill->id = $rec_frsk->id;

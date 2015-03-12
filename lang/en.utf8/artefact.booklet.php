@@ -156,6 +156,7 @@ $string['addfieldsavefailed'] = "This field is already linked to this object!";
 $string['addlist'] = "New list of skills";
 $string['assessment'] = "Check assessment";
 $string['code'] = "Code";
+$string['codedesc'] = "Code has to be a key for a peculiar domain.";
 $string['checked'] = "Checked";
 
 $string['deleteskills'] = "Delete ?";
@@ -239,5 +240,11 @@ $string['freeskills'] = "User's skills";
 $string['saveskill'] = "Save this new skill";
 $string['saveskills'] = "Save these new skills";
 $string['addnewskill'] = "Type in an user's skill";
-
-
+$string['manageskills'] = "Manage skills";
+$string['skillsmanagement'] = "Skills management";
+$string['manageskillsdesc'] = "Edit and delete skills may impact user data";
+$string['eraseskills'] = "Erase this skills ?";
+$string['eraseskillsdesc'] = "BE CARREFULL: If checked this skills will be erased from server and data user modified...";
+$string['editskills'] = "Edit some skills";
+$string['skillstitle'] = "Domain :: Code";
+$string['selecteditskills'] = "Select skills to edit or erase";

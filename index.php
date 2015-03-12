@@ -237,6 +237,33 @@ if ($designer) {
 
     $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('modifbooklet', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($modform) . '<i>'.get_string('modifbookletdesc', 'artefact.booklet').'</i> </div></fieldset>';
     $indexform['modform'] = $pf;
+
+	// Gestion des competences // skills management
+	if (!isset($idtab)){
+        $idtab = 0;
+	}
+
+    $skillsform = array(
+        'name'        => 'skillsform',
+        'successcallback' => 'skillsform_submit',
+        'method'      => 'post',
+        'renderer'    => 'oneline',
+        'elements'    => array(
+            'save' => array(
+                'type' => 'submit',
+                'value' => get_string('manageskills', 'artefact.booklet'),
+            ),
+        ),
+        'idtab' => array(
+                	'type' => 'hidden',
+            		'value' => $idtab,
+	    ),
+
+        'autofocus'  => false,
+    );
+
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('skillsmanagement', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($skillsform) . '<i>'.get_string('manageskillsdesc', 'artefact.booklet').'</i> </div></fieldset>';
+    $indexform['skillsform'] = $pf;
 }
 
 
@@ -277,25 +304,29 @@ if ($admin->admin) {
         $admindeleteform = "";
     }
     // formulaire d'ajout de designers
-    $adminform = pieform(array(
-        'name' => 'adminform',
-        'plugintype' => 'artefact',
-        'successcallback' => 'adminform_submit',
-        'pluginname' => 'booklet',
-        'method' => 'post',
-        'renderer' => 'oneline',
-        'elements' => array(
-            'name' => array(
-                'type' => 'text',
-                'title' => get_string('adddesigner', 'artefact.booklet'),
-                'size' => 20,
-            ),
-            'save' => array(
-                'type' => 'submit',
-                'value' => get_string('add', 'artefact.booklet'),
-            )
-        ),
-    ));
+    $adminform = pieform(
+		array(
+    	    'name' => 'adminform',
+	        'plugintype' => 'artefact',
+        	'successcallback' => 'adminform_submit',
+    	    'pluginname' => 'booklet',
+	        'method' => 'post',
+        	'renderer' => 'oneline',
+    	    'elements' => array(
+	            'name' => array(
+                	'type' => 'text',
+            	    'title' => get_string('adddesigner', 'artefact.booklet'),
+        	        'size' => 20,
+    	        ),
+
+				'save' => array(
+            	    'type' => 'submit',
+        	        'value' => get_string('add', 'artefact.booklet'),
+    	        ),
+    		)
+		)
+	);
+
     $aide = '';
     $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('adminfield', 'artefact.booklet') . ' ' . $aide . '</legend>' . $adminform . $admindeleteform . '</fieldset>';
     $indexform['adminform'] = $pf;
@@ -370,5 +401,10 @@ function admindeleteform_submit(Pieform $form, $values) {
     $goto = get_config('wwwroot') . '/artefact/booklet/index.php';
     delete_records('artefact_booklet_designer', 'id', $values['id']);
     $SESSION->add_ok_msg(get_string('userdeleted', 'artefact.booklet'));
+    redirect($goto);
+}
+
+function skillsform_submit(Pieform $form, $values) {
+    $goto = get_config('wwwroot').'/artefact/booklet/manageskills.php';
     redirect($goto);
 }
