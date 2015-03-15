@@ -131,6 +131,7 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
 					$tab_frame_to_artefact[$artefact->description] = $artefact->id;
 				}
 
+				// Ordonner les cadres en largeur d'abord
 				$recframes=get_records_sql_array('
 					SELECT id, displayorder, idparentframe
 					FROM {artefact_booklet_frame}
@@ -141,12 +142,22 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
 			    $tabaff_codes = array();
 				// 52 cadres possibles a chaque niveau de profondeur, ca devrait suffire ...
 				$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
-			    $niveau_courant = 0;
-			    $ordre_courant = 0;
-			    $parent_courant = 0;
+
 
 				// Reordonner
 			    if ($recframes) {
+					// Initialisation
+					$i=0;
+					foreach ($recframes as $recframe) {
+                        $tabaff_niveau[$recframe->id]=0;
+                        $tabaff_codes[$recframe->id]=$tcodes[$i];
+						$i++;
+					}
+
+                    $niveau_courant = 0;
+			    	$ordre_courant = 0;
+			    	$parent_courant = 0;
+					// Reperer les changement de niveau de profondeur
 					foreach ($recframes as $recframe) {
 						if ($recframe->idparentframe == 0){
 			                $niveau_courant = 0;
@@ -158,21 +169,23 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
 						}
 						$tabaff_niveau[$recframe->id] = $niveau_courant;
 						$parent_courant = $recframe->idparentframe;
-                            			    $code='';
+                        $code='';
 						if ($niveau_courant>0){
 							$code =  $tabaff_codes[$recframe->idparentframe];
 						}
             		    $code.=$tcodes[$ordre_courant];
-			               $tabaff_codes[$recframe->id] = $code;
+			            $tabaff_codes[$recframe->id] = $code;
             		    $ordre_courant++;
 					}
 				}
-        		asort($tabaff_codes);
+				if (!empty($tabaff_codes)){
+					// Reordonner dans l'ordre alphabérique des codes -> parcours en profondeur d'abord
+        			asort($tabaff_codes);
 
-
-				// REORGANISER LES ARTEFACTS DANS CET ORDRE
-				foreach ($tabaff_codes as $key => $val){
-            		$artefacts[] = get_record('artefact', 'id', $tab_frame_to_artefact[$key]) ;
+					// REORGANISER LES ARTEFACTS DANS CET ORDRE
+					foreach ($tabaff_codes as $key => $val){
+            			$artefacts[] = get_record('artefact', 'id', $tab_frame_to_artefact[$key]) ;
+					}
 				}
 			}
  /***********************FIN MODIF JF ******************************/
