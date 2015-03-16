@@ -2160,7 +2160,8 @@ function objectskillslist_submit(Pieform $form, $values){
         		                        if (!empty($scale_threshold[1])){
             		                        // threshold1]
 											// Chasser ']'
-                    		                $skill->threshold = trim(substr($scale_threshold[1],0,-1));
+                                            $athreshold=str_replace("]","",$scale_threshold[1]);
+                    		                $skill->threshold = $athreshold;
 										}
 									}
 								}
@@ -3332,7 +3333,8 @@ function objectfreeskills_submit(Pieform $form, $values){
         		                        if (!empty($scale_threshold[1])){
             		                        // threshold1]
 											// Chasser ']'
-                    		                $skill->threshold = trim(substr($scale_threshold[1],0,-1));
+                                            $athreshold=str_replace("]","",$scale_threshold[1]);
+                    		                $skill->threshold = $athreshold;
 										}
 									}
 								}
@@ -8288,6 +8290,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
     	                            );
         	                    }
             	            }
+
             	            else if ($object->type == 'listskills') {
 								// DEBUG
 								//echo "<br />lib.php :: 2783<br />\n";
