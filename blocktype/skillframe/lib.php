@@ -11,14 +11,14 @@
 
 defined('INTERNAL') || die();
 
-class PluginBlocktypebookletfield extends PluginBlocktype {
+class PluginBlocktypeSkillFrame extends PluginBlocktype {
 
     public static function get_title() {
-        return get_string('title', 'blocktype.booklet/bookletfield');
+        return get_string('title', 'blocktype.booklet/skillframe');
     }
 
     public static function get_description() {
-        return get_string('description', 'blocktype.booklet/bookletfield');
+        return get_string('description', 'blocktype.booklet/skillframe');
     }
 
     public static function get_categories() {
@@ -40,20 +40,25 @@ class PluginBlocktypebookletfield extends PluginBlocktype {
 
     public static function render_instance(BlockInstance $instance, $editing=false) {
         require_once(get_config('docroot') . 'artefact/lib.php');
+        safe_require('artefact','booklet');
         $smarty = smarty_core();
         $configdata = $instance->get('configdata');
-        $configdata['viewid'] = $instance->get('view');
+		$configdata['viewid'] = $instance->get('view');
         // Get data about the booklet field in this blockinstance
         if (!empty($configdata['artefactid'])) {
-            $bookletfield = $instance->get_artefact_instance($configdata['artefactid']);
-            $rendered = $bookletfield->render_self($configdata);
-            $result = $rendered['html'];
-            if (!empty($rendered['javascript'])) {
-                $result .= '<script type="text/javascript">' . $rendered['javascript'] . '</script>';
-            }
-            return $result;
+            if ($bookletfield = $instance->get_artefact_instance($configdata['artefactid'])){
+            	$rendered = $bookletfield->render_self($configdata);
+            	$result = $rendered['html'];
+            	if (!empty($rendered['javascript'])) {
+                	$result .= '<script type="text/javascript">' . $rendered['javascript'] . '</script>';
+            	}
+            	return $result;
+			}
+			else{
+                return 'Erreur lib.php :: 58 :: render_instance()';
+			}
         }
-        return '';
+        return 'Erreur lib.php :: 561 :: render_instance()';
     }
 
     public static function has_instance_config() {
@@ -64,13 +69,14 @@ class PluginBlocktypebookletfield extends PluginBlocktype {
         $configdata = $instance->get('configdata');
 
         $form = array();
-
         // Which booklet field does the user want
         $form[] = self::artefactchooser_element((isset($configdata['artefactid'])) ? $configdata['artefactid'] : null);
-        $form['message'] = array(
+
+		$form['message'] = array(
             'type' => 'html',
-            'value' => get_string('filloutyourbooklet', 'blocktype.booklet/bookletfield', '<a href="' . get_config('wwwroot') . 'artefact/booklet/">', '</a>'),
+            'value' => get_string('filloutyourbookletskill', 'blocktype.booklet/skillframe', '<a href="' . get_config('wwwroot') . 'artefact/booklet/">', '</a>'),
         );
+
 
         return $form;
     }
@@ -80,18 +86,19 @@ class PluginBlocktypebookletfield extends PluginBlocktype {
         return $values;
     }
 
+
     public static function artefactchooser_element($default=null) {
         safe_require('artefact', 'booklet');
         return array(
             'name'  => 'artefactid',
             'type'  => 'artefactchooser',
-            'title' => get_string('fieldtoshow', 'blocktype.booklet/bookletfield'),
+            'title' => get_string('fieldtoshow', 'blocktype.booklet/skillframe'),
             'defaultvalue' => $default,
-            'blocktype' => 'bookletfield',
+            'blocktype' => 'skillframe',
             'limit'     => 655360, // 640K profile fields is enough for anyone!
             'selectone' => true,
             'search'    => false,
-            'artefacttypes' => array('visualization'),
+            'artefacttypes' => array('skillframe'),
             'template'  => 'artefact:booklet:artefactchooser-element.tpl',
         );
     }

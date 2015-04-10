@@ -149,9 +149,11 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
 					// Initialisation
 					$i=0;
 					foreach ($recframes as $recframe) {
-                        $tabaff_niveau[$recframe->id]=0;
-                        $tabaff_codes[$recframe->id]=$tcodes[$i];
-						$i++;
+                        if ($recframe){
+                        	$tabaff_niveau[$recframe->id]=0;
+	                        $tabaff_codes[$recframe->id]=$tcodes[$i];
+							$i++;
+						}
 					}
 
                     $niveau_courant = 0;
@@ -159,23 +161,30 @@ class PluginBlocktypeEntirebooklet extends PluginBlocktype {
 			    	$parent_courant = 0;
 					// Reperer les changement de niveau de profondeur
 					foreach ($recframes as $recframe) {
-						if ($recframe->idparentframe == 0){
-			                $niveau_courant = 0;
+						if ($recframe){
+							if ($recframe->idparentframe == 0){
+				                $niveau_courant = 0;
+							}
+							else if ($recframe->idparentframe != $parent_courant){
+								// changement de niveau
+								$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
+            		    	    $ordre_courant = 0;
+							}
+							$tabaff_niveau[$recframe->id] = $niveau_courant;
+							$parent_courant = $recframe->idparentframe;
+            	            $code='';
+							if ($niveau_courant>0){
+								if (isset($recframe->idparentframe)){
+									$code =  $tabaff_codes[$recframe->idparentframe];
+								}
+								else{
+                                    $code =  $tabaff_codes[$recframe->id];
+								}
+							}
+            		    	$code.=$tcodes[$ordre_courant];
+			            	$tabaff_codes[$recframe->id] = $code;
+            		    	$ordre_courant++;
 						}
-						else if ($recframe->idparentframe != $parent_courant){
-							// changement de niveau
-							$niveau_courant = $tabaff_niveau[$recframe->idparentframe] + 1;
-            		        $ordre_courant = 0;
-						}
-						$tabaff_niveau[$recframe->id] = $niveau_courant;
-						$parent_courant = $recframe->idparentframe;
-                        $code='';
-						if ($niveau_courant>0){
-							$code =  $tabaff_codes[$recframe->idparentframe];
-						}
-            		    $code.=$tcodes[$ordre_courant];
-			            $tabaff_codes[$recframe->id] = $code;
-            		    $ordre_courant++;
 					}
 				}
 				if (!empty($tabaff_codes)){

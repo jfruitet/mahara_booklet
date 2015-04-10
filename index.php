@@ -195,6 +195,33 @@ else {
     $choiceform = "";
 }
 
+
+// Retrouver les competences  associes à des fiches
+
+	// skills selection
+	if (!isset($idtab)){
+        $idtab = 0;
+	}
+
+    $skillsselectform = array(
+        'name'        => 'skillsselectform',
+        'successcallback' => 'skillsselectform_submit',
+        'method'      => 'post',
+        'renderer'    => 'oneline',
+        'elements'    => array(
+            'save' => array(
+                'type' => 'submit',
+                'value' => get_string('selectskills', 'artefact.booklet'),
+            ),
+        ),
+
+        'autofocus'  => false,
+    );
+
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('selectskillsfromframes', 'artefact.booklet') . ' </legend><div class="fondvert">' . pieform($skillsselectform) . '<i>'.get_string('selectskillsfromframesdesc', 'artefact.booklet').'</i> </div></fieldset>';
+    $indexform['skillsselectform'] = $pf;
+
+
 // Modification des booklets
 /*
 if ($designer) {
@@ -408,3 +435,9 @@ function skillsform_submit(Pieform $form, $values) {
     $goto = get_config('wwwroot').'/artefact/booklet/manageskills.php';
     redirect($goto);
 }
+
+function skillsselectform_submit(Pieform $form, $values) {
+    $goto = get_config('wwwroot').'/artefact/booklet/selectframesskills.php';
+    redirect($goto);
+}
+

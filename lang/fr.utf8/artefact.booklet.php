@@ -232,3 +232,15 @@ $string['eraseskillsdesc'] = "ATTENTION : Si coché les compétences sélectionn
 $string['editskills'] = "Edition de compétences";
 $string['skillstitle'] = "Domaine :: Code";
 $string['selecteditskills'] = "Sélectionnez des compétences à éditer ou supprimer";
+$string['non_pertinent'] = "Non pertinent";
+$string['selectskillsfromframes'] = "Fiches sélectionnées en fonction des compétences";
+$string['selectskillsfromframesdesc'] = "Fiches associées à des compétences";
+
+$string['usethreshold'] = "Seuils activés ?";
+$string['usethresholddesc'] = "Seules les fiches contenant des compétences supérieurs ou égale au seuil sont affichées";
+$string['frametitle'] = "Titre de la fiche";
+$string['title'] = "Titre de l'objet";
+$string['selectframe'] = "Sélectionner cette fiche";
+$string['skillframe'] = "Association Compétences / Fiches.";
+$string['skillframesavefailed'] = "Echec à la sauvegarde. Il y a des données manquantes.";
+$string['skillframedoesnotexist'] = "Cette association Compétence/Fiche n'existe pas";

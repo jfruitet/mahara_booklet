@@ -11,9 +11,24 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
  
 ## Modifications by JF
 
-### March 2015
+### New functionnalities
 
-#### New functionnalities
+#### April 2015
+
+**Version 2015033102 Release 1.2.6 - 2015-04-10**
+
+##### New blocktype ***SkillFrame***
+
+L'utilisateur peut sélectionner une liste de fiches à partir d'une liste de compétences. Toutes les fiches qui remplissent le critère de recherche sont affichées. 
+
+C'est une façon de collecter les fiches qui témoignent de cette liste de compétences. Cette liste de fiches peut être ensuite intégrée dans un portfolio (booklet/skillframe : Blocktype "Une rubrique de compétences").
+
+User may select a list of frames by the way of a list of skills. All frames that match de selection criteria will be displayed. 
+
+This is a convenient way to collect any frame where such skills are gained. This frames may be dispayed in a portfolio (booklet/skillframe: Blocktype "One SkillFrame field").
+
+
+#### March 2015
 
 **Version 2015030201 Release 1.2.3 - 2015-03-02**
 
@@ -22,19 +37,7 @@ Nouvel objet "Compétences utilisateur" : tout utilisateur peut créer ses propr
 Cet objet complète l'objet "Liste de compétences" qui lui est à l'initiative du concepteur d'un livret.
 
 
-
-
-#### Bug correction
-
-**Version 1.2.2 - 2015-03-02** : 
-
-* Une ligne vide corrigée dans les fichiers d'export XML due à une inclusion de bibliothèque. A void line corrected in the xml header due to library inclusion.
-* L'importation répétée d'un même livret ne crée plus de doublons sur les objets. Twice import of the same booklet does not create twins objects.
-
-
-### February 2015
-
-#### New functionnalities
+#### February 2015
 
 **Version 1.2.2 - 2015-02-29**
 
@@ -49,7 +52,15 @@ Le concepteur peut importer des listes de compétences ; l'utilisateur peut éva
 
 Designer may import list of skills with scale ; user may check achievement
 
-### January 2015
+
+##### Bug correction
+
+**Version 1.2.2 - 2015-03-02** : 
+
+* Une ligne vide corrigée dans les fichiers d'export XML due à une inclusion de bibliothèque. A void line corrected in the xml header due to library inclusion.
+* L'importation répétée d'un même livret ne crée plus de doublons sur les objets. Twice import of the same booklet does not create twins objects.
+
+#### January 2015
 
 **Version 1.1.1 - 2015-01-22**
 
@@ -94,7 +105,7 @@ L'affichage du menu se fait selon un parcours en profondeur d'abord
 
 
 
-### December 2014
+#### December 2014
 
 #### Show / Edit
 

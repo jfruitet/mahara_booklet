@@ -294,6 +294,7 @@
             </KEYS>
         </TABLE>
 
+
          <!-- This table is supposed to have a 1-1 relation with every row in the table artefact_booklet_tome. -->
     	<TABLE NAME="artefact_booklet_author">
         	<FIELDS>

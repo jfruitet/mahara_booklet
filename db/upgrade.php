@@ -211,10 +211,6 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
         }
 	}
 
-    if ($oldversion < 2015030202) {
-
-	}
-
     return $status;
 }
 
