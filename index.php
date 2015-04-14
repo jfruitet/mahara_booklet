@@ -244,27 +244,8 @@ if ($designer) {
 }
 */
 
-// Modification des booklets
+
 if ($designer) {
-    $modform = array(
-        'name'        => 'modform',
-        'plugintype'  => 'artefact',
-        'successcallback' => 'modform_submit',
-        'pluginname'  => 'booklet',
-        'method'      => 'post',
-        'renderer'    => 'oneline',
-        'elements'    => array(
-            'save' => array(
-                'type' => 'submit',
-                'value' => get_string('modif', 'artefact.booklet'),
-            )
-        ),
-        'autofocus'  => false,
-    );
-
-    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('modifbooklet', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($modform) . '<i>'.get_string('modifbookletdesc', 'artefact.booklet').'</i> </div></fieldset>';
-    $indexform['modform'] = $pf;
-
 	// Gestion des competences // skills management
 	if (!isset($idtab)){
         $idtab = 0;
@@ -289,8 +270,29 @@ if ($designer) {
         'autofocus'  => false,
     );
 
-    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('skillsmanagement', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($skillsform) . '<i>'.get_string('manageskillsdesc', 'artefact.booklet').'</i> </div></fieldset>';
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('skillsmanagement', 'artefact.booklet') . ' </legend><div class="fondmauve">' . pieform($skillsform) . '<i>'.get_string('manageskillsdesc', 'artefact.booklet').'</i> </div></fieldset>';
     $indexform['skillsform'] = $pf;
+
+    // Modification des booklets
+    $modform = array(
+        'name'        => 'modform',
+        'plugintype'  => 'artefact',
+        'successcallback' => 'modform_submit',
+        'pluginname'  => 'booklet',
+        'method'      => 'post',
+        'renderer'    => 'oneline',
+        'elements'    => array(
+            'save' => array(
+                'type' => 'submit',
+                'value' => get_string('modif', 'artefact.booklet'),
+            )
+        ),
+        'autofocus'  => false,
+    );
+
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('modifbooklet', 'artefact.booklet') . ' </legend><div class="surligne">' . pieform($modform) . '<i>'.get_string('modifbookletdesc', 'artefact.booklet').'</i> </div></fieldset>';
+    $indexform['modform'] = $pf;
+
 }
 
 

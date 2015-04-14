@@ -249,7 +249,13 @@ $string['editskills'] = "Edit some skills";
 $string['skillstitle'] = "Domain :: Code";
 $string['selecteditskills'] = "Select skills to edit or erase";
 $string['non_pertinent'] = "Not relevant";
+$string['mandatoryscale'] = "Recommanded Scale";
+$string['mandatoryvalue'] = "Mandatory Scale";
+$string['mandatorythreshold'] = "Mandatory Threshold";
 
+
+
+// Frames from skills
 $string['selectskillsfromframes'] = "Select skills matching frames";
 $string['selectskillsfromframesdesc'] = "Display the frames matching some skills";
 $string['usethreshold'] = "Use skill's threshold to select frames";
@@ -269,3 +275,5 @@ $string['checkedfordelete'] ="Check for deletetion";
 $string['checkedfordeletedesc'] ="Only the selection will be deleted, not the frame itself... But this can impact registered portfolios.";
 $string['deleteframe'] ="Delete selected records";
 $string['framesfromskills'] = "Skills linked to Frames";
+$string['tometitle'] = "Booklet: ";
+$string['tabtitle'] = "Page: ";

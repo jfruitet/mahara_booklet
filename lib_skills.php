@@ -1072,12 +1072,12 @@ function multiselectframes_submit(Pieform $form, $values) {
 				}
 		    }
     		catch (Exception $e) {
-        		$SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
+        		$_SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
     		}
 		}
 	}
 	else{
-    	$SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
+    	$_SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
 	}
 
 
@@ -1256,11 +1256,11 @@ function askill_submit(Pieform $form, $values){
 					}
 		    }
     		catch (Exception $e) {
-        		$SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
+        		$_SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
     		}
 		}
 		else{
-           	$SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
+           	$_SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
 		}
 
 	redirect($goto);
@@ -1575,7 +1575,7 @@ function get_skillseditform($idtab, $domainsselected='', $skillsselected='' ) {
 
 // -------------------------------------
 function manyskillsedit_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
     $skillsselected='';
     $t_skillsselected=array();      // Liste des enregistrement selectionnes
@@ -1619,8 +1619,26 @@ function manyskillsedit_submit(Pieform $form, $values) {
         global $USER, $THEME;
         $elements = array();
         $components = array();
+        $rslt = '';
 		if ($idframe){
 			if ($frame = get_record('artefact_booklet_frame', 'id', $idframe)){
+				if (!empty($idtome)){
+							if ($tome = get_record('artefact_booklet_tome', 'id', $idtome)){
+								$rslt .= "<p>".get_string('tometitle','artefact.booklet').' <b>'.strip_tags($tome->title)."</b></p>\n";
+							}
+				}
+				if (!empty($frame->idtab)){
+							if ($tab = get_record('artefact_booklet_tab', 'id', $frame->idtab)){
+								$rslt .= "<p>".get_string('tabtitle','artefact.booklet').' <b>'.strip_tags($tab->title)."</b></p>\n";
+							}
+				}
+				if (!empty($rslt)){
+							   	$components['tome' . $frame->id] =  array(
+                           	       	'type' => 'html',
+                            	   	'title' => get_string('tometitle', 'artefact.booklet'),
+    	                            'value' =>  $rslt,
+   	    	                    );
+				}
                	$components = array();
                 $elements = null;
    	            $components = null;
