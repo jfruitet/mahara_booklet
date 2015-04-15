@@ -25,7 +25,7 @@ $domainsselected  = param_alphanumext('domainsselected', null);
 $skillsselected  = param_alphanumext('skillsselected', null);
 
 	//'<a target="_blank" href="'.get_config('wwwroot').'/artefact/booklet/manageskills.php?idskill='.skill->id.'&domainsselected=&skillsselected=">'.get_string('manageskills', 'artefact.booklet').'</a> ';
-	//echo "<br>IDOBJECT: $idskill, DOMAINSSELECTED: $domainsselected, SKILLSSELECTED: $skillsselected\n";
+	//echo "<br>DEBUG :: manafeskills.php :: 28 ::<br />IDTAB: $idtab, DOMAINSSELECTED: $domainsselected, SKILLSSELECTED: $skillsselected\n";
 	//exit;
 
     define('TITLE', get_string('skillsmanagement', 'artefact.booklet'));

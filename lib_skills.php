@@ -527,13 +527,12 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 	global $USER;
 
 	// DEBUG
-	//echo "<br /> DEBUG :: lib.php :: 2548 :: <br />\n";
-	//print_object($askill);
+	//echo "<br /> DEBUG :: lib_skills.php :: 530 :: DOMAINSELECTED : $domainsselected\n";
 	//exit;
     $compositeform = array();
 	$elements = array();
 	$tab_skills_selected = array();
-
+    $designer = get_record('artefact_booklet_designer', 'id', $USER->get('id'));
 
 	if (empty($domainsselected)){
     	$domainsselected='any';
@@ -544,6 +543,8 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 
     if (!empty($domainsselected) && ($domainsselected!='any')){
 		$tab_domainsselected = explode('-', $domainsselected);
+        // DEBUG
+		//echo "<br /> DEBUG :: libskills.php :: 548 :: <br />TAB DOMAINSELECTED\n";
 		//print_object($tab_domainsselected);
 		//exit;
 		foreach($tab_domainsselected as $index_domainselected){
@@ -557,18 +558,27 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 	//exit;
 
     // Skills
+    $params=array();
+	if ($designer){
+		$sql = "SELECT DISTINCT domain FROM {artefact_booklet_skill} ORDER BY domain ASC";
 
-	$sql = "SELECT DISTINCT domain FROM {artefact_booklet_skill} ORDER BY domain ASC";
-    $domains = get_records_sql_array($sql, array());
+	}
+	else{
+        $sql = "SELECT DISTINCT domain FROM {artefact_booklet_skill} WHERE owner = ? ORDER BY domain ASC";
+        $params=array($USER->id);
+	}
+    $domains = get_records_sql_array($sql, $params);
     //print_object($domains);
 	//exit;
 
 	if (!empty($domains)){
        	$nbdomains = count($domains);
+		//echo "DEBUG <br />NBDOMINS : $nbdomains      \n";
+		//exit;
 		if ($nbdomains>1){
 	    	$domain_options = array();
 			$domain_selected = array();
-			$d=0;
+			$d=1;
     		if ($domainsselected=='any'){
 				foreach ($domains as $domain){
 	               	$domain_options[$d]=$domain->domain;
@@ -585,9 +595,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 					$d++;
 				}
 			}
-		    //print_object($domain_options);
-			//exit;
-   			$elementdomains['domainselect'] = array(
+			$elementdomains['domainselect'] = array(
 	        		'type' => 'select',
 	    	    	'title' => '', //get_string('selectdomains','artefact.booklet'),
 		        	'multiple' => true,
@@ -596,7 +604,8 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
         			//'size' => count($domains),
 	                'size' => 3,
     	            'description' => get_string('multiselect', 'artefact.booklet'),
-   			);
+			);
+
 
        	    $elementdomains['submit'] = array(
             		'type' => 'submitcancel',
@@ -604,21 +613,22 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
     	         	'goto' => get_config('wwwroot') . '/artefact/booklet/index.php?id='.$idtab,
 	    	);
 
-            $elementdomains['idtab'] = array(
+       	    $elementdomains['idtab'] = array(
         	            'type' => 'hidden',
             	        'value' => $idtab,
-    	    );
+   	    	);
 
-   	    	$domainchoice = array(
-            	'name' => 'domainchoice',
-	        	'plugintype' => 'artefact',
-    	    	'pluginname' => 'booklet',
-   	    	    // 'validatecallback' => 'validate_selectlist',
-       	    	'successcallback' => 'selectsomedomains_submit',
-           	    'renderer' => 'table',
-               	'elements' => $elementdomains,
+	   	    $domainchoice = array(
+    	        	'name' => 'domainchoice',
+	    	    	'plugintype' => 'artefact',
+    	    		'pluginname' => 'booklet',
+   	    	    	// 'validatecallback' => 'validate_selectlist',
+	       	    	'successcallback' => 'selectsomedomains_submit',
+    	       	    'renderer' => 'table',
+        	       	'elements' => $elementdomains,
             );
    	    	$compositeform['domainchoice'] = pieform($domainchoice);
+
 		}
 	}
 
@@ -632,14 +642,30 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 				else{
                     $where.=' domain = ? ';
 				}
-				$params[]= $domain_options[$d];
+				$params[] = $domain_options[$d];
 			}
-			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE ".$where." ORDER BY code ASC";
+
+			if ($designer){
+       			$sql = "SELECT * FROM {artefact_booklet_skill} WHERE ".$where." ORDER BY code ASC";
+			}
+			else{
+    	    	$sql = $sql = "SELECT * FROM {artefact_booklet_skill}  WHERE (".$where.") AND (owner = ?) ORDER BY domain ASC, code ASC";
+        		$params[] = $USER->id;
+			}
+
 		    $skills = get_records_sql_array($sql, $params);
 	}
 	else{
-			$sql = "SELECT * FROM {artefact_booklet_skill} ORDER BY domain ASC, code ASC";
-		    $skills = get_records_sql_array($sql, array());
+        $params=array();
+		if ($designer){
+   			$sql = "SELECT * FROM {artefact_booklet_skill} ORDER BY domain ASC, code ASC";
+		}
+		else{
+    	    $sql = $sql = "SELECT * FROM {artefact_booklet_skill} WHERE owner = ? ORDER BY domain ASC, code ASC";
+        	$params=array($USER->id);
+		}
+
+		$skills = get_records_sql_array($sql, $params);
 	}
 
 
@@ -687,9 +713,11 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
     	    );
 
        		$elementsskills['submit'] = array(
-            	'type' => 'submit',
-            	'value' => get_string('savechecklist','artefact.booklet'),
-        	);
+   	           'type' => 'submitcancel',
+               'value' => array(get_string('savechecklist','artefact.booklet'), get_string('cancel')),
+               'goto' => get_config('wwwroot') . '/artefact/booklet/index.php?id='.$idtab,
+    	    );
+
 
 			$elementsskills['delete'] = array(
                 'type' => 'checkbox',
@@ -927,7 +955,7 @@ function selectsomedomains_submit(Pieform $form, $values) {
             $goto = get_config('wwwroot') . '/artefact/booklet/manageskills.php?idtab='.$values['idtab'].'&domainsselected='.$domainsselected;
 		}
 		else{
-			$goto = get_config('wwwroot') . '/artefact/booklet/manageskills.php?idtab='.$values['idtab'].'&domainsselected=';
+			$goto = get_config('wwwroot') . '/artefact/booklet/manageskills.php?idtab='.$values['idtab'];
 		}
 	}
 	else{
@@ -1134,6 +1162,9 @@ function selectskills_submit(Pieform $form, $values) {
 				$goto = get_config('wwwroot').'/artefact/booklet/editskills.php?idtab='.$values['idtab'].'&domainsselected='.$values['domainsselected'].'&skillsselected='.$skillsselected;
 			}
 		}
+	}
+	else{
+		$goto = get_config('wwwroot').'/artefact/booklet/index.php?idtab='.$values['idtab'];
 	}
 	redirect($goto);
 }

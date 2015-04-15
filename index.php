@@ -221,36 +221,7 @@ else {
     $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('selectskillsfromframes', 'artefact.booklet') . ' </legend><div class="fondvert">' . pieform($skillsselectform) . '<i>'.get_string('selectskillsfromframesdesc', 'artefact.booklet').'</i> </div></fieldset>';
     $indexform['skillsselectform'] = $pf;
 
-
-// Modification des booklets
-/*
-if ($designer) {
-    $modform = array(
-        'name'        => 'modform',
-        'plugintype'  => 'artefact',
-        'successcallback' => 'modform_submit',
-        'pluginname'  => 'booklet',
-        'method'      => 'post',
-        'renderer'    => 'oneline',
-        'elements'    => array(
-            'save' => array(
-                'type' => 'submit',
-                'value' => get_string('modif', 'artefact.booklet'),
-            )
-        ),
-        'autofocus'  => false,
-    );
-    $indexform['modform'] = pieform($modform);
-}
-*/
-
-
-if ($designer) {
 	// Gestion des competences // skills management
-	if (!isset($idtab)){
-        $idtab = 0;
-	}
-
     $skillsform = array(
         'name'        => 'skillsform',
         'successcallback' => 'skillsform_submit',
@@ -273,6 +244,8 @@ if ($designer) {
     $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('skillsmanagement', 'artefact.booklet') . ' </legend><div class="fondmauve">' . pieform($skillsform) . '<i>'.get_string('manageskillsdesc', 'artefact.booklet').'</i> </div></fieldset>';
     $indexform['skillsform'] = $pf;
 
+
+if ($designer) {
     // Modification des booklets
     $modform = array(
         'name'        => 'modform',
