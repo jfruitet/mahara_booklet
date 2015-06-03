@@ -6149,7 +6149,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
                                                          OR type='htmltext'
                                                          OR type='synthesis')
                                                     )";
-                        	$item = get_record_sql($sql, array($frame->id, $frame->id));
+                        	$item = get_record_sql($sql, array($frame->id, array($frame->id)));
 	                    }
 						/*
 						if ($item){
@@ -9080,7 +9080,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                                                          OR type='htmltext'
                                                          OR type='synthesis')
                                                     )";
-                        	$item = get_record_sql($sql, array($frame->id, $frame->id));
+                        	$item = get_record_sql($sql, array($frame->id, array($frame->id)));
 	                    }
     	                if ($frame->help != null) {
         	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
@@ -10345,7 +10345,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
   AND re.idowner = ?
   AND re.idrecord = ?
  ORDER BY rd.displayorder";
-                    			if ($val = get_record_sql($sql, array($object->id, $this -> author, $a_record->idrecord))){
+                    			if ($val = get_record_sql($sql, array($object->id, $this -> author, array($a_record->idrecord)))){
 									if ($reference = get_record('artefact_booklet_reference', 'id', $val->idreference)){
 										if ($vertical){
 	   		    	    	                $ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
@@ -11145,7 +11145,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
   AND re.idowner = ?
   AND re.idrecord = ?
  ORDER BY rd.displayorder";
-								    					if ($val = get_record_sql($sql, array($object->id, $arec->author, $a_record->idrecord))){
+								    					if ($val = get_record_sql($sql, array($object->id, $arec->author, array($a_record->idrecord)))){
 																	if ($reference = get_record('artefact_booklet_reference', 'id', $val->idreference)){
 																				if ($vertical){
 	   				    	    									$ligne[$i].= "<th>".$intitules[$object->id]. "</th>";
