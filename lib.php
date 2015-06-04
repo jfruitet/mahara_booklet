@@ -9080,7 +9080,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                                                          OR type='htmltext'
                                                          OR type='synthesis')
                                                     )";
-                        	$item = get_record_sql($sql, array($frame->id, array($frame->id)));
+                        	$item = get_record_sql($sql, array($frame->id));
 	                    }
     	                if ($frame->help != null) {
         	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
