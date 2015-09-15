@@ -4,7 +4,7 @@
 defined('INTERNAL') || die();
 
 // debug
-$string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement omis de l'enregistrer avant de le visualiser !";
+$string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement omis d'enregistrer une première page avant de le visualiser !";
 
 // Included frame
 $string['addsuccessorframe'] = "Ajouter une fiche incluse";
@@ -250,7 +250,7 @@ $string['title'] = "Titre de l'objet";
 $string['selectframe'] = "Sélectionner cette fiche";
 $string['skillframe'] = "Association Compétences / Fiches.";
 $string['skillframesavefailed'] = "Echec à la sauvegarde. Il y a des données manquantes.";
-$string['skillframedoesnotexist'] = "Cette association Compétence/Fiche n'existe pas";
+$string['skillframedoesnotexist'] = "Cette association Compétence / Fiche n'existe pas";
 $string['skills_research'] = "Compétences recherchées";
 $string['skills_frame'] = "Fiche sélectionnée (générée le %s)";
 
