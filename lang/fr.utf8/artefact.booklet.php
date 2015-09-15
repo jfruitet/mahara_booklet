@@ -4,7 +4,7 @@
 defined('INTERNAL') || die();
 
 // debug
-$string['incorrectbooklettab'] = "Ce livret est bogué...";
+$string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement omis de l'enregistrer avant de le visualiser !";
 
 // Included frame
 $string['addsuccessorframe'] = "Ajouter une fiche incluse";

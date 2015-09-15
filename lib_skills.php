@@ -223,16 +223,18 @@ function get_skilltodisplayform($domainsselected='', $skillsselected='', $thresh
        	            'type' => 'hidden',
            	        'value' => $nbskills,
             );
-
+/*
+// Inutile car ces informations ne servent à rien et ne sont pas réellement disponibles de façon unique
            	$elements['idtome'] = array(
        	            'type' => 'hidden',
-           	        'value' => $atome->id,
+           	        'value' => $idtome,
             );
 
            	$elements['idtab'] = array(
        	            'type' => 'hidden',
-           	        'value' => $atab->id,
+           	        'value' => $idtab,
             );
+*/
 
             $elements['iduser'] = array(
        	            'type' => 'hidden',
@@ -364,8 +366,8 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
 		if ($nbdomains>1){
 	    	$domain_options = array();
 			$domain_selected = array();
-			$d=0;
-    		if ($domainsselected=='any'){
+			$d=1;
+			if ($domainsselected=='any'){
 				foreach ($domains as $domain){
 	               	$domain_options[$d]=$domain->domain;
    	                $domain_selected[] = $d;
@@ -907,7 +909,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 
 // -------------------------------------
 function selectsomedomainsframes_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $_SERVER;
 	//print_object($values);
 	//exit;
@@ -937,7 +939,7 @@ function selectsomedomainsframes_submit(Pieform $form, $values) {
 
 // -------------------------------------
 function selectsomedomains_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $_SERVER;
 	//print_object($values);
 	//exit;
@@ -967,7 +969,7 @@ function selectsomedomains_submit(Pieform $form, $values) {
 
 // -------------------------------------
 function selectskillsframes_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
     $skillsselected='';
     $t_skillsselected=array();      // Liste des enregistrement selectionnes
@@ -1010,17 +1012,16 @@ function selectskillsframes_submit(Pieform $form, $values) {
 
 // -------------------------------------
 function multiselectframes_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
     $skillslist='';
     $str='';
     $t_framesselected=array();
-	/*
-	if (!empty($values)){
-		print_object($values);
-	}
-	*/
+	// DEBUG
+	//echo "<br />DEBUG :: lib_skills.php :: 1021 :: <br />VALUES : <br />\n";
+	//print_object($values);
 	//exit;
+
 	if (!empty($values['nbskills'])){
  		for ($i=0; $i<$values['nbskills']; $i++){
 			if (!empty($values['skillid'.$i])){
@@ -1036,86 +1037,95 @@ function multiselectframes_submit(Pieform $form, $values) {
             	$t_framesselected[]=$values['idframe'.$i];
 			}
 		}
-	}
-	// DEBUG
-	//echo "<br />DEBUG :: lib_skills.php :: 966 :: <br />SKILLSLIST : $skillslist <br />\n";
-	//print_object($t_framesselected);
-	//exit;
-	// Creer les associations
-	if ($t_framesselected){
-		foreach ($t_framesselected as $idframe){
-            try {
-				// Creer l'association
 
-				// scale verification
-        		if (!empty($skillslist) && preg_match("/;/", $skillslist)){
-					$skillslist = str_replace(';',',',$this->get('skillslist'));
-				}
-				/*
-				if (!empty($skillslist)){
-  					$t_skills=explode(",", $skillslist);
-					if (!empty($t_skills)){
-						foreach ($t_skills as $idskill){
-							if ($skill = get_record('artefact_booklet_skill', 'id', $idskill)){
-		                        $str .= " ".$skill->id." :: ".$skill->domain." :: ".$skill->code.",";
-								//$str .= "<br />$skill->description."\n";
+		// DEBUG
+		//echo "<br />DEBUG :: lib_skills.php :: 1042 :: <br />T_FRAMESELECTED <br />\n";
+		//print_object($t_framesselected);
+		//exit;
+		// Creer les associations
+		if ($t_framesselected){
+			foreach ($t_framesselected as $idframe){
+            	try {
+					// Creer l'association
+
+					// scale verification
+    	    		if (!empty($skillslist) && preg_match("/;/", $skillslist)){
+						$skillslist = str_replace(';',',',$this->get('skillslist'));
+					}
+					/*
+					if (!empty($skillslist)){
+  						$t_skills=explode(",", $skillslist);
+						if (!empty($t_skills)){
+							foreach ($t_skills as $idskill){
+								if ($skill = get_record('artefact_booklet_skill', 'id', $idskill)){
+		            	            $str .= " ".$skill->id." :: ".$skill->domain." :: ".$skill->code.",";
+									//$str .= "<br />$skill->description."\n";
+								}
 							}
 						}
 					}
-				}
-				*/
+					*/
 
-        		$str_title = '';
-        		$idtome = 0;
-				if (!empty($idframe)){
-					if ($frame = get_record('artefact_booklet_frame', 'id',  $idframe)){
-						$str_title = strip_tags($frame->title);
-        		        if ($tab = get_record('artefact_booklet_tab', 'id',  $frame->idtab)){
-                		    $idtome = $tab->idtome;
+        			$str_title = '';
+
+	        		$idtab = 0;
+    	            $idtome = 0;
+					if (!empty($idframe)){
+						if ($frame = get_record('artefact_booklet_frame', 'id',  $idframe)){
+							$str_title = strip_tags($frame->title);
+        		    	    if ($tab = get_record('artefact_booklet_tab', 'id',  $frame->idtab)){
+                        	    $idtab = $tab->id;
+								$idtome = $tab->idtome;
+							}
+
+			                $skilltoframe = new stdclass();
+        			        $skilltoframe->description = $idframe;
+            	    		$skilltoframe->note = $idtome;
+		        	        $skilltoframe->owner = $USER->get('id');
+        		    	    $skilltoframe->author = $USER->get('id');
+                			$skilltoframe->title = $str_title. ' ['.$skillslist.']';
+
+							if ($rec_skframe = get_record('artefact', 'artefacttype', 'skillframe', 'description', $idframe, 'owner', $USER->get('id'))){
+    	    		            $id = $rec_skframe->id;
+							}
+							else{
+								$id = 0;
+							}
+							// DEBUG
+							//echo "<br />DEBUG :: lib_skills.php :: 1095:: <br />SKILLTOFRAME<br />\n";
+							//print_object($skilltoframe);
+							//exit;
+
+        	    	    	if ($artefact = new ArtefactTypeSkillFrame($id, $skilltoframe)){
+     	    	    		    $artefact->commit();
+								// DEBUG
+								//echo "<br />DEBUG :: lib_skills.php :: 966 :: <br />SKILLSLIST : $skillslist <br />\n";
+								//print_object($artefact);
+								//exit;
+
+							}
 						}
 					}
-				}
-
-                $skilltoframe = new stdclass();
-                $skilltoframe->description = $idframe;
-                $skilltoframe->note = $idtome;
-                $skilltoframe->owner = $USER->get('id');
-                $skilltoframe->author = $USER->get('id');
-                $skilltoframe->title = $str_title. ' ['.$skillslist.']';
-
-				if ($rec_skframe = get_record('artefact', 'artefacttype', 'skillframe', 'description', $idframe, 'owner', $USER->get('id'))){
-                    $id = $rec_skframe->id;
-				}
-				else{
-					$id = 0;
-				}
-
-                if ($artefact = new ArtefactTypeSkillFrame($id, $skilltoframe)){
-     	            $artefact->commit();
-	// DEBUG
-	//echo "<br />DEBUG :: lib_skills.php :: 966 :: <br />SKILLSLIST : $skillslist <br />\n";
-	//print_object($artefact);
-	//exit;
-
-				}
-		    }
-    		catch (Exception $e) {
-        		$_SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
-    		}
+		    	}
+    			catch (Exception $e) {
+        			$SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
+    			}
+			}
 		}
 	}
 	else{
-    	$_SESSION->add_error_msg(get_string('skillframesavefailed', 'artefact.booklet'));
+    	$SESSION->add_error_msg(get_string('skillframedoesnotexist', 'artefact.booklet'));
 	}
 
 
-    $goto = get_config('wwwroot') . 'artefact/booklet/index.php?tab=' . $values['idtab'] . '&browse=1';
+    //$goto = get_config('wwwroot') . 'artefact/booklet/index.php?tab=' . $idtab . '&browse=1';
+    $goto = get_config('wwwroot') . 'artefact/booklet/index.php';
 	redirect($goto);
 }
 
 // -------------------------------------
 function selectskills_submit(Pieform $form, $values) {
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
     $skillsselected='';
     $t_skillsselected=array();      // Liste des enregistrement selectionnes
@@ -1172,7 +1182,7 @@ function selectskills_submit(Pieform $form, $values) {
 
 // ----------------------------------------------
 function askill_submit(Pieform $form, $values){
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
 		if (!empty($values['domainsselected'])){
     		$goto = get_config('wwwroot') . '/artefact/booklet/manageskills.php?idtab='.$values['idtab'].'&domainsselected='.$values['domainsselected'];
@@ -1287,11 +1297,11 @@ function askill_submit(Pieform $form, $values){
 					}
 		    }
     		catch (Exception $e) {
-        		$_SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
+        		$SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
     		}
 		}
 		else{
-           	$_SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
+           	$SESSION->add_error_msg(get_string('skillsavefailed', 'artefact.booklet'));
 		}
 
 	redirect($goto);
@@ -1300,7 +1310,7 @@ function askill_submit(Pieform $form, $values){
 
 // ----------------------------------------------
 function skills_submit(Pieform $form, $values){
-    global $_SESSION;
+    global $SESSION;
 	global $USER;
     srand();
 

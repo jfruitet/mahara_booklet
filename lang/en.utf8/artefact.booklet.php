@@ -12,7 +12,7 @@
 defined('INTERNAL') || die();
 
 // debug
-$string['incorrectbooklettab'] = "This booklet is bugged";
+$string['incorrectbooklettab'] = "This booklet is bugged. Have you thought to save it ?";
 
 // Included frame
 $string['included'] = "Included frame";

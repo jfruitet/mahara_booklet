@@ -1537,7 +1537,7 @@ EOF;
 
 
 	//------------------------------------------------------------------------
-    public static function get_form($idobject, $domainsselected=0) {
+    public static function get_form($idobject, $domainsselected='') {
         $object = get_record('artefact_booklet_object', 'id', $idobject);
 		//print_object($object);
 		//exit;
