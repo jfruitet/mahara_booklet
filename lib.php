@@ -5423,30 +5423,31 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
 
     public static function submenu_items($idtome) {
         global $USER;
-        $tabs = get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder');
-        // liste des tabs du tome tries par displayorder
-        $selectedtome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'));
-		if (empty($selectedtome)){
-			$a = new StdClass;
-			$a->iduser=$USER->get('id');
-            $rec=get_record_sql('SELECT MIN(id) as idtome FROM {artefact_booklet_tome}');
-			if ($rec->idtome){
-            	$a->idtome=$rec->idtome;
-                // DEBUG
-				//echo "<br />DEBUG :: lib.php ::1902<br />\n";
-				//print_object($a);
-				//exit;
-            	insert_record('artefact_booklet_selectedtome', $a);
-			}
-		}
-
-        $opt = null;
-        if ($selectedtome && $idtome != $selectedtome->idtome) {
-        // Cas ou un designer regarde un tome qui n'est pas celui qu'il a selectionne
-            $opt = "&tome=" . $idtome;
-        }
         $items = array();
-        if ($tabs) {
+		if ($tabs = get_records_array('artefact_booklet_tab', 'idtome', $idtome, 'displayorder')){
+        	// liste des tabs du tome tries par displayorder
+        	$selectedtome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'));
+			if (empty($selectedtome)){
+				$a = new StdClass;
+				$a->iduser=$USER->get('id');
+            	$rec=get_record_sql('SELECT MIN(id) as idtome FROM {artefact_booklet_tome}');
+				if ($rec->idtome){
+        	    	$a->idtome=$rec->idtome;
+            	    // DEBUG
+					//echo "<br />DEBUG :: lib.php ::1902<br />\n";
+					//print_object($a);
+					//exit;
+        	    	insert_record('artefact_booklet_selectedtome', $a);
+				}
+			}
+
+    	    $opt = null;
+        	if ($selectedtome && $idtome != $selectedtome->idtome) {
+		        // Cas ou un designer regarde un tome qui n'est pas celui qu'il a selectionne
+        	    $opt = "&tome=" . $idtome;
+	        }
+
+
             foreach ($tabs as $tab) {
                 // cree un tableau : displayorder -> tableau (page url title)
                 $items[$tab->displayorder] = array(
@@ -5455,9 +5456,9 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
                     'title'    => $tab->title,
                 );
             }
-        }
-        if (defined('BOOKLET_SUBPAGE') && isset($items[BOOKLET_SUBPAGE])) {
-        // pour differencier 1er et second appel depuis index.php
+ 	    }
+        if (!empty($items) && defined('BOOKLET_SUBPAGE') && isset($items[BOOKLET_SUBPAGE])) {
+        	// pour differencier 1er et second appel depuis index.php
             $items[BOOKLET_SUBPAGE]['selected'] = true;
         }
         return $items;
