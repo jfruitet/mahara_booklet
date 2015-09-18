@@ -25,7 +25,8 @@ $skillsselected  = param_alphanumext('skillsselected', null);
 $thresholdactive = param_integer('thresholdactive', 0);
 
 	//'<a target="_blank" href="'.get_config('wwwroot').'/artefact/booklet/displayframesskills.php?idskill='.skill->id.'&domainsselected=&skillsselected=">'.get_string('selectskills', 'artefact.booklet').'</a> ';
-	//echo "<br>IDTAB: $idtab, DOMAINSSELECTED: $domainsselected, SKILLSSELECTED: $skillsselected TRESHOLDACTIVE: $thresholdactive\n";
+	//echo "<br />DEBUG : displayframeskills.php<br />\n";
+	//echo "<br>DOMAINSSELECTED: $domainsselected, SKILLSSELECTED: $skillsselected TRESHOLDACTIVE: $thresholdactive\n";
 	//exit;
 
     define('TITLE', get_string('selectskillsfromframes', 'artefact.booklet'));

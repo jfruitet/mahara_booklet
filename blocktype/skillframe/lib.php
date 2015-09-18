@@ -97,7 +97,7 @@ class PluginBlocktypeSkillFrame extends PluginBlocktype {
             'blocktype' => 'skillframe',
             'limit'     => 655360, // 640K profile fields is enough for anyone!
             'selectone' => true,
-            'search'    => false,
+            'search'    => true,
             'artefacttypes' => array('skillframe'),
             'template'  => 'artefact:booklet:artefactchooser-element.tpl',
         );

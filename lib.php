@@ -6150,7 +6150,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
                                                          OR type='htmltext'
                                                          OR type='synthesis')
                                                     )";
-                        	$item = get_record_sql($sql, array($frame->id, array($frame->id)));
+                        	$item = get_record_sql($sql, array($frame->id, $frame->id));
 	                    }
 						/*
 						if ($item){
