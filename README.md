@@ -13,6 +13,19 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 ### New functionnalities
 
+
+#### September 2015
+
+**Version 2015091801 Release = 1.2.7 - 2015-09-18**
+
+##### Bug correction for blocktype  ***SkillFrame***
+
+Pour des motifs étranges le serveurs sous PostGres semblent plus sensibles à la syntaxe des requêtes SQL que les serveurs sous MySQL !
+J'ai donc corrigé pas mal de requêtes et quelques bugs d'affichage...
+
+Many SQL request adapted to PostGres SQL server. Few bugs corrected.
+
+
 #### April 2015
 
 **Version 2015033102 Release 1.2.6 - 2015-04-10**
@@ -21,7 +34,7 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 L'utilisateur peut sélectionner une liste de fiches à partir d'une liste de compétences. Toutes les fiches qui remplissent le critère de recherche sont affichées. 
 
-C'est une façon de collecter les fiches qui témoignent de cette liste de compétences. Cette liste de fiches peut être ensuite intégrée dans un portfolio (booklet/skillframe : Blocktype "Une rubrique de compétences").
+C'est une façon de collecter les fiches qui témoignent de ces de compétences. Cette liste de fiches peut être ensuite intégrée dans un portfolio (booklet/skillframe : Blocktype "Une rubrique de compétences").
 
 User may select a list of frames by the way of a list of skills. All frames that match de selection criteria will be displayed. 
 
