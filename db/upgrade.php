@@ -211,6 +211,21 @@ function xmldb_artefact_booklet_upgrade($oldversion=0) {
         }
 	}
 
+    if ($oldversion < 2015091901) {
+     	$table = new XMLDBTable('artefact_booklet_group');
+        $table->addFieldInfo('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $table->addFieldInfo('idgroup', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+        $table->addFieldInfo('idtome', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL);
+
+        $table->addKeyInfo('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!create_table($table)) {
+            throw new SQLException($table . " could not be created, check log for errors.");
+        }
+    }
+
+
+
     return $status;
 }
 

@@ -6,6 +6,19 @@ defined('INTERNAL') || die();
 // debug
 $string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement omis d'enregistrer une première page avant de le visualiser !";
 
+// Groups
+$string['groupmatch'] = "Restriction à des groupes";
+$string['nogroupmatch'] = "<i>Liste vide</i>";
+$string['grouprestrictionhelp'] = "Cocher pour restreindre l'accès du livret à une liste de groupes";
+$string['groupsmanagement'] = "Sélection des groupes";
+$string['groupsselect'] = "Cochez les groupes à sélectionner";
+$string['groupsselected'] = "Liste des groupes réservés";
+$string['grouperase'] = "Supprimer";
+$string['grouperasedesc'] = "Si cette case est cochée les groupes sélectionnés sont retirés de la restriction";
+$string['grouphidden'] = "Caché";
+$string['groupopen'] = "Ouvert";
+$string['grouppublic'] = "Public";
+
 // Included frame
 $string['addsuccessorframe'] = "Ajouter une fiche incluse";
 $string['successorframe'] = "Inclus dans la fiche %s";

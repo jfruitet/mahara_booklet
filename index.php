@@ -36,7 +36,12 @@ $menuspecialform =  NULL; // menu des fiches / frames
 // pour recuperer idmodiflist passé dans l'url
 $designer = get_record('artefact_booklet_designer', 'id', $USER->get('id'));
 // renvoit les designers d'id = user pour savoir si user est designer
-$tomes = get_records_array('artefact_booklet_tome', 'public', 1);
+
+// Modif JF : il faut verifier si le livret est restriant à un groupe
+// et si oui que l'utilisateur est membre du groupe
+// $tomes = get_records_array('artefact_booklet_tome', 'public', 1);
+$tomes = get_tomes_user($USER->get('id'));
+
 // renvoit la liste des tomes publics
 $admin = get_record('usr', 'id', $USER->get('id'));
 // renvoit l'enregistrement de user pour tester ensuite si son champ admin est a vrai
@@ -416,3 +421,55 @@ function skillsselectform_submit(Pieform $form, $values) {
     redirect($goto);
 }
 
+/**
+ * Retourne une liste de livrets qui sont publics
+ *  & ne sont pas restrients à un groupe
+ *  & sinon si l'utilisateur est membre du groupe
+ */
+function get_tomes_user($iduser){
+	//echo "<br />USER: $iduser<br />\n";
+	$tomes=array();
+	if ($tomespublics = get_records_array('artefact_booklet_tome', 'public', 1)){
+		// Tomes non assignes à des groupes
+    	foreach ($tomespublics as $tome){
+			if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $tome->id)){
+                //echo "<br />TOME ".$tome->id."<br />GROUPES <br />\n";
+				//print_object( $groupsselected   );
+                foreach ($groupsselected as $selgroup){
+                    //echo "<br />SELGROUP ID: ".$selgroup->id."<br />GROUPE<br />\n";
+					//print_object( $selgroup  );
+
+     				if (group_user_member($selgroup->idgroup, $iduser)){
+                        $tomes[] = $tome;
+					}
+				}
+			}
+			else{ // pas de restriction de groupe pour ce tome
+                $tomes[] = $tome;
+			}
+		}
+	}
+	//echo "<br />TOMES<br />\n";
+    //print_object( $tomes   );
+	//exit;
+	return $tomes;
+}
+
+/**
+ * Establishes what role a user has in a given group.
+ *
+ * If the user is not in the group, this returns false.
+ *
+ * @param mixed $groupid  ID of the group to check
+ * @param mixed $userid   ID of the user to check.
+ * @return mixed          The role the user has in the group, or false if they
+ *                        have no role in the group
+ */
+function group_user_member($groupid, $userid=null) {
+    static $result;
+	//echo "<br /> $groupid, $userid   \n";
+    if (empty($userid) || empty($groupid) ) {
+        return false;
+    }
+    return $result[$groupid][$userid] = get_field('group_member', 'role', 'group', $groupid, 'member', $userid);
+}

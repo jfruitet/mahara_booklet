@@ -16,14 +16,13 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 #### September 2015
 
-**Version 2015091801 Release = 1.2.7 - 2015-09-18**
+**Version 2015091901 Release = 1.2.8 - 2015-09-19**
 
-##### Bug correction for blocktype  ***SkillFrame***
+##### Group management
 
-Pour des motifs étranges le serveurs sous PostGres semblent plus sensibles à la syntaxe des requêtes SQL que les serveurs sous MySQL !
-J'ai donc corrigé pas mal de requêtes et quelques bugs d'affichage...
+La disponibilité d'un livret peut être restreinte à une liste de groupes.  
 
-Many SQL request adapted to PostGres SQL server. Few bugs corrected.
+The availability of a booklet can be restricted to a list of groups.
 
 
 #### April 2015

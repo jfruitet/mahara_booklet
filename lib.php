@@ -466,6 +466,7 @@ function get_edition_status($idtome) {
 
 
 
+
 // *********************************************************************
 
 class ArtefactTypeTab extends ArtefactTypebooklet {
@@ -475,6 +476,21 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
 	// Modif JF
     public static function get_form_status($idtome) {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
+		// Gestion des groupes
+		$listegroupes='';
+   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
+				// DEBUG
+				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
+				//print_object ($groupsselected);
+				//exit;
+				foreach ($groupsselected as $sgroup){
+					$params=array('id' => $sgroup->idgroup);
+                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
+    				if ($agroup = get_records_sql_array($sql, $params)){
+                        $listegroupes.=$agroup->id.':'.$agroup->name.', ';
+					}
+				}
+		}
 
 		$tabform = pieform(array(
             'name'        => 'tabform',
@@ -519,6 +535,11 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                     'value' => ((!empty($tome)) ? $tome->status : NULL)
                 ),
 
+                'group' => array(
+                    'type' => 'hidden',
+                    'value' =>  NULL,
+                ),
+
                 'save' => array(
                     'type' => 'submitcancel',
                     'value' => array(get_string('savetome', 'artefact.booklet'),
@@ -557,6 +578,43 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
 
     public static function get_form($idtome) {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
+		// Gestion des groupes
+		$listegroupes='';
+   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
+				// DEBUG
+				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
+				//print_object ($groupsselected);
+				//exit;
+				foreach ($groupsselected as $sgroup){
+					$params=array('id' => $sgroup->idgroup);
+                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
+    				if ($agroup = get_record_sql($sql, $params)){
+                        $listegroupes.=$agroup->name.' (ID:'.$agroup->id.') ';
+					}
+				}
+		}
+
+		if (!empty($listegroupes)){
+			$msggrp= array(
+                    'type' => 'html',
+                    'title' => get_string('groupsselected', 'artefact.booklet'),
+                    'value' => $listegroupes,
+                );
+ 		}
+		else{
+			$msggrp= array(
+                    'type' => 'html',
+                    'title' => get_string('groupsselected', 'artefact.booklet'),
+                    'value' => get_string('nogroupmatch', 'artefact.booklet'),
+                );
+		}
+
+		$selgrp = array(
+                    'type' => 'checkbox',
+                    'title' => get_string('groupmatch', 'artefact.booklet'),
+                    'defaultvalue' => NULL,
+                    'description' => get_string('grouprestrictionhelp', 'artefact.booklet'),
+                );
 
         if (isset($tome->status)){
 			$status= array(
@@ -608,7 +666,12 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                     'defaultvalue' => ((!empty($tome)) ? $tome->public : NULL)
                 ),
 				'msg' => $msg,
+
 				'status' => $status,
+
+				'infogroupe' => $msggrp,
+
+				'group' => $selgrp,
 
                 'save' => array(
                     'type' => 'submitcancel',
@@ -712,9 +775,17 @@ function tomestatus_submit (Pieform $form, $values) {
     $tome->help = $values['help'];
     $tome->public = (!empty($values['public']) ? 1 : 0);
     $tome->status = (!empty($values['status']) ? 1 : 0);
+
     update_record('artefact_booklet_tome', $tome);
     // $goto = get_config('wwwroot') . '/artefact/booklet/tomes.php';
-    $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
+    // $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
+ 	if (!empty($values['group'])){
+		// Proposer  une liste de groupes
+         $goto = get_config('wwwroot') . '/artefact/booklet/groups.php?id=' . $tome->id;
+	}
+	else{
+    	$goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
+    }
     redirect($goto);
 }
 
@@ -725,10 +796,17 @@ function tomename_submit (Pieform $form, $values) {
     $tome->help = $values['help'];
     $tome->public = (!empty($values['public']) ? 1 : 0);
     $tome->status = (!empty($values['status']) ? 1 : 0);
+
 	update_record('artefact_booklet_tome', $tome);
     // $goto = get_config('wwwroot') . '/artefact/booklet/tomes.php';
-    $goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
-    redirect($goto);
+ 	if (!empty($values['group'])){
+		// Proposer  une liste de groupes
+         $goto = get_config('wwwroot') . '/artefact/booklet/groups.php?id=' . $tome->id;
+	}
+	else{
+     	$goto = get_config('wwwroot') . '/artefact/booklet/tabs.php?id=' . $tome->id;
+    }
+	redirect($goto);
 }
 
 function addtab_submit(Pieform $form, $values) {

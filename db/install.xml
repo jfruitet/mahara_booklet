@@ -56,6 +56,17 @@
                 <KEY NAME="tabfk" TYPE="foreign" FIELDS="idtab" REFTABLE="artefact_booklet_tab" REFFIELDS="id" />
             </KEYS>
          </TABLE>
+         <TABLE NAME="artefact_booklet_group">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+                <FIELD NAME="idgroup" TYPE="int" LENGTH="10" NOTNULL="false" />
+				<FIELD NAME="idtome" TYPE="int" LENGTH="10" NOTNULL="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+         </TABLE>
+		 
          <TABLE NAME="artefact_booklet_object">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
