@@ -24,7 +24,7 @@ if ($idtome && $tome = get_record('artefact_booklet_tome', 'id', $idtome)){
  	define('TITLE', get_string('groupsmanagement', 'artefact.booklet'));
 
  	$sql = "SELECT id, name, description, public, jointype, hidden FROM {group} ";
-    if ($groups = get_records_sql_array($sql)){
+    if ($groups = get_records_sql_array($sql, NULL)){
 	    $inlinejs = '';
 		if ($optionsform = getform_groupsselect($idtome, $groups)){
 			//print_object($optionsform);
@@ -77,9 +77,12 @@ function getform_groupsselect($idtome, $groups = NULL ) {
                     if (!empty($msg)) $msg.=', ';
 					$msg.=get_string('groupopen','artefact.booklet');
 				}
+				if (!empty($msg)){
+                    $msg = ' [<i>'.$msg.'</i>]';
+				}
 		        $elements['html'.$i] = array(
            				'type' => 'html',
-	           			'value' => strip_tags($group->description).' [<i>'.$msg.'</i>]'."\n",
+	           			'value' => strip_tags($group->description).$msg."\n",
     	       	);
 
 
