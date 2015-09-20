@@ -25,11 +25,6 @@ if ($idtome && $tome = get_record('artefact_booklet_tome', 'id', $idtome)){
 
  	$sql = "SELECT id, name, description, public, jointype, hidden FROM {group} ";
     if ($groups = get_records_sql_array($sql)){
-		// DEBUG
-		//echo "<br />DEBUG :: groups.php :: 26 <br />GROUPS<br />\n";
-		//print_object ($groups);
-		//exit;
-
 	    $inlinejs = '';
 		if ($optionsform = getform_groupsselect($idtome, $groups)){
 			//print_object($optionsform);
@@ -52,20 +47,24 @@ die;
 function getform_groupsselect($idtome, $groups = NULL ) {
 	global $USER;
     global $THEME;
-	// DEBUG
-	//echo "<br /> DEBUG :: lib.php :: 2548 :: <br />\n";
-	//print_object($askill);
-	//exit;
-
 	$compositeform = array();
 	$elements = array();
 	$tab_groups_selected = array();
 
+	if (!empty($idtome   )){
+        $tab_groups_selected = get_records_array('artefact_booklet_group', 'idtome', $idtome);
+
+	}
 	if (!empty($groups)){
  			$i=0;
             $elements = array();
         	foreach ($groups as $group){
 				$msg='';
+                $selectvalue=0;
+                if ($groupselected = get_record('artefact_booklet_group', 'idgroup', $group->id, 'idtome', $idtome)){
+					$selectvalue=1;
+				}
+
 				if ($group->public){
 					if (!empty($msg)) $msg.=', ';
                     $msg.=get_string('grouppublic','artefact.booklet');
@@ -91,7 +90,7 @@ function getform_groupsselect($idtome, $groups = NULL ) {
 
 				$elements['select'.$i] = array(
         		        	'type' => 'checkbox',
-                			'defaultvalue' => 0,
+                			'defaultvalue' => $selectvalue,
 		                	'title' =>  $group->name,
         		        	//'description' => '',
            			);

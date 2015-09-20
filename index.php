@@ -427,18 +427,12 @@ function skillsselectform_submit(Pieform $form, $values) {
  *  & sinon si l'utilisateur est membre du groupe
  */
 function get_tomes_user($iduser){
-	//echo "<br />USER: $iduser<br />\n";
 	$tomes=array();
 	if ($tomespublics = get_records_array('artefact_booklet_tome', 'public', 1)){
 		// Tomes non assignes à des groupes
     	foreach ($tomespublics as $tome){
 			if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $tome->id)){
-                //echo "<br />TOME ".$tome->id."<br />GROUPES <br />\n";
-				//print_object( $groupsselected   );
                 foreach ($groupsselected as $selgroup){
-                    //echo "<br />SELGROUP ID: ".$selgroup->id."<br />GROUPE<br />\n";
-					//print_object( $selgroup  );
-
      				if (group_user_member($selgroup->idgroup, $iduser)){
                         $tomes[] = $tome;
 					}
@@ -449,9 +443,6 @@ function get_tomes_user($iduser){
 			}
 		}
 	}
-	//echo "<br />TOMES<br />\n";
-    //print_object( $tomes   );
-	//exit;
 	return $tomes;
 }
 
@@ -467,7 +458,6 @@ function get_tomes_user($iduser){
  */
 function group_user_member($groupid, $userid=null) {
     static $result;
-	//echo "<br /> $groupid, $userid   \n";
     if (empty($userid) || empty($groupid) ) {
         return false;
     }
