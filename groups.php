@@ -38,6 +38,8 @@ if ($idtome && $tome = get_record('artefact_booklet_tome', 'id', $idtome)){
 			die;
 		}
 	}
+    $SESSION->add_error_msg(get_string('nogroups', 'artefact.booklet'));
+    redirect(get_config('wwwroot') . '/artefact/booklet/tabs.php?id='.$idtome);
 }
 $SESSION->add_error_msg(get_string('failed', 'artefact.booklet'));
 redirect(get_config('wwwroot') . '/artefact/booklet/index.php');
