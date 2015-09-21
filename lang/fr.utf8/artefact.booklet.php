@@ -8,6 +8,7 @@ $string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement
 
 // Groups
 $string['groupmatch'] = "Restriction à des groupes";
+$string['grouprestriction'] = "Restreint aux groupes";
 $string['nogroups'] = "Aucun groupe n'est disponible";
 $string['tomefailed'] = "Aucun livret n'est disponible";
 $string['nogroupmatch'] = "<i>Liste vide</i>";

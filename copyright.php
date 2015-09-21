@@ -39,7 +39,14 @@ if (!empty($idtome)){
                 $smarty->assign('statusvalue', get_string('forbidden','artefact.booklet'));
 			}
 		}
+		// Groupes
+  		if ($listgroups=get_groups_tome_details($tome->id)){
+            $smarty->assign('restrictedgroups', get_string('grouprestriction','artefact.booklet'));
+            $smarty->assign('listgroups', $listgroups);
+		}
+
         $smarty->assign('idtome', $idtome);
+        $smarty->assign('information', get_string('information','artefact.booklet'));
 
 		$author = get_record('artefact_booklet_author', 'idtome', $idtome);
 

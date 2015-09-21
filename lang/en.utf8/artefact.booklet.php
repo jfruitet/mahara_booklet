@@ -16,6 +16,7 @@ $string['incorrectbooklettab'] = "This booklet is bugged. Have you thought to sa
 
 // Groups
 $string['groupmatch'] = "Group restriction";
+$string['grouprestriction'] = "Reserved to groups";
 $string['nogroups'] = "Not any group";
 $string['nogroups'] = "Aucun group n'est disponible";
 $string['tomefailed'] = "Not any Booklet";
