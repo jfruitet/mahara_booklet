@@ -26,7 +26,7 @@ $string['grouperasedesc'] = "If checked groups selected are not restricted to th
 $string['grouphidden'] = "Hidden";
 $string['groupopen'] = "Open";
 $string['grouppublic'] = "Public";
-
+$string['nmembers'] = "Members: %s";
 
 // Included frame
 $string['included'] = "Included frame";

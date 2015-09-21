@@ -18,6 +18,7 @@ $string['grouperasedesc'] = "Si cette case est cochée les groupes sélectionné
 $string['grouphidden'] = "Caché";
 $string['groupopen'] = "Ouvert";
 $string['grouppublic'] = "Public";
+$string['nmembers'] = "Membres: %s";
 
 // Included frame
 $string['addsuccessorframe'] = "Ajouter une fiche incluse";

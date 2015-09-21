@@ -17,6 +17,7 @@ defined('INTERNAL') || die();
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
 require_once('pieforms/pieform.php');
+require_once('group.php');
 safe_require('artefact', 'booklet');
 $idtome = param_integer('id', null);
 
@@ -59,6 +60,8 @@ function getform_groupsselect($idtome, $groups = NULL ) {
  			$i=0;
             $elements = array();
         	foreach ($groups as $group){
+				$linkmembers  = get_config('wwwroot') . '/group/members.php?id=' . $group->id;
+                $nmembers = count_records('group_member', 'group', $group->id);
 				$msg='';
                 $selectvalue=0;
                 if ($groupselected = get_record('artefact_booklet_group', 'idgroup', $group->id, 'idtome', $idtome)){
@@ -67,22 +70,25 @@ function getform_groupsselect($idtome, $groups = NULL ) {
 
 				if ($group->public){
 					if (!empty($msg)) $msg.=', ';
-                    $msg.=get_string('grouppublic','artefact.booklet');
+                    //$msg.=get_string('grouppublic','artefact.booklet');
+                    $msg.=get_string('publiclyvisible', 'group');
 				}
 				if ($group->hidden){
                     if (!empty($msg)) $msg.=', ';
 					$msg.=get_string('grouphidden','artefact.booklet');
+                    //$msg.=get_string('hidden','group');
 				}
 				if ($group->jointype=='open'){
                     if (!empty($msg)) $msg.=', ';
-					$msg.=get_string('groupopen','artefact.booklet');
+					//$msg.=get_string('groupopen','artefact.booklet');
+                    $msg.=get_string('membershiptype.abbrev.open','group');
 				}
 				if (!empty($msg)){
                     $msg = ' [<i>'.$msg.'</i>]';
 				}
 		        $elements['html'.$i] = array(
            				'type' => 'html',
-	           			'value' => strip_tags($group->description).$msg."\n",
+	           			'value' => strip_tags($group->description).$msg.' <a href="'.$linkmembers.'" target="_blank">'.get_string('nmembers','artefact.booklet',$nmembers).'</a>'."\n",
     	       	);
 
 
