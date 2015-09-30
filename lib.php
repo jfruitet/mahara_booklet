@@ -477,20 +477,7 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
     public static function get_form_status($idtome) {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
 		// Gestion des groupes
-		$listegroupes='';
-   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
-				// DEBUG
-				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
-				//print_object ($groupsselected);
-				//exit;
-				foreach ($groupsselected as $sgroup){
-					$params=array('id' => $sgroup->idgroup);
-                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
-    				if ($agroup = get_records_sql_array($sql, $params)){
-                        $listegroupes.=$agroup->id.':'.$agroup->name.', ';
-					}
-				}
-		}
+		$listegroupes=get_groups_tome($idtome);
 
 		$tabform = pieform(array(
             'name'        => 'tabform',
@@ -514,6 +501,11 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                     'type' => 'html',
                     'title' => get_string('statusmodif', 'artefact.booklet'),
                     'value' =>  ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
+                ),
+				'msg4' => array(
+                    'type' => 'html',
+                    'title' => get_string('grouprestriction', 'artefact.booklet'),
+                    'value' =>  ((!empty($listegroupes)) ? '<i>'.$listegroupes.'</i>'  : ''),
                 ),
 
                 'public' => array(
@@ -580,19 +572,6 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
 		// Gestion des groupes
 		$listegroupes=get_groups_tome($idtome);
-   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
-				// DEBUG
-				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
-				//print_object ($groupsselected);
-				//exit;
-				foreach ($groupsselected as $sgroup){
-					$params=array('id' => $sgroup->idgroup);
-                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
-    				if ($agroup = get_record_sql($sql, $params)){
-                        $listegroupes.=$agroup->name.' (ID:'.$agroup->id.') ';
-					}
-				}
-		}
 
 		if (!empty($listegroupes)){
 			$msggrp= array(
@@ -11620,9 +11599,21 @@ function get_groups_tome($idtome){
 		//exit;
 		foreach ($groupsselected as $sgroup){
 			$params=array('id' => $sgroup->idgroup);
-            $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
+            $sql = "SELECT id, name, description, public, deleted FROM {group} WHERE id=? ";
     		if ($agroup = get_record_sql($sql, $params)){
-            	$listegroups.=$agroup->name.' (ID:'.$agroup->id.') ';
+            	if (!$agroup->deleted){
+					$listegroups.=$agroup->name.' (ID:'.$agroup->id.') ';
+				}
+				else{
+					// this group does not exist anymore
+					// refresh artefact_booklet_group table
+            	    delete_records('artefact_booklet_group', 'idgroup', $agroup->id);
+				}
+			}
+			else{
+				// this group does not exist anymore
+				// refresh artefact_booklet_group table
+                delete_records('artefact_booklet_group', 'idgroup', $sgroup->idgroup);
 			}
 		}
 	}
@@ -11644,30 +11635,42 @@ function get_groups_tome_details($idtome){
 		//exit;
 		foreach ($groupsselected as $sgroup){
 			$params=array('id' => $sgroup->idgroup);
-            $sql = "SELECT id, name, description, public, hidden, jointype FROM {group} WHERE id=? ";
+            $sql = "SELECT id, name, description, public, hidden, jointype , deleted FROM {group} WHERE id=? ";
     		if ($group = get_record_sql($sql, $params)){
-				$linkmembers  = get_config('wwwroot') . '/group/members.php?id=' . $group->id;
-                $nmembers = count_records('group_member', 'group', $group->id);
-				$msg='';
-				if ($group->public){
-					if (!empty($msg)) $msg.=', ';
-                    //$msg.=get_string('grouppublic','artefact.booklet');
-                    $msg.=get_string('publiclyvisible', 'group');
+				if (!$group->deleted){
+					$linkmembers  = get_config('wwwroot') . '/group/members.php?id=' . $group->id;
+	                $nmembers = count_records('group_member', 'group', $group->id);
+					$msg='';
+					if ($group->public){
+						if (!empty($msg)) $msg.=', ';
+                	    //$msg.=get_string('grouppublic','artefact.booklet');
+                    	$msg.=get_string('publiclyvisible', 'group');
+					}
+					if ($group->hidden){
+        	            if (!empty($msg)) $msg.=', ';
+						$msg.=get_string('grouphidden','artefact.booklet');
+                	    //$msg.=get_string('hidden','group');
+					}
+					if ($group->jointype=='open'){
+        	            if (!empty($msg)) $msg.=', ';
+						//$msg.=get_string('groupopen','artefact.booklet');
+                	    $msg.=get_string('membershiptype.abbrev.open','group');
+					}
+					if (!empty($msg)){
+        	            $msg = ' [<i>'.$msg.'</i>]';
+					}
+		        	$listegroups .=  '<li><b>'.strip_tags($group->name).'</b> '.strip_tags($group->description).$msg.' <a href="'.$linkmembers.'" target="_blank">'.get_string('nmembers','artefact.booklet',$nmembers).'</a> </li>'."\n";
 				}
-				if ($group->hidden){
-                    if (!empty($msg)) $msg.=', ';
-					$msg.=get_string('grouphidden','artefact.booklet');
-                    //$msg.=get_string('hidden','group');
+				else{
+					// this group does not exist anymore
+					// refresh artefact_booklet_group table
+	                delete_records('artefact_booklet_group', 'idgroup', $group->id);
 				}
-				if ($group->jointype=='open'){
-                    if (!empty($msg)) $msg.=', ';
-					//$msg.=get_string('groupopen','artefact.booklet');
-                    $msg.=get_string('membershiptype.abbrev.open','group');
-				}
-				if (!empty($msg)){
-                    $msg = ' [<i>'.$msg.'</i>]';
-				}
-		        $listegroups .=  '<li><b>'.strip_tags($group->name).'</b> '.strip_tags($group->description).$msg.' <a href="'.$linkmembers.'" target="_blank">'.get_string('nmembers','artefact.booklet',$nmembers).'</a> </li>'."\n";
+			}
+			else{
+				// this group does not exist anymore
+				// refresh artefact_booklet_group table
+                delete_records('artefact_booklet_group', 'idgroup', $sgroup->idgroup);
 			}
 		}
         if (!empty($listegroups)){

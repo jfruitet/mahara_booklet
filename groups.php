@@ -24,7 +24,7 @@ $idtome = param_integer('id', null);
 if ($idtome && $tome = get_record('artefact_booklet_tome', 'id', $idtome)){
  	define('TITLE', get_string('groupsmanagement', 'artefact.booklet'));
 
- 	$sql = "SELECT id, name, description, public, jointype, hidden FROM {group} ";
+ 	$sql = "SELECT id, name, description, public, jointype, hidden, deleted FROM {group} ";
     if ($groups = get_records_sql_array($sql, NULL)){
 	    $inlinejs = '';
 		if ($optionsform = getform_groupsselect($idtome, $groups)){
@@ -52,12 +52,6 @@ function getform_groupsselect($idtome, $groups = NULL ) {
     global $THEME;
 	$compositeform = array();
 	$elements = array();
-	$tab_groups_selected = array();
-
-	if (!empty($idtome   )){
-        $tab_groups_selected = get_records_array('artefact_booklet_group', 'idtome', $idtome);
-
-	}
 	if (!empty($groups)){
  			$i=0;
             $elements = array();
