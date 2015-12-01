@@ -1,6 +1,6 @@
 mahara_booklet
 ==============
-Mahara 10.1 and Mahara 10.2
+Mahara 15.04
 
 This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr> (https://github.com/jfruitet/mahara_booklet)
 
@@ -10,6 +10,23 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
  
 ## Modifications by JF
+
+### Mahara 15.04 version
+
+
+#### November 2015
+
+**Version = 2015113001, Release = '1.3.0'**
+
+##### How it differs from Mahara 10.0x versions 
+
+Few obsoletes functions have been removed... 
+ 
+ It seams that the theme architecture has evolved from Mahara 10.x to Mahara 15.4 but you may let all the theme directory stuff in ./artefact/booklet/ directory.
+ 
+ The big change will be for  Mahara 15.10.
+ Stay connnected.
+ 
 
 ### New functionnalities
 
