@@ -4,7 +4,26 @@
 defined('INTERNAL') || die();
 
 // debug
-$string['incorrectbooklettab'] = "Ce livret est bogué...";
+$string['incorrectbooklettab'] = "Ce livret est bogué... Vous avez probablement omis d'enregistrer une première page avant de le visualiser !";
+
+// help
+$string['help'] = "Aide";
+// Groups
+$string['groupmatch'] = "Restriction à des groupes";
+$string['grouprestriction'] = "Restreint aux groupes";
+$string['nogroups'] = "Aucun groupe n'est disponible";
+$string['tomefailed'] = "Aucun livret n'est disponible";
+$string['nogroupmatch'] = "<i>Liste vide</i>";
+$string['grouprestrictionhelp'] = "Cocher pour restreindre l'accès du livret à une liste de groupes";
+$string['groupsmanagement'] = "Sélection des groupes";
+$string['groupsselect'] = "Cochez les groupes à sélectionner";
+$string['groupsselected'] = "Liste des groupes réservés";
+$string['grouperase'] = "Supprimer";
+$string['grouperasedesc'] = "Si cette case est cochée les groupes sélectionnés sont retirés de la restriction";
+$string['grouphidden'] = "Caché";
+$string['groupopen'] = "Ouvert";
+$string['grouppublic'] = "Public";
+$string['nmembers'] = "Membres: %s";
 
 // Included frame
 $string['addsuccessorframe'] = "Ajouter une fiche incluse";
@@ -48,8 +67,8 @@ $string['booklet'] = 'Livret';
 
 //index.php
 $string['modif'] = "Modifier des livrets";
-$string['modifbooklet'] = "Modifier l'architecture de livrets";
-$string['modifbookletdesc'] = "Attention quand vous éditez l'architecture d'un livret car cela peut impacter des données déjà saisies.";
+$string['modifbooklet'] = "Editer les livrets";
+$string['modifbookletdesc'] = "Attention quand vous modifiez un livret car cela peut impacter les données antérieurement saisies.";
 $string['tomechoice'] = "Choisir le livret à utiliser : ";
 $string['bookletsaved'] = "Livret sauvé";
 
@@ -233,7 +252,13 @@ $string['editskills'] = "Edition de compétences";
 $string['skillstitle'] = "Domaine :: Code";
 $string['selecteditskills'] = "Sélectionnez des compétences à éditer ou supprimer";
 $string['non_pertinent'] = "Non pertinent";
+$string['mandatoryscale'] = "Barème recommandé";
+$string['mandatoryscaledesc'] = "Ce barème s'impose pour toutes les compétences ajoutées";
+$string['mandatoryvalue'] = "Barème imposé";
+$string['mandatoryvaluedesc'] = "L'utilisateur ne peut en changer";
+$string['mandatorythreshold'] = "Seuil imposé";
 
+// Frames from skills
 $string['selectskillsfromframes'] = "Sélectionner les compétences à retrouver dans les Fiches";
 $string['selectskillsfromframesdesc'] = "Fiches associées à des compétences";
 
@@ -244,7 +269,7 @@ $string['title'] = "Titre de l'objet";
 $string['selectframe'] = "Sélectionner cette fiche";
 $string['skillframe'] = "Association Compétences / Fiches.";
 $string['skillframesavefailed'] = "Echec à la sauvegarde. Il y a des données manquantes.";
-$string['skillframedoesnotexist'] = "Cette association Compétence/Fiche n'existe pas";
+$string['skillframedoesnotexist'] = "Cette association Compétence / Fiche n'existe pas";
 $string['skills_research'] = "Compétences recherchées";
 $string['skills_frame'] = "Fiche sélectionnée (générée le %s)";
 
@@ -256,3 +281,6 @@ $string['checkedfordelete'] ="Cocher pour supprimer";
 $string['checkedfordeletedesc'] ="N.B. : Seule la sélection sera supprimée et non la fiche elle-même... mais cela peut impacter les portfolios déjà enregistrés.";
 $string['deleteframe'] ="Supprimer les enregistrements sélectionnés";
 $string['framesfromskills'] = "Compétences liées à des fiches";
+
+$string['tometitle'] = "Livret : ";
+$string['tabtitle'] = "Page : ";

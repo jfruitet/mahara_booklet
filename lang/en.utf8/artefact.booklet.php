@@ -12,7 +12,24 @@
 defined('INTERNAL') || die();
 
 // debug
-$string['incorrectbooklettab'] = "This booklet is bugged";
+$string['incorrectbooklettab'] = "This booklet is bugged. Have you thought to save it ?";
+
+// help
+$string['help'] = "Help";
+
+// Groups
+$string['groupmatch'] = "Group restriction";
+$string['nogroupmatch'] = "Not any group selected";
+$string['grouprestrictionhelp'] = "Check for restrict this booklet to a list of groups";
+$string['groupsmanagement'] = "Groups Selection";
+$string['groupsselect'] = "Check groups to select";
+$string['groupsselected'] = "This Booklet is restricted to these groups: ";
+$string['grouperase'] = "Delete";
+$string['grouperasedesc'] = "If checked groups selected are not restricted to this Booklet";
+$string['grouphidden'] = "Hidden";
+$string['groupopen'] = "Open";
+$string['grouppublic'] = "Public";
+
 
 // Included frame
 $string['included'] = "Included frame";

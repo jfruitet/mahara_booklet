@@ -1,6 +1,6 @@
 mahara_booklet
 ==============
-Mahara 10.1 and Mahara 10.2
+Mahara 15.10
 
 This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr> (https://github.com/jfruitet/mahara_booklet)
 
@@ -11,7 +11,54 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
  
 ## Modifications by JF
 
+### Mahara 15.10 version
+
+#### December 2015
+
+**Version = 2015113001, Release = '1.3.0'**
+
+##### How it differs from Mahara 15.04 versions 
+
+Few minor correction and a big one :
+ - Mahara now supports Responsive Design.
+ - The theme architecture has evolved from Mahara 15.04 to Mahara 15.10
+
+You have now to copy all the ./artefact/booklet/theme directory stuff in ./theme/raw/plugintype/artefact/booklet/ directory.
+
+Then you may delete the ./artefact/booklet/theme directory
+
+Sorry for the inconvenience.
+
+ ### Mahara 15.04 version
+
+
+#### November 2015
+
+**Version = 2015113001, Release = '1.3.0'**
+
+##### How it differs from Mahara 10.0x versions 
+
+Few obsoletes functions have been removed... 
+ 
+ It seams that the theme architecture has evolved from Mahara 10.x to Mahara 15.4 but you may let all the theme directory stuff in ./artefact/booklet/ directory.
+ 
+ The big change will be for  Mahara 15.10.
+ Stay connnected.
+ 
+
 ### New functionnalities
+
+
+#### September 2015
+
+**Version 2015091901 Release = 1.2.8 - 2015-09-19**
+
+##### Group management
+
+La disponibilité d'un livret peut être restreinte à une liste de groupes.  
+
+The availability of a booklet can be restricted to a list of groups.
+
 
 #### April 2015
 
@@ -21,7 +68,7 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 L'utilisateur peut sélectionner une liste de fiches à partir d'une liste de compétences. Toutes les fiches qui remplissent le critère de recherche sont affichées. 
 
-C'est une façon de collecter les fiches qui témoignent de cette liste de compétences. Cette liste de fiches peut être ensuite intégrée dans un portfolio (booklet/skillframe : Blocktype "Une rubrique de compétences").
+C'est une façon de collecter les fiches qui témoignent de ces de compétences. Cette liste de fiches peut être ensuite intégrée dans un portfolio (booklet/skillframe : Blocktype "Une rubrique de compétences").
 
 User may select a list of frames by the way of a list of skills. All frames that match de selection criteria will be displayed. 
 
