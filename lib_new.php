@@ -63,6 +63,7 @@ class PluginArtefactbooklet extends PluginArtefact {
 
 }
 
+
 class ArtefactTypebooklet extends ArtefactType {
     /* classe pour fonctions JS communes */
 
@@ -114,8 +115,8 @@ class ArtefactTypebooklet extends ArtefactType {
 
     public static function get_js($compositetype, $id = null) {
         global $THEME;
-        $imagemoveblockup   = json_encode($THEME->get_url('images/btn_moveup.png'));
-        $imagemoveblockdown = json_encode($THEME->get_url('images/btn_movedown.png'));
+        $imagemoveblockup   = json_encode($THEME->get_url('images/btn_moveup.png', false, 'artefact/booklet'));
+        $imagemoveblockdown = json_encode($THEME->get_url('images/btn_movedown.png', false, 'artefact/booklet'));
         $imageincluded = json_encode($THEME->get_url('images/btn_included.png', false, 'artefact/booklet'));
         $imageempty = json_encode($THEME->get_url('images/btn_empty.png', false, 'artefact/booklet'));
         $imagenode = json_encode($THEME->get_url('images/btn_node.png', false, 'artefact/booklet'));
@@ -365,18 +366,29 @@ class ArtefactTypeTome extends ArtefactTypebooklet {
  */
 
     public static function get_editdel_js() {
-        $image = get_config('wwwroot') . 'theme/raw/static/images/btn_export.png';
-        $imageinfo  = get_config('wwwroot') . 'theme/raw/static/images/btn_info.png';
-        $editstr = get_string('edit','artefact.booklet');
+		global $THEME;
+        // $imageexport = get_config('wwwroot') . 'theme/raw/static/images/btn_export.png';
+        // $imageexport = get_config('wwwroot') . 'theme/raw/plugintype/artefact/booklet/images/btn_export.png';
+        $imageexport = $THEME->get_url('images/btn_export.png', false, 'artefact/booklet');
+        // $imageinfo  = get_config('wwwroot') . 'theme/raw/static/images/btn_info.png';
+        // $imageinfo  = get_config('wwwroot') . 'theme/raw/plugintype/artefact/booklet/images/btn_info.png';
+        $imageinfo  = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        // $imageedit  = get_config('wwwroot') . 'theme/raw/plugintype/artefact/booklet/images/btn_edit.png';
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+		// $imagedeleteremove  = get_config('wwwroot') . 'theme/raw/plugintype/artefact/booklet/images/btn_deleteremove.png';
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+
+		$editstr = get_string('edit','artefact.booklet');
         $copyrightstr = get_string('copyright','artefact.booklet');
 		$exportstr = get_string('export','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
-        $js = <<<EOF
+
+		$js = <<<EOF
           function (r, d) {
          	var copyrightlink = A({'href': 'copyright.php?id=' + r.id, 'title': '{$copyrightstr}'}, IMG({'src': '{$imageinfo}', 'alt':'{$copyrightstr}'}));
-    		var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-            var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$image}', 'alt':'{$exportstr}'}));
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+    		var editlink = A({'href': 'tabs.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': '{$imageedit}', 'alt':'{$editstr}'}));
+            var exportlink = A({'href': 'exportxmltome.php?id=' + r.id, 'title': '{$exportstr}'}, IMG({'src': '{$imageexport}', 'alt':'{$exportstr}'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -477,7 +489,20 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
     public static function get_form_status($idtome) {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
 		// Gestion des groupes
-		$listegroupes=get_groups_tome($idtome);
+		$listegroupes='';
+   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
+				// DEBUG
+				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
+				//print_object ($groupsselected);
+				//exit;
+				foreach ($groupsselected as $sgroup){
+					$params=array('id' => $sgroup->idgroup);
+                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
+    				if ($agroup = get_records_sql_array($sql, $params)){
+                        $listegroupes.=$agroup->id.':'.$agroup->name.', ';
+					}
+				}
+		}
 
 		$tabform = pieform(array(
             'name'        => 'tabform',
@@ -501,11 +526,6 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
                     'type' => 'html',
                     'title' => get_string('statusmodif', 'artefact.booklet'),
                     'value' =>  ((!empty($tome)) ? ((!empty($tome->status)) ? '<i>'.get_string('forbidden', 'artefact.booklet').'</i>' : '<i>'.get_string('allowed', 'artefact.booklet').'</i>')  : '</i>'.get_string('allowed', 'artefact.booklet').'</i>'),
-                ),
-				'msg4' => array(
-                    'type' => 'html',
-                    'title' => get_string('grouprestriction', 'artefact.booklet'),
-                    'value' =>  ((!empty($listegroupes)) ? '<i>'.$listegroupes.'</i>'  : ''),
                 ),
 
                 'public' => array(
@@ -572,6 +592,19 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
         $tome = get_record('artefact_booklet_tome', 'id', $idtome);
 		// Gestion des groupes
 		$listegroupes=get_groups_tome($idtome);
+   		if ($groupsselected = get_records_array('artefact_booklet_group', 'idtome', $idtome)){
+				// DEBUG
+				//echo "<br />GROUPSELECTEDS for Tome $idtome<br />\n";
+				//print_object ($groupsselected);
+				//exit;
+				foreach ($groupsselected as $sgroup){
+					$params=array('id' => $sgroup->idgroup);
+                    $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
+    				if ($agroup = get_record_sql($sql, $params)){
+                        $listegroupes.=$agroup->name.' (ID:'.$agroup->id.') ';
+					}
+				}
+		}
 
 		if (!empty($listegroupes)){
 			$msggrp= array(
@@ -713,12 +746,19 @@ class ArtefactTypeTab extends ArtefactTypebooklet {
     }
 
     public static function get_editdel_js() {
-        $editstr = get_string('edit','artefact.booklet');
+		global $THEME;
+        $imageexport = $THEME->get_url('images/btn_export.png', false, 'artefact/booklet');
+        $imageinfo  = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+
+		$editstr = get_string('edit','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
+
         $js = <<<EOF
           function (r, d) {
-            var editlink = A({'href': 'frames.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var editlink = A({'href': 'frames.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': '{$imageedit}', 'alt':'{$editstr}'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -896,12 +936,16 @@ class ArtefactTypeFrame extends ArtefactTypebooklet {
     }
 
     public static function get_editdel_js() {
+		global $THEME;
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
         $editstr = get_string('edit','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
+
         $js = <<<EOF
           function (r, d) {
-            var editlink = A({'href': 'objects.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-            var dellink = A({'href': 'frames.php?id=' + r.id, 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var editlink = A({'href': 'objects.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': '{$imageedit}', 'alt':'{$editstr}'}));
+            var dellink = A({'href': 'frames.php?id=' + r.id, 'title': '{$delstr}'}, IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -1460,12 +1504,17 @@ class ArtefactTypeObject extends ArtefactTypebooklet {
     }
 
     public static function get_editdel_js() {
+		global $THEME;
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+
         $editstr = get_string('edit','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
+
         $js = <<<EOF
           function (r, d) {
-            var editlink = A({'href': 'options.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var editlink = A({'href': 'options.php?id=' + r.id, 'title': '{$editstr}'}, IMG({'src': '{$imageedit}', 'alt':'{$editstr}'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -1576,10 +1625,13 @@ class ArtefactTypeListSkills extends ArtefactTypebooklet {
     }
 
     public static function get_editdel_js() {
+    	global $THEME;
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
         $delstr = get_string('del','artefact.booklet');
+
         $js = <<<EOF
           function (r, d) {
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -1956,8 +2008,8 @@ EOF;
             'plugintype'  => 'artefact',
             'pluginname'  => 'booklet',
             'successcallback' => 'visualizetome_submit',
-            'method'      => 'post',
-            'renderer'      => 'table',
+            'method' => 'post',
+            'renderer' => 'table',
             'elements'    => array(
                 'save' => array(
                     'type' => 'submit',
@@ -2276,10 +2328,13 @@ class ArtefactTypeOption extends ArtefactTypebooklet {
     /* classe pour pieforms et fonctions JS propres a une option */
     public static function is_singular() { return true; }
     public static function get_editdel_js() {
+		global $THEME;
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
         $delstr = get_string('del','artefact.booklet');
+
         $js = <<<EOF
           function (r, d) {
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id);
@@ -2346,7 +2401,7 @@ EOF;
                     'rows' => 20,
                     'cols' => 60,
                     'title' => get_string('helpobject', 'artefact.booklet'),
-                        'defaultvalue' => ((!empty($object)) ? $object->help : NULL),
+                    'defaultvalue' => ((!empty($object)) ? $object->help : NULL),
                 ),
                 'mandatoryscale' => array(
                     'type' => 'text',
@@ -2424,7 +2479,7 @@ EOF;
                     'rows' => 20,
                     'cols' => 60,
                     'title' => get_string('helpobject', 'artefact.booklet'),
-                        'defaultvalue' => ((!empty($object)) ? $object->help : NULL),
+                    'defaultvalue' => ((!empty($object)) ? $object->help : NULL),
                 ),
                 'submit' => array(
                     'type' => 'submitcancel',
@@ -5531,19 +5586,24 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
     public static function get_aframeform($idtome, $idtab, $idframe, $idmodifliste = null, $browse) {
         // idmodifliste est l'index dans artefact_booklet_resulttext
         global $USER;
-		// Modif JF
 		global $THEME;
-        $addstr = get_string('add','artefact.booklet');
-        $imageadd = $THEME->get_url('images/btn_add.png');
-        $editstr = get_string('edit','artefact.booklet');
-        $editallstr = get_string('editall','artefact.booklet');
-        $imageedit = $THEME->get_url('images/btn_edit.png');
-		$showstr = get_string('show','artefact.booklet');
-		$showallstr = get_string('showall','artefact.booklet');
-        $imageshow = $THEME->get_url('images/btn_info.png');
-		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
+        $imageexport = $THEME->get_url('images/btn_export.png', false, 'artefact/booklet');
+        $imageinfo  = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+        $imageadd = $THEME->get_url('images/btn_add.png', false, 'artefact/booklet');
+        $imageshow = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
         $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $imagehelp = $THEME->get_url('images/help.png', false, 'artefact/booklet');
+
+
+        $addstr = get_string('add','artefact.booklet');
+        $editstr = get_string('edit','artefact.booklet');
+        $editallstr = get_string('editall','artefact.booklet');
+		$showstr = get_string('show','artefact.booklet');
+		$showallstr = get_string('showall','artefact.booklet');
+		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
 		$showlink  = array();
@@ -5603,7 +5663,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
 					if ( !$frame->list){
 					   	$elements['showedit'] = array(
 							'type' => 'html',
-							'title' => '',
+							'title' => $frame->title,
 							'value' =>  '<div class="right">
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=1&idframe='.$idframe.'"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a>
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>
@@ -6092,7 +6152,6 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
     	                } // fin de foreach objects
         	        }
 
-
 					if (count($components) != 0 && $notframelist) {
                 	    $elements['idtab'] = array(
 	                        'type' => 'hidden',
@@ -6113,7 +6172,7 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
         	            $elements[$frame->id] = array(
             	            'type' => 'fieldset',
                 	        'legend' => $frame->title,
-                    	    'help' => ($frame->help != null),
+                    	    'help' => $frame->help,
                         	'elements' => $components
 	                    );
 
@@ -6153,6 +6212,8 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
             	        $elements = $components;
                 	}
 
+					//print_object (  $elements               );
+					//exit;
                 	$pf = pieform(array(
 	                    'name'        => 'pieform'.$frame->id,
     	                'plugintype'  => 'artefact',
@@ -6230,12 +6291,11 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
 						}
 						*/
 
+                        $aide = null;
     	                if ($frame->help != null) {
-        	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
+        	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.$imagehelp.'" alt="'.get_string('help','artefact.booklet').'" title="'.get_string('help','artefact.booklet').'"></a></span>';
             	        }
-                	    else {
-                    	    $aide = null;
-	                    }
+
 
 // afficher les boutons alternant affichage et edition
 $alink1 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe='.$idframe.'&tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showstr.'" title="'.$showstr.'" /></a>';
@@ -6264,7 +6324,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 
 
         	        }
-            	    $bookletform[$frame->title] = $pf;
+            	    $bookletform["content"] = $pf;
             	} // fin de frame
 	        //} // fin de foreach frames
 		//}
@@ -6278,12 +6338,20 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
         // idmodifliste est l'index dans artefact_booklet_resulttext
         global $USER, $THEME;
         $editstr = get_string('edit','artefact.booklet');
-        $imageedit = $THEME->get_url('images/btn_edit.png');
+        $imageedit = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
 		$showallstr = get_string('showall','artefact.booklet');
-        $imageshow = $THEME->get_url('images/btn_info.png');
+        $imageshow = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
         $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
+
+        $addstr = get_string('add','artefact.booklet');
+        $editstr = get_string('edit','artefact.booklet');
+        $editallstr = get_string('editall','artefact.booklet');
+		$showstr = get_string('show','artefact.booklet');
+		$showallstr = get_string('showall','artefact.booklet');
+		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
         require_once(get_config('libroot') . 'pieforms/pieform.php');
@@ -6329,7 +6397,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 				// afficher le bouton alternant affichage et edition
                    	$elements['showedit'] = array(
 						'type' => 'html',
-						'title' => '',
+						'title' => $frame->title,
 						'value' =>  '<div class="right">
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0&idframe='.$idframe.'"><img src="'.$imageedit.'" alt="'.$editstr.'" title="'.$editstr.'" /></a>
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showallstr.'" title="'.$showallstr.'" /></a>
@@ -6344,7 +6412,9 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 
    	                	foreach ($objects as $object) {
        	                	$help = ($object->help != null);
-
+							if (!isset($object->help->title)){
+                                $object->help->title = get_string("help","artefact.booklet");
+							}
     	       	            if ($object->type == 'longtext') {
                	            	$val = null;
                        	        // ce n'est pas une liste : rechercher le contenu du champ texte
@@ -7292,78 +7362,81 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
         	       		$components['framelist' . $frame->id] = array(
 					       	'type' => 'html',
 							'help' => '',
-					        'title' => '',
+					        'title' => $frame->title,
     	   	   	    		'value' => $rslt,
 						);
 					} // Fin de Objectlist
                 } // Fin de if List
+
+				if (count($components) != 0 && $notframelist) {
+     	        	   	$elements['idtab'] = array(
+    	            	'type' => 'hidden',
+        	       	    'value' => $idtab
+	        	   	);
+			        $elements['idtome'] = array(
+    			       	'type' => 'hidden',
+        		        'value' => $idtome
+            	    );
+		        	$elements['list'] = array(
+	    		      	'type' => 'hidden',
+    	    	        'value' => false
+        	        );
+            	   	$elements[$frame->id] = array(
+	           		    'type' => 'fieldset',
+	           	    	'legend' => $frame->title,
+			            'help' => ($frame->help != null),
+                        'title' => get_string("help","artefact.booklet"),
+    			      	'elements' => $components
+        		    );
+        		}
+
+        		if (count($components) != 0 && $frame->list) {
+					$elements['idtab'] = array(
+						'type' => 'hidden',
+	                	'value' => $idtab
+					);
+
+					$elements['idrecord'] = array(
+						'type' => 'hidden',
+                		'value' => $idrecord,
+					);
+
+			        $elements['idtome'] = array(
+    			    	'type' => 'hidden',
+        		        'value' => $idtome
+            		);
+			        $elements['list'] = array(
+    			    	'type' => 'hidden',
+        		        'value' => true
+            		);
+                	$elements[$frame->id] = array(
+		            	'type' => 'fieldset',
+		            	'legend' => $frame->title,
+			            'help' => ($frame->help != null),
+                        'title' => get_string("help","artefact.booklet"),
+    			        'elements' => $components,
+					);
+				}
+
+				$pf = pieform(array(
+        	    	'name'        => 'pieform'.$frame->id,
+					'title'       => 'pieform'.$frame->title,
+	            	'plugintype'  => 'artefact',
+		            'pluginname'  => 'booklet',
+			        'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
+				    'method'      => 'post',
+    	    		'renderer'    => 'table',
+	        	    'successcallback' => '',
+    	        	'elements'    => $elements,
+	    	        'autofocus'   => false,
+				));
+       			//$bookletform[$frame->title] = $pf;
+                $bookletform["content"] = $pf;
 			} // Fin de if Frame
-		}   // Fin de if frameid
 
-		if (count($components) != 0 && $notframelist) {
-        	   	$elements['idtab'] = array(
-                	'type' => 'hidden',
-               	    'value' => $idtab
-	           	);
-		        $elements['idtome'] = array(
-    		       	'type' => 'hidden',
-        	        'value' => $idtome
-                );
-		        $elements['list'] = array(
-    		      	'type' => 'hidden',
-        	        'value' => false
-                );
-               	$elements[$frame->id] = array(
-	           	    'type' => 'fieldset',
-	           	    'legend' => $frame->title,
-		            'help' => ($frame->help != null),
-    		      	'elements' => $components
-        	    );
-        }
+		}   // Fin de if idframe
 
-        if (count($components) != 0 && $frame->list) {
-				$elements['idtab'] = array(
-					'type' => 'hidden',
-                	'value' => $idtab
-				);
-
-				$elements['idrecord'] = array(
-					'type' => 'hidden',
-                	'value' => $idrecord,
-				);
-
-		        $elements['idtome'] = array(
-    		    	'type' => 'hidden',
-        	        'value' => $idtome
-            	);
-		        $elements['list'] = array(
-    		    	'type' => 'hidden',
-        	        'value' => true
-            	);
-                $elements[$frame->id] = array(
-	            	'type' => 'fieldset',
-	            	'legend' => $frame->title,
-		            'help' => ($frame->help != null),
-    		        'elements' => $components
-
-				);
-		}
-
-
-   	    $pf = pieform(array(
-        	    'name'        => 'pieform'.$frame->id,
-            	'plugintype'  => 'artefact',
-	            'pluginname'  => 'booklet',
-		        'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
-			    'method'      => 'post',
-    	    	'renderer'    => 'table',
-        	    'successcallback' => '',
-            	'elements'    => $elements,
-	            'autofocus'   => false,
-		));
-       	$bookletform[$frame->title] = $pf;
-
-        return $bookletform;
+    	return $bookletform;
     }
     // fin de get_aframeform_display
 
@@ -7382,14 +7455,22 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
         global $USER, $THEME;
         $editstr = get_string('edit','artefact.booklet');
         $editallstr = get_string('editall','artefact.booklet');
-        $imageedit = $THEME->get_url('images/btn_edit.png');
+        $imageedit = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
 		$showallstr = get_string('showall','artefact.booklet');
-        $imageshow = $THEME->get_url('images/btn_info.png');
+        $imageshow = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
 		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
         $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
         $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
+
+        $addstr = get_string('add','artefact.booklet');
+        $editstr = get_string('edit','artefact.booklet');
+        $editallstr = get_string('editall','artefact.booklet');
+		$showstr = get_string('show','artefact.booklet');
+		$showallstr = get_string('showall','artefact.booklet');
+		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
         require_once(get_config('libroot') . 'pieforms/pieform.php');
         if (!is_null($idmodifliste)) {
@@ -7443,26 +7524,29 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
        	        	$objmodifotherframe = $objmodif && ($objmodif->idframe != $frame->id);  // frame liste  mais n'est pas celle qui est modifiee
 	                $itementete = null; // titre entete de liste
 
-				// afficher le bouton alternant affichage et edition
-   				if ($drapeau){  // afficher le bouton
-                   	$elements['showedit'] = array(
-						'type' => 'html',
-						'title' => '',
-						'value' =>  '<div class="right">
+					// afficher le bouton alternant affichage et edition
+   					if ($drapeau){  // afficher le bouton
+                   		$elements['showedit'] = array(
+							'type' => 'html',
+							'title' => $frame->title,
+							'value' =>  '<div class="right">
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showallstr.'" title="'.$showallstr.'" /></a>
 </div>',
-					);
-					$drapeau=false;
-				}
+						);
+						$drapeau=false;
+					}
 
                 	if ($notframelist) { // ce n'est pas une liste
                     	if($objects = get_records_array('artefact_booklet_object', 'idframe', $frame->id, 'displayorder')){
 		               		// liste des objets du frame ordonnes par displayorder
 
    	                		foreach ($objects as $object) {
-	       	                	$help = ($object->help != null);
-
+	       	                	if ($help = ($object->help != null)){
+									if (!isset($object->help->title)){
+										$object->help->title = get_string("help","artefact.booklet");
+									}
+								}
     		       	            if ($object->type == 'longtext') {
         	       	            	$val = null;
             	           	        // ce n'est pas une liste : rechercher le contenu du champ texte
@@ -7471,10 +7555,10 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 										$val = $vals[0];
 	                        	    }
 							   		$components['lt' . $object->id] =  array(
-                           	       	'type' => 'html',
-                            	   	'title' => $object->title,
-	                               	'help' => $help,
-    	                            'value' => ((!empty($val)) ? $val->value : NULL),
+                	           	       	'type' => 'html',
+                    	        	   	'title' => $object->title,
+	                    	           	'help' => $help,
+    	                    	        'value' => ((!empty($val)) ? $val->value : NULL),
 	   	    	                    );
 					        	}
         	       	        	else if ($object->type == 'area') {
@@ -8385,17 +8469,15 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 						}
 
 						$rslt .= "\n</table>\n ";
-        	       		$components['framelist' . $frame->id] = array(
-					       	'type' => 'html',
-							'help' => '',
-					        'title' => '',
-    	   	   	    		'value' => $rslt,
-						);
-					} // Fin de Objectlist
-                } // Fin de if List
+        	       			$components['framelist' . $frame->id] = array(
+					       		'type' => 'html',
+								'help' => $frame->title,
+    	   	   	    			'value' => $rslt,
+							);
+						} // Fin de Objectlist
+                	} // Fin de if List
 
-
-					if (count($components) != 0 && $notframelist) {
+  					if (count($components) != 0 && $notframelist) {
 		        	   	$elements['idtab'] = array(
         	        	'type' => 'hidden',
             	   	    'value' => $idtab
@@ -8412,50 +8494,60 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 	    	       	    'type' => 'fieldset',
 	        	   	    'legend' => $frame->title,
 		        	    'help' => ($frame->help != null),
+                        'title' => get_string("help","artefact.booklet"),
     		      		'elements' => $components
 	        		    );
     	   			}
 
         			if (count($components) != 0 && $frame->list) {
 						$elements['idtab'] = array(
-						'type' => 'hidden',
-    	            	'value' => $idtab
+							'type' => 'hidden',
+    	            		'value' => $idtab
 						);
-				        $elements['idtome'] = array(
-    		    		'type' => 'hidden',
-        	        	'value' => $idtome
-		            	);
-				        $elements['list'] = array(
-    			    	'type' => 'hidden',
-        		        'value' => true
-        	    	);
 
-				    $elements[$frame->id] = array(
-	            	'type' => 'fieldset',
-	            	'legend' => $frame->title,
-		            'help' => ($frame->help != null),
-    		        'elements' => $components
+				    	$elements['idtome'] = array(
+    		    			'type' => 'hidden',
+        	        		'value' => $idtome
+						);
+					    $elements['list'] = array(
+    				    	'type' => 'hidden',
+        			        'value' => true
+    	    	    	);
 
-					);
-				}
+					    $elements[$frame->id] = array(
+	            			'type' => 'fieldset',
+		            		'legend' => $frame->title,
+			            	'help' => $help,
+							'title' => get_string("help","artefact.booklet"),
+	    			        'elements' => $components
+						);
+					}
 
 
-   	   			$pf = pieform(array(
-        	    'name'        => 'pieform'.$frame->id,
-            	'plugintype'  => 'artefact',
-	            'pluginname'  => 'booklet',
-		        'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
-			    'method'      => 'post',
-    	    	'renderer'    => 'table',
-        	    'successcallback' => '',
-            	'elements'    => $elements,
-	            'autofocus'   => false,
-				));
-       			$bookletform[$frame->title] = $pf;
+   	   				$pf = pieform(array(
+		        	    'name'        => 'pieform'.$frame->id,
+						'title'       => 'pieform'.$frame->title,
+        		    	'plugintype'  => 'artefact',
+	            		'pluginname'  => 'booklet',
+				        'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
+					    'method'      => 'post',
+    	    			'renderer'    => 'table',
+		        	    'successcallback' => '',
+        		    	'elements'    => $elements,
+	            		'autofocus'   => false,
+					));
+
+					//echo "<br />DEBUG : ID FRAME : $key<br />FRAME : <br />\n";
+					//print_object($frame);
+                    //echo "<br />\n";
+					//exit;
+					$bookletform["content"] = $pf;
 					// ***************************************
 	            } // fin de foreach frames
 			}
 		}
+        //print_object($bookletform);
+		//exit;
         return $bookletform;
     }
     // fin de get_form_display
@@ -8471,15 +8563,23 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
     public static function get_form($idtome, $idtab, $idmodifliste = null, $browse) {
         // idmodifliste est l'index dans artefact_booklet_resulttext
         global $USER;
-		// Modif JF
 		global $THEME;
-        $editallstr = get_string('editall','artefact.booklet');
-        $imageedit = $THEME->get_url('images/btn_edit.png');
-		$showallstr = get_string('showall','artefact.booklet');
-        $imageshow = $THEME->get_url('images/btn_info.png');
-		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
+        $imageexport = $THEME->get_url('images/btn_export.png', false, 'artefact/booklet');
+        $imageinfo  = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+        $imageadd = $THEME->get_url('images/btn_add.png', false, 'artefact/booklet');
+        $imageshow = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
         $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
         $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $imagehelp = $THEME->get_url('images/help.png', false, 'artefact/booklet');
+
+        $addstr = get_string('add','artefact.booklet');
+        $editstr = get_string('edit','artefact.booklet');
+        $editallstr = get_string('editall','artefact.booklet');
+		$showstr = get_string('show','artefact.booklet');
+		$showallstr = get_string('showall','artefact.booklet');
+		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
         $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
 
 		// Astuce pour forcer l'affichage
@@ -8525,7 +8625,6 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 				if ($frame = get_record('artefact_booklet_frame', 'id', $key)){
                 	$components = array();
                 	$elements = null;
-                	$components = null;
                 	$pf = null;
                 	// Quatre conditions exclusives
 	                $notframelist = !$frame->list;
@@ -8537,7 +8636,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
    					if ($drapeau){  // afficher le bouton
                 	   	$elements['showedit'] = array(
 							'type' => 'html',
-							'title' => '',
+							'title' => $frame->title,
 							'value' =>  '<div class="right">
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=1"><img src="'.$imageshow.'" alt="'.$showallstr.'" title="'.$showallstr.'" /></a>
 <a href="'.get_config('wwwroot').'/artefact/booklet/index.php?tab='.$idtab.'&okdisplay=0"><img src="'.$imageedit.'" alt="'.$editallstr.'" title="'.$editallstr.'" /></a>
@@ -8552,7 +8651,8 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
             	    // liste des objets du frame ordonnes par displayorder
                 	if ($objects) {
 	            	    foreach ($objects as $object) {
-	            	        $help = ($object->help != null);
+                   			$help = ($object->help != null);
+
 	            	        if ($object->type == 'longtext') {
 								$val = null;
 	            	            if ($notframelist) {
@@ -9033,7 +9133,6 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
     	                } // fin de foreach objects
         	        }
 
-
 					if (count($components) != 0 && $notframelist) {
                 	    $elements['idtab'] = array(
 	                        'type' => 'hidden',
@@ -9055,6 +9154,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
             	            'type' => 'fieldset',
                 	        'legend' => $frame->title,
                     	    'help' => ($frame->help != null),
+                            'title' => get_string("help","artefact.booklet"),
                         	'elements' => $components
 	                    );
     	            }
@@ -9093,6 +9193,9 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
             	        $elements = $components;
                 	}
 
+
+
+
                 	$pf = pieform(array(
 	                    'name'        => 'pieform'.$frame->id,
     	                'plugintype'  => 'artefact',
@@ -9104,6 +9207,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
     	                'elements'    => $elements,
                     	'autofocus'   => false,
                	 	));
+
         	        if ($frame->list) {
             	        if ($framelistnomodif) {
                 	        $pf = "<div id='pieform".$frame->id."form' class='hidden'>". $pf. "</div>" .
@@ -9141,11 +9245,12 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                         	$item = get_record_sql($sql, array($frame->id, $frame->id));
 	                    }
     	                if ($frame->help != null) {
-        	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
+        	                $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$frame->id.'&quot;,&quot;'.$frame->id.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.$imagehelp.'" alt="'.get_string("help","artefact.booklet").'" title="'.get_string("help","artefact.booklet").'"></a></span>';
             	        }
                 	    else {
                     	    $aide = null;
 	                    }
+
     	                $pf = '<fieldset class="pieform-fieldset"><legend>' . $frame->title . ' ' . $aide . '</legend>
                            <table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
                                <thead>
@@ -9166,7 +9271,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                            ' . $pf . '
                            </fieldset>';
         	        }
-            	    $bookletform[$frame->title] = $pf;
+            	    $bookletform["content"] = $pf;
             	} // fin de frame
 	        } // fin de foreach frames
 		}
@@ -9187,17 +9292,35 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 
     public static function get_artefacttype_js($compositetype, $id, $tab) {
         // genere les fonctions js pour une frame
-        global $THEME;
-        $imagemoveblockup = json_encode($THEME->get_url('images/btn_moveup.png'));
-        $imagemoveblockdown = json_encode($THEME->get_url('images/btn_movedown.png'));
-        $upstr = get_string('moveup','artefact.booklet');
-        $downstr = get_string('movedown','artefact.booklet');
+		global $THEME;
+        $imageexport = $THEME->get_url('images/btn_export.png', false, 'artefact/booklet');
+        $imageinfo  = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        $imageedit  = $THEME->get_url('images/btn_edit.png', false, 'artefact/booklet');
+        $imagedeleteremove  = $THEME->get_url('images/btn_deleteremove.png', false, 'artefact/booklet');
+        $imageadd = $THEME->get_url('images/btn_add.png', false, 'artefact/booklet');
+        $imageshow = $THEME->get_url('images/btn_info.png', false, 'artefact/booklet');
+        $imagelinked = $THEME->get_url('images/btn_show.png', false, 'artefact/booklet');
+        $imageaddfreeskills = $THEME->get_url('images/btn_check.png', false, 'artefact/booklet');
+        $imagehelp = $THEME->get_url('images/help.png', false, 'artefact/booklet');
+        $imagemoveblockup = $THEME->get_url('images/btn_moveup.png', false, 'artefact/booklet');
+        $imagemoveblockdown = $THEME->get_url('images/btn_movedown.png', false, 'artefact/booklet');
+
+        $addstr = get_string('add','artefact.booklet');
         $editstr = get_string('edit','artefact.booklet');
+        $editallstr = get_string('editall','artefact.booklet');
+		$showstr = get_string('show','artefact.booklet');
+		$showallstr = get_string('showall','artefact.booklet');
+		$objectlinkedstr = get_string('objectlinked','artefact.booklet');
+        $addfreeskillsstr = get_string('addfreeskills','artefact.booklet');
+		$upstr = get_string('moveup','artefact.booklet');
+        $downstr = get_string('movedown','artefact.booklet');
         $delstr = get_string('del','artefact.booklet');
 
+        $imagemoveblockup = json_encode($imagemoveblockup);
+        $imagemoveblockdown = json_encode($imagemoveblockdown);
+
         // Modif JF
-        $showstr = get_string('show','artefact.booklet');
-        $imageshow = json_encode($THEME->get_url('images/btn_info.png'));
+        $imageshow = json_encode($imageshow);
 
         $js = <<<EOF
 tableRenderers.{$compositetype}{$id} = new TableRenderer(
@@ -9234,8 +9357,8 @@ EOF;
 			// Modif JF
 			// http://localhost/mahara101//artefact/booklet/index.php?tab=1&idframe=230
 			var showlink = A({'href': 'index.php?tab={$tab}&idframe=' + d.id + '&okdisplay=1&idmodifliste=' + r.id, 'title': '{$showstr}'}, IMG({'src': {$imageshow}, 'alt':'{$showstr}'}));
-            var editlink = A({'href': 'index.php?tab={$tab}&idframe=' + d.id + '&okdisplay=0&idmodifliste=' + r.id, 'title': '{$editstr}'}, IMG({'src': config.theme['images/btn_edit.png'], 'alt':'{$editstr}'}));
-            var dellink = A({'href': '', 'title': '{$delstr}'}, IMG({'src': config.theme['images/btn_deleteremove.png'], 'alt': '[x]'}));
+            var editlink = A({'href': 'index.php?tab={$tab}&idframe=' + d.id + '&okdisplay=0&idmodifliste=' + r.id, 'title': '{$editstr}'}, IMG({'src': {$imageedit}, 'alt':'{$editstr}'}));
+            var dellink = A({'href': '', 'title': '{$delstr}'}, IIMG({'src': '{$imagedeleteremove}', 'alt': '[x]'}));
             connect(dellink, 'onclick', function (e) {
                 e.stop();
                 return deleteComposite(d.type, r.id, d.id);
@@ -9261,6 +9384,7 @@ EOF;
         $cancelstr = get_string('cancel','artefact.booklet');
         $addstr = get_string('add','artefact.booklet');
         $confirmdelstr = get_string('compositedeleteconfirm','artefact.booklet');
+
         $js = <<<EOF
 var tableRenderers = {};
 function toggleCompositeForm(type) {
@@ -9315,7 +9439,6 @@ function moveComposite(type, id, artefact, direction, idfr) {
     );
     return false;
 }
-
 function contextualHelp(formName, helpName, pluginType, pluginName, page, section, ref) {
     var key;
     var target = $(formName + '_' + helpName + '_container');
@@ -11600,21 +11723,9 @@ function get_groups_tome($idtome){
 		//exit;
 		foreach ($groupsselected as $sgroup){
 			$params=array('id' => $sgroup->idgroup);
-            $sql = "SELECT id, name, description, public, deleted FROM {group} WHERE id=? ";
+            $sql = "SELECT id, name, description, public FROM {group} WHERE id=? ";
     		if ($agroup = get_record_sql($sql, $params)){
-            	if (!$agroup->deleted){
-					$listegroups.=$agroup->name.' (ID:'.$agroup->id.') ';
-				}
-				else{
-					// this group does not exist anymore
-					// refresh artefact_booklet_group table
-            	    delete_records('artefact_booklet_group', 'idgroup', $agroup->id);
-				}
-			}
-			else{
-				// this group does not exist anymore
-				// refresh artefact_booklet_group table
-                delete_records('artefact_booklet_group', 'idgroup', $sgroup->idgroup);
+            	$listegroups.=$agroup->name.' (ID:'.$agroup->id.') ';
 			}
 		}
 	}
@@ -11636,42 +11747,30 @@ function get_groups_tome_details($idtome){
 		//exit;
 		foreach ($groupsselected as $sgroup){
 			$params=array('id' => $sgroup->idgroup);
-            $sql = "SELECT id, name, description, public, hidden, jointype , deleted FROM {group} WHERE id=? ";
+            $sql = "SELECT id, name, description, public, hidden, jointype FROM {group} WHERE id=? ";
     		if ($group = get_record_sql($sql, $params)){
-				if (!$group->deleted){
-					$linkmembers  = get_config('wwwroot') . '/group/members.php?id=' . $group->id;
-	                $nmembers = count_records('group_member', 'group', $group->id);
-					$msg='';
-					if ($group->public){
-						if (!empty($msg)) $msg.=', ';
-                	    //$msg.=get_string('grouppublic','artefact.booklet');
-                    	$msg.=get_string('publiclyvisible', 'group');
-					}
-					if ($group->hidden){
-        	            if (!empty($msg)) $msg.=', ';
-						$msg.=get_string('grouphidden','artefact.booklet');
-                	    //$msg.=get_string('hidden','group');
-					}
-					if ($group->jointype=='open'){
-        	            if (!empty($msg)) $msg.=', ';
-						//$msg.=get_string('groupopen','artefact.booklet');
-                	    $msg.=get_string('membershiptype.abbrev.open','group');
-					}
-					if (!empty($msg)){
-        	            $msg = ' [<i>'.$msg.'</i>]';
-					}
-		        	$listegroups .=  '<li><b>'.strip_tags($group->name).'</b> '.strip_tags($group->description).$msg.' <a href="'.$linkmembers.'" target="_blank">'.get_string('nmembers','artefact.booklet',$nmembers).'</a> </li>'."\n";
+				$linkmembers  = get_config('wwwroot') . '/group/members.php?id=' . $group->id;
+                $nmembers = count_records('group_member', 'group', $group->id);
+				$msg='';
+				if ($group->public){
+					if (!empty($msg)) $msg.=', ';
+                    //$msg.=get_string('grouppublic','artefact.booklet');
+                    $msg.=get_string('publiclyvisible', 'group');
 				}
-				else{
-					// this group does not exist anymore
-					// refresh artefact_booklet_group table
-	                delete_records('artefact_booklet_group', 'idgroup', $group->id);
+				if ($group->hidden){
+                    if (!empty($msg)) $msg.=', ';
+					$msg.=get_string('grouphidden','artefact.booklet');
+                    //$msg.=get_string('hidden','group');
 				}
-			}
-			else{
-				// this group does not exist anymore
-				// refresh artefact_booklet_group table
-                delete_records('artefact_booklet_group', 'idgroup', $sgroup->idgroup);
+				if ($group->jointype=='open'){
+                    if (!empty($msg)) $msg.=', ';
+					//$msg.=get_string('groupopen','artefact.booklet');
+                    $msg.=get_string('membershiptype.abbrev.open','group');
+				}
+				if (!empty($msg)){
+                    $msg = ' [<i>'.$msg.'</i>]';
+				}
+		        $listegroups .=  '<li><b>'.strip_tags($group->name).'</b> '.strip_tags($group->description).$msg.' <a href="'.$linkmembers.'" target="_blank">'.get_string('nmembers','artefact.booklet',$nmembers).'</a> </li>'."\n";
 			}
 		}
         if (!empty($listegroups)){

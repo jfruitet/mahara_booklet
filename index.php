@@ -29,10 +29,6 @@ $browse = (int) param_variable('browse', 0);
 $idframe  = param_integer('idframe', 0);
 $okdisplay = param_integer('okdisplay', 0);
 
-// Modif Mahara 15.10
-$idtome = NULL;
-$tomeselected = NULL;
-
 $idmodifliste = param_integer('idmodifliste', null);
 
 $menuspecialform =  NULL; // menu des fiches / frames
@@ -41,36 +37,29 @@ $menuspecialform =  NULL; // menu des fiches / frames
 $designer = get_record('artefact_booklet_designer', 'id', $USER->get('id'));
 // renvoit les designers d'id = user pour savoir si user est designer
 
-// Modif JF : il faut verifier si le livret est restreint à un groupe
+// Modif JF : il faut verifier si le livret est restriant à un groupe
 // et si oui que l'utilisateur est membre du groupe
 // $tomes = get_records_array('artefact_booklet_tome', 'public', 1);
+$tomes = get_tomes_user($USER->get('id'));
 
-
-$user = get_record('usr', 'id', $USER->get('id'));
-
-if ($tomes = get_tomes_user($USER->get('id'))){
-	// renvoit la liste des tomes publics
-
-	// renvoit l'enregistrement de user pour tester ensuite si son champ admin est a vrai
-	if (!$selectedTome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'))) {
-    	// si pas de tome selectionné, on utilise le 1er
-	    if (!empty($tomes) && isset($tomes[0])) {
-    	    $tomeselected = $tomes[0];
-        	$idtome = $tomeselected->id;
-	    }
-		else{
-			// not any tome
-		}
-	}
-	else {
-    	$idtome = $selectedTome->idtome;
-    	$t = get_record('artefact_booklet_tome', 'id', $idtome);
-	    if ($t->public == 0 && count($designer) == 0) {
-    	    // si tome selectionne n'est pas public, on utilise le premier
-        	$tomeselected = $tomes[0];
-	        $idtome = $tomeselected->id;
-    	}
-	}
+// renvoit la liste des tomes publics
+$admin = get_record('usr', 'id', $USER->get('id'));
+// renvoit l'enregistrement de user pour tester ensuite si son champ admin est a vrai
+if (!$selectedTome = get_record('artefact_booklet_selectedtome', 'iduser', $USER->get('id'))) {
+    // si pas de tome selectionné, on utilise le 1er
+    if ($tomes[0]) {
+        $tomeselected = $tomes[0];
+        $idtome = $tomeselected->id;
+    }
+}
+else {
+    $idtome = $selectedTome->idtome;
+    $t = get_record('artefact_booklet_tome', 'id', $idtome);
+    if ($t->public == 0 && count($designer) == 0) {
+        // si tome selectionne n'est pas public, on utilise le premier
+        $tomeselected = $tomes[0];
+        $idtome = $tomeselected->id;
+    }
 }
 
 $visuatest = false;
@@ -89,7 +78,7 @@ if (count($designer) != 0) {
 }
 
 // Affichage d'un tome
-if (!empty($idtome)) {
+if (isset($idtome)) {
     // si idtome est défini, ce qui est vrai dans tous les cas sauf avant que le 1er tome soit public
     $tome = get_record('artefact_booklet_tome', 'id', $idtome);
     define('TITLE', $tome->title);
@@ -154,20 +143,22 @@ if (!empty($idtome)) {
     // renvoit la forme correspondant au tome à afficher
 	if (!empty($idframe)){
 		if ($okdisplay){
-    		$indexform = ArtefactTypeVisualization::get_aframeform_display($idtome, $tab, $idframe, $idmodifliste, $browse);
+    		$tomeform = ArtefactTypeVisualization::get_aframeform_display($idtome, $tab, $idframe, $idmodifliste, $browse);
 		}
 		else{
-    		$indexform= ArtefactTypeVisualization::get_aframeform($idtome, $tab, $idframe, $idmodifliste, $browse);
+    		$tomeform = ArtefactTypeVisualization::get_aframeform($idtome, $tab, $idframe, $idmodifliste, $browse);
 		}
 	}
 	else{
 		if ($okdisplay){
-    		$indexform = ArtefactTypeVisualization::get_form_display($idtome, $tab, $idmodifliste, $browse);
+    		$tomeform = ArtefactTypeVisualization::get_form_display($idtome, $tab, $idmodifliste, $browse);
 		}
 		else{
-    		$indexform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
+    		$tomeform = ArtefactTypeVisualization::get_form($idtome, $tab, $idmodifliste, $browse);
 		}
 	}
+
+	$indexform = $tomeform;
 }
 else {
     define('TITLE', get_string('booklet', 'artefact.booklet'));
@@ -177,7 +168,7 @@ else {
 }
 
 // Selection d'un tome
-if (!empty($tomes)) {
+if ($tomes) {
     // pour formulaire de choix du tome, le selectionné par défaut
     $options = array();
     // construit dans options un tableau des tomes : id -> title
@@ -283,7 +274,7 @@ if ($designer) {
 }
 
 
-if (!empty($user) && !empty($user->admin)) {
+if ($admin->admin) {
     // si admin : formulaires de gestion des concepteurs
     $sql = "SELECT * FROM {usr}
            WHERE id IN (SELECT id from {artefact_booklet_designer})";
@@ -343,22 +334,15 @@ if (!empty($user) && !empty($user->admin)) {
 		)
 	);
 
-    $aide = '';
-    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('adminfield', 'artefact.booklet') . ' ' . $aide . '</legend>' . $adminform . $admindeleteform . '</fieldset>';
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('adminfield', 'artefact.booklet') . ' </legend>' . $adminform . $admindeleteform . '</fieldset>';
     $indexform['adminform'] = $pf;
 }
-
 if (isset($idtome)) {
-	$imagehelp = $THEME->get_url('images/help.png', false, 'artefact/booklet');
-    $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$idtome.'&quot;,&quot;to'.$idtome.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.$imagehelp.'" alt="Help" title="Help"></a></span>';
+    $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$idtome.'&quot;,&quot;to'.$idtome.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="'.get_string('help','artefact.booklet').'" title="'.get_string('help','artefact.booklet').'"></a></span>';
 }
 else {
     $aide = '';
 }
-
-// DEBUG
-//print_object ($indexform);
-//exit;
 
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHELPNAME', true);
@@ -368,16 +352,12 @@ if (!empty($menuspecialform)){
 	$smarty->assign('menuspecialform', $menuspecialform);
 }
 $smarty->assign('help', $aide);
-
 $smarty->assign('indexform', $indexform);
 $smarty->assign('choiceform', $choiceform);
 $smarty->assign('INLINEJAVASCRIPT', $inlinejs);
 $smarty->assign('d', $designer);
 $smarty->assign('SUBPAGENAV', $tabs);
 $smarty->display('artefact:booklet:index.tpl');
-
-
-/***********************************************************/
 
 function modform_submit(Pieform $form, $values) {
     $goto = get_config('wwwroot').'/artefact/booklet/tomes.php';
