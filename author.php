@@ -31,7 +31,7 @@ class ArtefactTypeAuthor extends ArtefactTypebooklet {
             'successcallback' => 'authorform_submit',
             'pluginname'  => 'booklet',
             'method'      => 'post',
-            'renderer'      => 'table',
+            'renderer'      => 'oneline',
             'elements'    =>  array(
               	'authormail' => array(
                     'type' => 'text',
@@ -145,7 +145,7 @@ class ArtefactTypeAuthor extends ArtefactTypebooklet {
             'successcallback' => 'authorform_submit',
             'pluginname'  => 'booklet',
             'method'      => 'post',
-            'renderer'      => 'table',
+            'renderer'      => 'oneline',
             'elements'    =>  array(
               'authormail' => array(
                     'type' => 'text',
@@ -372,6 +372,7 @@ if (!empty($tome)){
     define('TITLE', $tome->title);
     $smarty = smarty(array('tablerenderer','jquery'));
  	$smarty->assign('title', $tome->title);
+    $smarty->assign('pagetitle', get_string('author','artefact.booklet'));
 	$smarty->assign('PAGEHEADING', TITLE);
 	$smarty->assign('authorform', $authorform);
 	$smarty->display('artefact:booklet:author.tpl');

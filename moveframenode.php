@@ -36,12 +36,12 @@ if ($idframe && $frame = get_record('artefact_booklet_frame', 'id', $idframe)){
 		    $sql = "SELECT MIN( displayorder) as val
  FROM {artefact_booklet_tab}
  WHERE idtome = ?";
-    		$min = get_record_sql($sql, $tome->id);
+    		$min = get_record_sql($sql, array($tome->id));
     		// calcule valeur min de displayorder dans artefact_booklet_tab
     		$sql = "SELECT MAX( displayorder ) as val
  FROM {artefact_booklet_tab}
  WHERE idtome = ?";
-    		$max = get_record_sql($sql, $tome->id);
+    		$max = get_record_sql($sql, array($tome->id));
     		// calcule valeur max de displayorder dans artefact_booklet_tab
     		$tab = param_integer('tab', $min->val);
     		if ($tab > $max->val) {

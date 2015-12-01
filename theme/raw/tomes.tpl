@@ -7,14 +7,14 @@
     <thead>
         <tr>
             <!-- <th class="tomecontrols"></th> -->
-            <th class="nom">{str tag='tomesname' section='artefact.booklet'}</th>
-            <th class="tomecontrols"></th>
+            <th class="nom" width="70%">{str tag='tomesname' section='artefact.booklet'}</th>
+            <th class="tomecontrols" width="30%"></th>
         </tr>
     </thead>
     <tbody>
         {foreach from=$rows item=row}
         <tr>
-            <td class="buttonscell"></td>
+            <!-- td class="buttonscell"></td -->
             <td class="toggle">{$row->title}</td>
             <td class="buttonscell"></td>
         </tr>
