@@ -300,7 +300,7 @@ function get_skilltodisplayform($domainsselected='', $skillsselected='', $thresh
 				'name' => 'selectskillsfromframes',
 	        	'plugintype' => 'artefact',
     	    	'pluginname' => 'booklet',
-		        'renderer' => 'oneline',
+          		'renderer' => 'table', // 'online' fait planter
     		    'method' => 'post',
         		'successcallback' => 'multiselectframes_submit',
 				'elements' => $elements,
@@ -342,7 +342,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
         	'name' => 'framesskills',
 	        'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
-    		'renderer' => 'oneline',
+      		'renderer' => 'table', // 'online' fait planter
         	'method'      => 'post',
         	'successcallback' => 'framesskills_submit',
 		    'elements' => array(
@@ -454,7 +454,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
     	    	'pluginname' => 'booklet',
    	    	    // 'validatecallback' => 'validate_selectlist',
        	    	'successcallback' => 'selectsomedomainsframes_submit',
-           	    'renderer' => 'oneline',
+                'renderer' => 'table', // 'online' fait planter
                	'elements' => $elementdomains,
             );
    	    	$compositeform['domainchoice'] = pieform($domainchoice);
@@ -555,7 +555,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
                 'pluginname' => 'booklet',
         	    // 'validatecallback' => 'validate_selectlist',
             	'successcallback' => 'selectskillsframes_submit',
-                'renderer' => 'oneline',
+                'renderer' => 'table', // 'online' fait planter,
                 'elements' => $elementsskills,
             );
         	$compositeform['choice'] = pieform($choice);
@@ -671,7 +671,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
     	    		'pluginname' => 'booklet',
    	    	    	// 'validatecallback' => 'validate_selectlist',
 	       	    	'successcallback' => 'selectsomedomains_submit',
-    	       	    'renderer' => 'oneline',
+    	       	    'renderer' => 'table', // 'online' fait planter
         	       	'elements' => $elementdomains,
             );
    	    	$compositeform['domainchoice'] = pieform($domainchoice);
@@ -790,7 +790,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
                 'pluginname' => 'booklet',
         	    // 'validatecallback' => 'validate_selectlist',
             	'successcallback' => 'selectskills_submit',
-                'renderer' => 'oneline',
+                'renderer' => 'table', // 'online' fait planter
                 'elements' => $elementsskills,
             );
         	$compositeform['choice'] = pieform($choice);
@@ -801,7 +801,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 			'name' => 'addskillform',
             'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
-	        'renderer' => 'oneline',
+            'renderer' => 'table', // 'online' fait planter
     	    'method' => 'post',
         	'successcallback' => 'askill_submit',
 			'elements' => array(
@@ -905,7 +905,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
         	'name' => 'inputskills',
 	        'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
-    		'renderer' => 'oneline',
+      		'renderer' => 'table', // 'online' fait planter
         	'method'      => 'post',
         	'successcallback' => 'skills_submit',
 		    'elements' => array(
@@ -1661,7 +1661,7 @@ function get_skillseditform($idtab, $domainsselected='', $skillsselected='' ) {
 				'name' => 'editskillsform',
 	        	'plugintype' => 'artefact',
     	    	'pluginname' => 'booklet',
-		        'renderer' => 'oneline',
+          		'renderer' => 'table', // 'online' fait planter
     		    'method' => 'post',
         		'successcallback' => 'manyskillsedit_submit',
 				'elements' => $elements,
