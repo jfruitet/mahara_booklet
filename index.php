@@ -14,6 +14,7 @@ define('MENUITEM', 'content/booklet');
 define('SECTION_PLUGINTYPE', 'artefact');
 define('SECTION_PLUGINNAME', 'booklet');
 define('SECTION_PAGE', 'index');
+
 defined('INTERNAL') || die();
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/init.php');
@@ -22,6 +23,11 @@ require_once('pieforms/pieform.php');
 require_once('license.php');
 safe_require('artefact', 'booklet');
 safe_require('artefact', 'file');
+
+
+if (!PluginArtefactBooklet::is_active()) {
+    throw new AccessDeniedException(get_string('plugindisableduser', 'mahara', get_string('booklet','artefact.booklet')));
+}
 
 $browse = (int) param_variable('browse', 0);
 

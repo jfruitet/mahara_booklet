@@ -6116,10 +6116,22 @@ echo "<br />DEBUG :: lib.php :: 4802 :: Utilise REFERENCE en mode liste\n";
                         	'type' => 'hidden',
 	                        'value' => false
     	                );
+/*
+http://localhost:8080/mahara1510/artefact/internal/index.php
+//  DEBUG
+   'profile' => array(
+        'type' => 'fieldset',
+        'legend' => get_string('aboutme', 'artefact.internal'),
+        'class' => 'has-help' . $fieldset != 'aboutme' ? 'collapsed' : '',
+        'elements' => get_desired_fields($items, array('firstname', 'lastname', 'studentid', 'preferredname', 'introduction'), 'about'),
+    ),
+
+*/
         	            $elements[$frame->id] = array(
             	            'type' => 'fieldset',
                 	        'legend' => $frame->title,
                             'title' => $frame->title,
+                            'class' => 'has-help' . $fieldset != 'aboutme' ? 'collapsed' : '',
                     	    'help' => ($frame->help != null),
                         	'elements' => $components
 	                    );
@@ -8564,6 +8576,12 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                 	if ($objects) {
 	            	    foreach ($objects as $object) {
 	            	        $help = ($object->help != null);
+							// DEBUG
+							if (0 && $help){
+                            	echo "<br />DEBUG : lib.php : 8580 : OBJECT  <br /> \n";
+								print_object($object);
+								exit;
+							}
 	            	        if ($object->type == 'longtext') {
 								$val = null;
 	            	            if ($notframelist) {
@@ -8815,26 +8833,25 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 
                                             	if ($notframelist || !$objmodifotherframe) {
          											if (!$header){
-		    	                        			$components['rlc' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
-                                            			'type' => 'radio',
-            			        	                    'options' => $options,
-                        				                //'help' => $help,
-                            	    			        'title' => $str_skill,
-                                	        			'defaultvalue' => $defaultvalue,
-                                                        'rowsize' => $nboptions,
-                                                        'description' => "$domain :: $code",
-                                    				);
+		    	                        				$components['rlc' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
+	                                            			'type' => 'radio',
+    	        			        	                    'options' => $options,
+        	                				                'help' => $help,
+            	                	    			        'title' => $str_skill,
+                	                	        			'defaultvalue' => $defaultvalue,
+                    	                                    'rowsize' => $nboptions,
+                        	                                'description' => "$domain :: $code",
+                            	        				);
 				    								}
 													else if (!$hidden) {
-		    	                        			$components['rlc' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
-                                            			'type' => 'html',
-                               	    			        'title' => $str_skill,
-                                	        			'value' => "<b>$domain :: $code</b>",
-                                    				);
+			    	                        			$components['rlc' . $object->id.'_'.$list->id.'_'.$skill->id] = array(
+    	                                        			'type' => 'html',
+        	                       	    			        'title' => $str_skill,
+            	                    	        			'value' => "<b>$domain :: $code</b>",
+                	                    				);
 
 													}
 												}
-
 											}
 										}
 									}
@@ -8966,8 +8983,6 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
             	    	            );
 
                             	if ($notframelist || !$objmodifotherframe) {
-
-
 									if ($vals){
 										//print_object($vals);
 										//exit;
@@ -9021,7 +9036,7 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
 		    	                        			$components['frsk' . $object->id.'_'.$skill->id] = array(
                                             			'type' => 'radio',
             			        	                    'options' => $options,
-                        				                //'help' => $help,
+                        				                'help' => $help,
                             	    			        'title' => $str_skill,
                                 	        			'defaultvalue' => $defaultvalue,
                                                         'rowsize' => $nboptions,
@@ -9111,7 +9126,8 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
         	            'pluginname'  => 'booklet',
             	        'configdirs'  => array(get_config('libroot') . 'form/', get_config('docroot') . 'artefact/file/form/'),
                 	    'method'      => 'post',
-                    	'renderer'    => 'oneline',  // 'renderer'    => 'table',
+                        'renderer'    => 'table',
+                    	// 'renderer'    => 'oneline',
 	                    'successcallback' => 'visualization_submit',
     	                'elements'    => $elements,
                     	'autofocus'   => false,
@@ -9158,8 +9174,11 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                 	    else {
                     	    $aide = '';
 	                    }
-    	                $pf = '<fieldset class="pieform-fieldset"><legend>' . $frame->title . ' ' . $aide . '</legend>
-                           <table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
+						/*
+    	                $pf = '<fieldset class="pieform-fieldset">
+
+							<legend>' . $frame->title . ' ' . $aide . '</legend>
+                           	<table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
                                <thead>
                                    <tr>
                                        <th class="visualizationcontrols"></th>
@@ -9174,6 +9193,21 @@ $alink3 = '<a href="'.get_config('wwwroot').'/artefact/booklet/index.php?idframe
                                        <td class="buttonscell"></td>
                                    </tr>
                                </tbody>
+                           </table>
+                           ' . $pf . '
+                           </fieldset>';
+*/
+    	                $pf = '<fieldset class="pieform-fieldset">
+
+							<legend>' . $frame->title . ' ' . $aide . '</legend>
+                           	<table id="visualization'.$frame->id.'list" class="tablerenderer visualizationcomposite">
+                               <thead>
+                                   <tr>
+                                       <th class="visualizationcontrols"></th>
+                                       <th class="nom">BIDON 1 ' . (($item) ? $item->title : "") . '</th>
+                                       <th class="visualizationcontrols"></th>
+                                   </tr>
+                               </thead>
                            </table>
                            ' . $pf . '
                            </fieldset>';

@@ -207,6 +207,17 @@ $string['sktype'] = "Display type";
 $string['skilltype'] = "Type (0: header, 1: item, 2: hidden)";
 $string['skilldescriptionmodel'] = "Use action verbs to describe this skill";
 $string['skilldescriptiondesc'] = "Display the know-hows and the expertises linked to this skill... ";
+$string['addnewskill_h'] = "New Skill Help";
+$string['addnewskill_help'] = "	Pour chaque comp&eacute;tence saisir les valeurs : <br />
+<ul><li><b>Domaine</b>: Une d&eacute;signation identique pour toutes les comp&eacute;tences d'un m&ecirc;me domaine.
+</li><li><b>Code</b> : C'est une cl&eacute; pour d&eacute;signer une comp&eacute;tences dans un domaine donn&eacute;.
+</li><li><b>Type</b>: Permet de moduler l'affichage 0: Ent&ecirc;te (aucun bar&egrave;me n'est appliqu&eacute;), 1: Item standard ; 2: Item masqu&eacute;, qui ne sera pas affich&eacute; du tout.
+</li><li><b>Description</b>: Liste des savoir-faire et des habilet&eacute;s que cette comp&eacute;tence d&eacute;montre.
+</li><li><b>Bar&egrave;me</b> : Une liste de valeurs s&eacute;par&eacute;es par une virgule, par exemple \"<i>Non acquis, Notion, Application, Ma&icirc;trise, Expertise</i>\";
+</li><li><b>Seuil</b> Position du bar&egrave;mes qui permet de valider la comp&eacute;tence ; par exemple pour le bar&egrave;me ci-dessus il faut indiquer '3' qui correspond &agrave; \"</i>Application</i>\".
+<br />Si le bar&egrave;me n'est pas saisi il sera repris du bar&egrave;me par d&eacute;faut  \"Non acquis, Notion, Application, Ma&icirc;trise, Expertise\".
+</li></ul> ";
+
 $string['skillsavefailed'] = "Fail to save the Skill. Some data missing...";
 
 $string['threshold'] = "Threshold";

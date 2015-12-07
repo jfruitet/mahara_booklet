@@ -101,6 +101,7 @@ function get_skilltodisplayform($domainsselected='', $skillsselected='', $thresh
 		    $elements['skills'] = array(
 	        	    	'type' => 'fieldset',
 	            		'legend' => get_string('skills', 'artefact.booklet'),
+                        'title' => get_string('skills', 'artefact.booklet'),
     		        	'elements' => $elementskills,
 			);
 		}
@@ -342,7 +343,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
         	'name' => 'framesskills',
 	        'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
-    		'renderer' => 'oneline',
+		    'renderer' => 'oneline',
         	'method'      => 'post',
         	'successcallback' => 'framesskills_submit',
 		    'elements' => array(
@@ -430,16 +431,16 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
 			}
 		    //print_object($domain_options);
 			//exit;
-   			$elementdomains['domainselect'] = array(
+			$elementdomains['domainselect'] = array(
 	        		'type' => 'select',
-	    	    	'title' => '', //get_string('selectdomains','artefact.booklet'),
+	    	    	'title' => get_string('selectdomains','artefact.booklet'),
 		        	'multiple' => true,
     		    	'options' => $domain_options,
         			'defaultvalue' => $domain_selected,
         			//'size' => count($domains),
-	                'size' => 3,
+	                'size' => 10,
     	            'description' => get_string('multiselect', 'artefact.booklet'),
-   			);
+			);
 
        	    $elementdomains['submit'] = array(
             		'type' => 'submitcancel',
@@ -454,7 +455,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
     	    	'pluginname' => 'booklet',
    	    	    // 'validatecallback' => 'validate_selectlist',
        	    	'successcallback' => 'selectsomedomainsframes_submit',
-           	    'renderer' => 'oneline',
+                'renderer' =>  'oneline', //  'table',
                	'elements' => $elementdomains,
             );
    	    	$compositeform['domainchoice'] = pieform($domainchoice);
@@ -555,7 +556,7 @@ function get_skillsframesform($domainsselected='', $skillsselected='' ) {
                 'pluginname' => 'booklet',
         	    // 'validatecallback' => 'validate_selectlist',
             	'successcallback' => 'selectskillsframes_submit',
-                'renderer' => 'oneline',
+                'renderer' => 'table', // 'oneline' fait planter
                 'elements' => $elementsskills,
             );
         	$compositeform['choice'] = pieform($choice);
@@ -644,12 +645,12 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 			}
 			$elementdomains['domainselect'] = array(
 	        		'type' => 'select',
-	    	    	'title' => '', //get_string('selectdomains','artefact.booklet'),
+	    	    	'title' => get_string('selectdomains','artefact.booklet'),
 		        	'multiple' => true,
     		    	'options' => $domain_options,
         			'defaultvalue' => $domain_selected,
         			//'size' => count($domains),
-	                'size' => 3,
+	                'size' => 10,
     	            'description' => get_string('multiselect', 'artefact.booklet'),
 			);
 
@@ -671,7 +672,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
     	    		'pluginname' => 'booklet',
    	    	    	// 'validatecallback' => 'validate_selectlist',
 	       	    	'successcallback' => 'selectsomedomains_submit',
-    	       	    'renderer' => 'oneline',
+                 	'renderer' =>  'oneline', //  'table','
         	       	'elements' => $elementdomains,
             );
    	    	$compositeform['domainchoice'] = pieform($domainchoice);
@@ -790,14 +791,14 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
                 'pluginname' => 'booklet',
         	    // 'validatecallback' => 'validate_selectlist',
             	'successcallback' => 'selectskills_submit',
-                'renderer' => 'oneline',
+                'renderer' => 'table',
                 'elements' => $elementsskills,
             );
         	$compositeform['choice'] = pieform($choice);
 	}
 
 
-	$aform = array(
+	$addform = array(
 			'name' => 'addskillform',
             'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
@@ -814,6 +815,11 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
     	        	'collapsed' => true,
 	    	        'legend' => get_string('addnewskill', 'artefact.booklet'),
             	    'elements' => array(
+	                	'skillpresentation' => array(
+                    		'type' => 'html',
+    		                'title' => get_string('addnewskill_h', 'artefact.booklet'),
+            		        'value' => get_string('addnewskill_help', 'artefact.booklet'),
+        	        	),
 
 	                	'skilldomain' => array(
 		                    'type' => 'text',
@@ -821,8 +827,9 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
         		            'size' => 40,
             		        'defaultvalue' => NULL,
                 		    'rules' => array(
-                    	    'required' => true,
+                    	    	'required' => true,
 	                    	),
+                            // 'description' => get_string('skilldescriptiondesc_help', 'artefact.booklet'),
     	                	'help' => true
         	        	),
             	    	'skillcode' => array(
@@ -855,6 +862,7 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 			                'rules' => array(
     			            	'required' => true,
         			        ),
+                            'help' => true
                			),
 
 		                'skillscale' => array(
@@ -899,13 +907,13 @@ function get_skillsform($idtab, $domainsselected='', $skillsselected='' ) {
 			),
     );
 
-	$compositeform['addform'] = pieform($aform);
+	$compositeform['addform'] = pieform($addform);
 
     $sform = array(
         	'name' => 'inputskills',
 	        'plugintype' => 'artefact',
     	    'pluginname' => 'booklet',
-    		'renderer' => 'oneline',
+    		'renderer' => 'oneline', // 'table',
         	'method'      => 'post',
         	'successcallback' => 'skills_submit',
 		    'elements' => array(
@@ -2819,6 +2827,7 @@ function manyskillsedit_submit(Pieform $form, $values) {
 	               	$elements[$frame->id] = array(
 		           	    'type' => 'fieldset',
 	    	       	    'legend' => $frame->title,
+                        'title' => $frame->title,
 		    	        'help' => ($frame->help != null),
     		    	  	'elements' => $components
 	        	    );
@@ -2841,6 +2850,7 @@ function manyskillsedit_submit(Pieform $form, $values) {
         	        $elements[$frame->id] = array(
 	        	    	'type' => 'fieldset',
 	            		'legend' => $frame->title,
+                        'title' => $frame->title,
 		            	'help' => ($frame->help != null),
     		        	'elements' => $components,
 					);
