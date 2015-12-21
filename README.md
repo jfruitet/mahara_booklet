@@ -7,7 +7,11 @@ This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr> (https://github.com
 of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228)
 
 
+Attention : Désormais Booklet est placé dans une branche différente à chaque nouvelle version de Mahara 
 
+- Mahara 10.x : https://github.com/jfruitet/mahara_booklet/tree/master
+- Mahara 15.04 : https://github.com/jfruitet/mahara_booklet/tree/mahara1504 
+- Mahara 15.10 : https://github.com/jfruitet/mahara_booklet/tree/mahara1510
  
 ## Modifications by JF
 
