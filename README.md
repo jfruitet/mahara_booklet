@@ -1,49 +1,71 @@
 mahara_booklet
 ==============
-Mahara 15.10
 
-This is a fork by Jean Fruitet <Jean.Fruitet@univ-nantes.fr> (https://github.com/jfruitet/mahara_booklet)
+Mahara Booklet artefact is maintened by jean.fruitet@free.fr
+
+This is a fork (https://github.com/jfruitet/mahara_booklet)
 
 of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014.univ-paris3.fr/course/view.php?id=228)
 
 
-
- 
 ## Modifications by JF
 
 ### Mahara 15.10 version
 
+This a new GitHub branch
+https://github.com/jfruitet/mahara_booklet/tree/mahara1510
+
 #### December 2015
 
-**Version = 2015113001, Release = '1.3.0'**
+**Version = 2015122101, Release = '1.3.1'**
 
-##### How it differs from Mahara 15.04 versions 
+##### How it differs from the Mahara 15.04 version
 
 Few minor correction and a big one :
  - Mahara now supports Responsive Design.
- - The theme architecture has evolved from Mahara 15.04 to Mahara 15.10
+ - The theme directory architecture has evolved from Mahara 15.04 to Mahara 15.10
 
-You have now to copy all the ./artefact/booklet/theme directory stuff in ./theme/raw/plugintype/artefact/booklet/ directory.
+You have now to copy all the *./artefact/booklet/theme* directory stuff in *./theme/raw/plugintype/artefact/booklet/* directory.
 
 Then you may delete the ./artefact/booklet/theme directory
 
 Sorry for the inconvenience.
 
- ### Mahara 15.04 version
+##### Installation
 
+ * Download ZIP frome the mahara1510 branch  https://github.com/jfruitet/mahara_booklet/tree/mahara1510
+ * Unzip archive in ./artefact/ then rename it "booklet"
+ * Move  ./artefact/theme-booklet to ./mahara/theme/raw/plugintype/artefact/ then rename it "booklet"
+ * Copy ./artefact/booklet/lang/fr.utf8 to ./maharadata/langpacks/fr.utf8/artefact/booklet/lang
+ * Copy ./artefact/booklet/blocktype/(listofblocktypes)/lang to ./maharadata/langpacks/fr.utf8/artefact/booklet/blocktype/(listofblocktypes)/lang
+
+ * Log as admin
+ * Go to Administration / plugins
+ * Install booklet artefact
+ * Install booklet blocktype
+ * Print ./artefact/booklet/documentation/ as a user tutorial.
+
+
+That's all.
+
+
+
+### Mahara 15.04 version
+
+This a new GitHub branch :
 
 #### November 2015
 
 **Version = 2015113001, Release = '1.3.0'**
 
-##### How it differs from Mahara 10.0x versions 
+##### How it differs from the Mahara 10.0x versions
 
 Few obsoletes functions have been removed... 
  
  It seams that the theme architecture has evolved from Mahara 10.x to Mahara 15.4 but you may let all the theme directory stuff in ./artefact/booklet/ directory.
  
  The big change will be for  Mahara 15.10.
- Stay connnected.
+ Stay connected.
  
 
 ### New functionnalities
