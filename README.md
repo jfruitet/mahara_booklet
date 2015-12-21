@@ -12,30 +12,36 @@ of the **Mahara Artefact Booklet** of Christophe Declercq (http://moodlemoot2014
 
 ### Mahara 15.10 version
 
+Ceci est une nouvelle branche
+
 This a new GitHub branch
+
 https://github.com/jfruitet/mahara_booklet/tree/mahara1510
 
 #### December 2015
 
 **Version = 2015122101, Release = '1.3.1'**
 
-##### How it differs from the Mahara 15.04 version
+##### Différences avec les versions de Mahara antérieures.
+
+Quelques corrections mineures et une grande évolution :
+
+ - Mahara supporte le "Responsive Design".
+ - L'architecture du dossier *theme* a changé
+
+####  How it differs from the Mahara 15.04 version
 
 Few minor correction and a big one :
+
  - Mahara now supports Responsive Design.
  - The theme directory architecture has evolved from Mahara 15.04 to Mahara 15.10
 
-You have now to copy all the *./artefact/booklet/theme* directory stuff in *./theme/raw/plugintype/artefact/booklet/* directory.
-
-Then you may delete the ./artefact/booklet/theme directory
-
-Sorry for the inconvenience.
 
 ##### Installation
 
- * Download ZIP frome the mahara1510 branch  https://github.com/jfruitet/mahara_booklet/tree/mahara1510
+ * Download ZIP from the mahara1510 branch  https://github.com/jfruitet/mahara_booklet/tree/mahara1510
  * Unzip archive in ./artefact/ then rename it "booklet"
- * Move  ./artefact/theme-booklet to ./mahara/theme/raw/plugintype/artefact/ then rename it "booklet"
+ * Move ./artefact/theme-booklet to ./mahara/theme/raw/plugintype/artefact/ then rename it "booklet"
  * Copy ./artefact/booklet/lang/fr.utf8 to ./maharadata/langpacks/fr.utf8/artefact/booklet/lang
  * Copy ./artefact/booklet/blocktype/(listofblocktypes)/lang to ./maharadata/langpacks/fr.utf8/artefact/booklet/blocktype/(listofblocktypes)/lang
 
