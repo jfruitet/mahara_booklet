@@ -334,17 +334,15 @@ if ($admin->admin) {
 		)
 	);
 
-    $aide = '';
-    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('adminfield', 'artefact.booklet') . ' ' . $aide . '</legend>' . $adminform . $admindeleteform . '</fieldset>';
+    $pf = '<fieldset class="pieform-fieldset"><legend>'. get_string('adminfield', 'artefact.booklet') . ' </legend>' . $adminform . $admindeleteform . '</fieldset>';
     $indexform['adminform'] = $pf;
 }
 if (isset($idtome)) {
-    $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$idtome.'&quot;,&quot;to'.$idtome.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="Help" title="Help"></a></span>';
+    $aide = '<span class="help"><a href="" onclick="contextualHelp(&quot;pieform'.$idtome.'&quot;,&quot;to'.$idtome.'&quot;,&quot;artefact&quot;,&quot;booklet&quot;,&quot;&quot;,&quot;&quot;,this); return false;"><img src="'.get_config('wwwroot').'/theme/raw/static/images/help.png" alt="'.get_string('help','artefact.booklet').'" title="'.get_string('help','artefact.booklet').'"></a></span>';
 }
 else {
     $aide = '';
 }
-
 
 $smarty = smarty(array('tablerenderer','jquery'));
 $smarty->assign('PAGEHELPNAME', true);

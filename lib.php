@@ -9315,6 +9315,7 @@ function moveComposite(type, id, artefact, direction, idfr) {
     );
     return false;
 }
+
 function contextualHelp(formName, helpName, pluginType, pluginName, page, section, ref) {
     var key;
     var target = $(formName + '_' + helpName + '_container');
