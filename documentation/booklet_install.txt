@@ -4,7 +4,7 @@ Jean.Fruite@free.fr
 
 December 2015
 1) Unzip zip archive in ./artefact/ then rename it "booklet"
-2) Move  ./artefact/theme-booklet to ./mahara/theme/raw/plugintype/artefact/ then rename it "booklet"
+2) Move  ./artefact/booklet/theme-booklet to ./mahara/theme/raw/plugintype/artefact/ then rename it "booklet"
 3) Copy ./artefact/booklet/lang/fr.utf8 to ./maharadata/langpacks/fr.utf8/artefact/booklet/lang
    Copy ./artefact/booklet/blocktype/(listofblocktypes)/lang to ./maharadata/langpacks/fr.utf8/artefact/booklet/blocktype/(listofblocktypes)/lang  
 
