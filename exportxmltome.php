@@ -232,35 +232,36 @@ function get_frames($idtab){
     $tabaff_parentids = array();
     $tabaff_codes = array();
 
-	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
-	$recframes = get_records_sql_array('SELECT ar.* FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
 	// REORDONNER sous forme d'arbre parcours en profondeur d'abord
 	// 52 branches possibles a chaque niveau de l'arbre, cela devrait suffire ...
 	$tcodes = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
 
     $tabaff_ids = array();
     $tabaff_niveau = array();
-	// Initialisation
-    foreach ($recframes as $recframe) {
-        if ($recframe){
-            $tabaff_niveau[$recframe->id] = 0;
-		}
-	}
-	// Initialisation
+    // Initialisation
 	$n=0;
-	foreach ($recframes as $recframe) {
-       	if ($recframe){
-           	$tabaff_codes[$recframe->id] =$tcodes[$n];
-			$n++;
-		}
-	}
-
-	$niveau_courant = 0;
+    $niveau_courant = 0;
     $ordre_courant = 0;
     $parent_courant = 0;
+	// Ordonner les frames selon leur frame parent et leur ordre d'affichage
+	$recframes = get_records_sql_array('SELECT ar.* FROM {artefact_booklet_frame} ar WHERE ar.idtab = ? ORDER BY ar.idparentframe ASC, ar.displayorder ASC', array($idtab));
 
-	// Reordonner
-    if ($recframes) {
+	if ($recframes){
+		foreach ($recframes as $recframe) {
+        	if ($recframe){
+            	$tabaff_niveau[$recframe->id] = 0;
+			}
+		}
+
+		foreach ($recframes as $recframe) {
+       		if ($recframe){
+           		$tabaff_codes[$recframe->id] =$tcodes[$n];
+				$n++;
+			}
+		}
+
+		// Reordonner
+
 		foreach ($recframes as $recframe) {
 			if ($recframe){
 				if ($recframe->idparentframe == 0){
@@ -286,12 +287,14 @@ function get_frames($idtab){
                 $ordre_courant++;
 			}
 		}
+
+		asort($tabaff_codes);
+   		foreach ($tabaff_codes as $key => $val){
+			$result[] = get_record('artefact_booklet_frame', 'id', $key);
+		}
+		return $result;
 	}
-	asort($tabaff_codes);
-   	foreach ($tabaff_codes as $key => $val){
-		$result[] = get_record('artefact_booklet_frame', 'id', $key);
-	}
-	return $result;
+	return false;
 }
 
 
