@@ -1,7 +1,12 @@
 mahara_booklet
 ==============
 
-Mahara Booklet artefact is maintened by jean.fruitet@free.fr
+Mahara Booklet artefact is no more maintened by jean.fruitet@free.fr
+
+I am retired, this artefact, quite useful, wil not be implemented in next Mahara version.
+
+JF the 1/1/2017
+--------------
 
 This is a fork (https://github.com/jfruitet/mahara_booklet)
 
@@ -11,11 +16,11 @@ Attention : Désormais Booklet est placé dans une branche différente à chaque
 
 - Mahara 10.x : https://github.com/jfruitet/mahara_booklet/tree/master
 - Mahara 15.04 : https://github.com/jfruitet/mahara_booklet/tree/mahara1504
-- Mahara 15.10 : https://github.com/jfruitet/mahara_booklet/tree/mahara1510
+- Mahara 15.10, 16.x : https://github.com/jfruitet/mahara_booklet/tree/mahara1510
 
 ## Modifications by JF
 
-### Mahara 15.10 version
+### Mahara 15.10 and 16.x version
 
 Ceci est une nouvelle branche
 
