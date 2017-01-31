@@ -1,12 +1,12 @@
 mahara_booklet
 ==============
 
-Mahara Booklet artefact is no more maintened by jean.fruitet@free.fr
+**Mahara Booklet artefact was maintened by jean.fruitet@free.fr**
 
-I am retired, this artefact, quite useful, wil not be implemented in next Mahara version.
+I am retired so this artefact will not be implemented in any future version of Mahara.
 
-JF the 1/1/2017
---------------
+*JF the 1/1/2017*
+
 
 This is a fork (https://github.com/jfruitet/mahara_booklet)
 
